@@ -1,0 +1,12 @@
+fastapi==0.115.5
+uvicorn==0.30.3
+pydantic-settings==2.4.0
+redis==5.0.4
+orjson==3.10.7
+pyJWT==2.10.0
+httpx==0.28.1
+backoff==2.2.1
+
+alembic==1.14.1
+asyncpg==0.30.0
+psycopg2==2.9.10

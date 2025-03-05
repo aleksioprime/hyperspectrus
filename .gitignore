@@ -1,0 +1,8 @@
+logs
+__pycache__
+.python-version
+.pytest_cache
+.DS_Store
+.env
+.env.prod
+.idea

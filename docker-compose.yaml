@@ -1,0 +1,102 @@
+x-app: &app
+  env_file:
+    - ./.env
+  restart: always
+  platform: linux/amd64
+
+services:
+  postgres:
+    image: postgres:14
+    container_name: hyperspectrus-postgres
+    <<: *app
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres_volume:/var/lib/postgresql/data/
+    environment:
+      TZ: "Europe/Moscow"
+      PGTZ: "Europe/Moscow"
+
+  redis:
+    image: redis:6
+    container_name: hyperspectrus-redis
+    <<: *app
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_volume:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  auth:
+    build:
+      context: ./auth
+    container_name: hyperspectrus-auth
+    <<: *app
+    volumes:
+      - ./auth:/usr/src/app/
+    ports:
+      - "8100:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+
+  backend:
+    build:
+      context: ./backend
+    container_name: hyperspectrus-backend
+    <<: *app
+    volumes:
+      - ./backend:/usr/src/app/
+    ports:
+      - "8101:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      target: dev
+      args:
+        - VITE_LOGGING=${VITE_LOGGING}
+        - VITE_AUTH_URL=${VITE_AUTH_URL}
+    <<: *app
+    container_name: hyperspectrus-frontend
+    volumes:
+      - ./frontend/app/src:/usr/src/app/src
+    ports:
+      - "8102:5173"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  postgres_volume:
+  redis_volume:

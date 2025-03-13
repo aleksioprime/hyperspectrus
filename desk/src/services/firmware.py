@@ -13,10 +13,10 @@ class FirmwareUploader:
         file_path, _ = QFileDialog.getOpenFileName(None, "Выберите прошивку", "", "Python Files (*.py);;All Files (*)")
         if file_path:
             self.selected_file = file_path
-            self.status_text.append(f"📂 Выбран файл: {file_path}")
+            self.status_text.append(f"Выбран файл: {file_path}")
 
     def upload_file(self, ip):
         if not self.selected_file:
-            self.status_text.append("⚠️ Файл не выбран!")
+            self.status_text.append("Файл не выбран!")
             return
         self.ssh_client.upload_file(ip, self.selected_file)

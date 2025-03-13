@@ -7,10 +7,11 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from starlette import status
 
-from src.dependencies.auth import get_auth_service
+from src.dependencies.auth import get_auth_service, check_roles
 from src.schemas.auth import RegisterSchema, AuthSchema
 from src.schemas.token import TokenSchema, RefreshTokenSchema, AccessTokenSchema
 from src.services.auth import AuthService
+from src.constants.role import RoleName
 
 router = APIRouter()
 
@@ -22,6 +23,7 @@ router = APIRouter()
     status_code=status.HTTP_201_CREATED,
     response_model=TokenSchema,
 )
+@check_roles([RoleName.ADMIN])
 async def register(
         body: RegisterSchema,
         service: Annotated[AuthService, Depends(get_auth_service)],
@@ -34,10 +36,11 @@ async def register(
 
 
 @router.post(
-    path='/auth',
-    summary='Авторизирует пользователя',
+    path='/login',
+    summary='Выполняет вход в аккаунт',
     description='Авторизирует пользователя, выдает новые jwt токены и записывает вход в историю',
     response_model=TokenSchema,
+    status_code=status.HTTP_200_OK,
 )
 async def authenticate(
         body: AuthSchema,
@@ -46,7 +49,7 @@ async def authenticate(
     """
     Авторизует пользователя и выдает новые jwt токены
     """
-    token_pair: TokenSchema = await service.auth(body)
+    token_pair: TokenSchema = await service.login(body)
     return token_pair
 
 
@@ -54,6 +57,7 @@ async def authenticate(
     path='/logout',
     summary='Выполняет выход из аккаунта',
     description='Помечает access токен отозванным, а refresh токен удаляет из базы',
+    status_code=status.HTTP_200_OK,
 )
 async def logout(
         tokens: TokenSchema,
@@ -71,6 +75,7 @@ async def logout(
     summary='Выдает новый access-токен',
     description='Выдает новый access-токен по предоставленному refresh-токену',
     response_model=AccessTokenSchema,
+    status_code=status.HTTP_200_OK,
 )
 async def refresh_tokens(
         token: RefreshTokenSchema,

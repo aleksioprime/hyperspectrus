@@ -1,5 +1,5 @@
 """
-Модуль с эндпоинтами для управления пользователями и их ролями
+Модуль с эндпоинтами для управления пользователями
 """
 
 from typing import Annotated
@@ -8,18 +8,22 @@ from uuid import UUID
 from fastapi import APIRouter, Depends
 from starlette import status
 
-from src.dependencies.auth import get_user_by_jwt
+from src.dependencies.auth import get_user_by_jwt, check_roles
 from src.dependencies.user import get_user_service
-from src.schemas.user import UserUpdate, UserJWT, UserSchema
+from src.schemas.user import UserUpdateSchema, UserJWT, UserSchema
+from src.schemas.role import RoleAssignment
 from src.services.user import UserService
+from src.constants.role import RoleName
 
 router = APIRouter()
 
 @router.get(
-    path='/user',
+    path='/users',
     summary='Получить всех пользователей',
     response_model=list[UserSchema],
+    status_code=status.HTTP_200_OK,
 )
+@check_roles([RoleName.ADMIN])
 async def get_all_users(
         service: Annotated[UserService, Depends(get_user_service)],
         user: Annotated[UserJWT, Depends(get_user_by_jwt)],
@@ -31,9 +35,10 @@ async def get_all_users(
     return users
 
 @router.get(
-    path='/user/me',
+    path='/users/me',
     summary='Получить информацию о себе',
     response_model=UserSchema,
+    status_code=status.HTTP_200_OK,
 )
 async def get_user_me(
     user_jwt: Annotated[UserJWT, Depends(get_user_by_jwt)],
@@ -46,14 +51,16 @@ async def get_user_me(
     return user
 
 @router.patch(
-    path='/user/{user_id}',
+    path='/users/{user_id}',
     summary='Обновление пользователя',
     response_model=UserSchema,
+    status_code=status.HTTP_200_OK,
 )
+@check_roles([RoleName.ADMIN])
 async def update_user(
     user_id: UUID,
     user: Annotated[UserJWT, Depends(get_user_by_jwt)],
-    body: UserUpdate,
+    body: UserUpdateSchema,
     service: Annotated[UserService, Depends(get_user_service)],
 ):
     """
@@ -63,10 +70,11 @@ async def update_user(
     return user
 
 @router.delete(
-    path='/user/{user_id}',
+    path='/users/{user_id}',
     summary='Удаление пользователя',
     status_code=status.HTTP_204_NO_CONTENT,
 )
+@check_roles([RoleName.ADMIN])
 async def delete_user(
     user_id: UUID,
     service: Annotated[UserService, Depends(get_user_service)],
@@ -76,4 +84,39 @@ async def delete_user(
     Удаляет пользователя
     """
     await service.delete(user_id)
-    return {"message": "Пользователь успешно удалён"}
+
+
+@router.post(
+    path='/users/{user_id}/role/add',
+    summary='Назначить роль пользователю',
+    status_code=status.HTTP_200_OK,
+)
+@check_roles([RoleName.ADMIN])
+async def add_role_to_user(
+        user_id: UUID,
+        role_assignment: RoleAssignment,
+        service: Annotated[UserService, Depends(get_user_service)],
+        user: Annotated[UserJWT, Depends(get_user_by_jwt)],
+):
+    """
+    Назначает роль пользователю
+    """
+    await service.role_add(user_id, role_assignment.role_id)
+
+
+@router.post(
+    path='/users/{user_id}/role/remove',
+    summary='Отозвать роль у пользователя',
+    status_code=status.HTTP_200_OK,
+)
+@check_roles([RoleName.ADMIN])
+async def remove_role_from_user(
+        user_id: UUID,
+        role_assignment: RoleAssignment,
+        service: Annotated[UserService, Depends(get_user_service)],
+        user: Annotated[UserJWT, Depends(get_user_by_jwt)],
+):
+    """
+    Отзывает роль у пользователя
+    """
+    await service.role_remove(user_id, role_assignment.role_id)

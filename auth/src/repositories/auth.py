@@ -28,15 +28,15 @@ class AuthRepository(BaseAuthRepository, BaseSQLRepository):
         )
 
         # Получаем или создаем роль "User"
-        query = select(Role).filter_by(name="User")
+        query = select(Role).filter_by(name="user")
         role = await self.session.scalar(query)
 
         if not role:
-            role = Role(name="User", description="Default user role")
+            role = Role(name="user", description="Default user role")
             self.session.add(role)
             await self.session.flush()
 
-        # Присваиваем пользователю роль "User"
+        # Присваиваем пользователю роль "user"
         user.roles.append(role)
 
         # Сохраняем пользователя в базе

@@ -5,15 +5,6 @@ from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from src.db.postgres import Base
-from src.models.permission import Permission
-
-
-
-role_permissions = Table('role_permissions', Base.metadata,
-                         Column('role_id', UUID(as_uuid=True), ForeignKey('role.id', ondelete="CASCADE")),
-                         Column('permission_id', UUID(as_uuid=True), ForeignKey('permission.id', ondelete="CASCADE"))
-                         )
-
 
 class Role(Base):
     __tablename__ = 'role'
@@ -24,9 +15,6 @@ class Role(Base):
 
     # Связь с пользователями
     users = relationship("User", secondary="user_roles", back_populates="roles")
-
-    # Связь с правами
-    permissions = relationship("Permission", secondary="role_permissions", back_populates="roles")
 
     def __init__(self, name: str, description: str) -> None:
         self.name = name

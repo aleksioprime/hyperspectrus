@@ -39,7 +39,7 @@ LOGGING = {
     "loggers": {
         "": {
             "handlers": LOG_DEFAULT_HANDLERS,
-            "level": "INFO",
+            "level": "DEBUG",
         },
         "uvicorn.error": {
             "level": "INFO",

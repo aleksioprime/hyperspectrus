@@ -2,7 +2,7 @@ from uuid import UUID
 from typing import List
 
 from src.repositories.uow import UnitOfWork
-from src.schemas.user import UserUpdate, UserSchema
+from src.schemas.user import UserUpdateSchema, UserSchema
 from src.serializers.user import BaseSerializer
 from src.models.user import User
 
@@ -30,7 +30,7 @@ class UserService:
 
         return self.serializer.serialize(user)
 
-    async def update(self, user_id: UUID, body: UserUpdate) -> UserSchema:
+    async def update(self, user_id: UUID, body: UserUpdateSchema) -> UserSchema:
         """
         Обновляет информацию о пользователе
         """
@@ -45,3 +45,17 @@ class UserService:
         """
         async with self.uow:
             await self.uow.user.delete(user_id)
+
+    async def role_add(self, user_id: UUID, role_id: UUID):
+        """
+        Добавляет роль к пользователю
+        """
+        async with self.uow:
+            await self.uow.user.role_add(user_id, role_id)
+
+    async def role_remove(self, user_id: UUID, role_id: UUID):
+        """
+        Удаляет роль у пользователя
+        """
+        async with self.uow:
+            await self.uow.user.role_remove(user_id, role_id)

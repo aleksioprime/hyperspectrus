@@ -1,6 +1,7 @@
 from src.db.postgres import async_session_maker
 from src.repositories.auth import AuthRepository
 from src.repositories.user import UserRepository
+from src.repositories.role import RoleRepository
 
 
 class UnitOfWork:
@@ -11,6 +12,7 @@ class UnitOfWork:
         self.session = self.session_factory()
         self.auth = AuthRepository(self.session)
         self.user = UserRepository(self.session)
+        self.role = RoleRepository(self.session)
 
     async def __aexit__(self, exc_type, exc_value, traceback):
         if exc_type is not None:

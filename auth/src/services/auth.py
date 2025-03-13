@@ -41,12 +41,12 @@ class AuthService:
 
         return tokens
 
-    async def auth(self, body: AuthSchema) -> TokenSchema:
+    async def login(self, body: AuthSchema) -> TokenSchema:
         """
         Аутентифицирует пользователя и генерирует JWT токены
         """
         async with self.uow:
-            user = await self._auth(body)
+            user = await self._login(body)
             roles = await self._get_user_roles(user.id)
             tokens = await self._generate_jwt_tokens(user.id, roles)
 
@@ -101,7 +101,7 @@ class AuthService:
             refresh_token=rt,
         )
 
-    async def _auth(self, body: AuthSchema) -> User:
+    async def _login(self, body: AuthSchema) -> User:
         """
         Аутентифицирует пользователя
         """

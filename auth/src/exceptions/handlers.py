@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 from starlette import status
 
 from src.exceptions.auth import AuthException
+from src.exceptions.crud import CrudException
 
 def register_exception_handlers(app: FastAPI):
     """
@@ -12,6 +13,14 @@ def register_exception_handlers(app: FastAPI):
     # Обработчик исключений для пользовательских ошибок аутентификации
     @app.exception_handler(AuthException)
     async def auth_exception_handler(request: Request, exc: AuthException):
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content={"detail": exc.message},
+        )
+
+    # Обработчик исключений для пользовательских ошибок CRUD-операций
+    @app.exception_handler(CrudException)
+    async def crud_exception_handler(request: Request, exc: CrudException):
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
             content={"detail": exc.message},

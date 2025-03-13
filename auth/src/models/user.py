@@ -1,6 +1,6 @@
 import uuid
 
-from sqlalchemy import Column, DateTime, String, ForeignKey, Table, func
+from sqlalchemy import Column, DateTime, String, Boolean, ForeignKey, Table, func
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -8,7 +8,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from src.db.postgres import Base
 from src.models.role import Role
 
-
+# Ассоциативная таблица для связи пользователей и ролей
 user_roles = Table('user_roles', Base.metadata,
                    Column('user_id', UUID(as_uuid=True), ForeignKey('user.id', ondelete="CASCADE")),
                    Column('role_id', UUID(as_uuid=True), ForeignKey('role.id', ondelete="CASCADE"))
@@ -26,15 +26,21 @@ class User(Base):
     email = Column(String(255), unique=True, nullable=False)
     created_at = Column(DateTime(timezone=True), default=func.now())
 
+    is_active = Column(Boolean, default=True, nullable=False)
+    is_superuser = Column(Boolean, default=False, nullable=False)
+    is_verified = Column(Boolean, default=False, nullable=False)
+    last_login = Column(DateTime(timezone=True), nullable=True)
+
     # Связь с ролями
     roles = relationship("Role", secondary="user_roles", back_populates="users")
 
-    def __init__(self, login: str, password: str, first_name: str, last_name: str, email: str) -> None:
+    def __init__(self, login: str, password: str, email: str, first_name: str = "", last_name: str = "", is_superuser: bool = False) -> None:
         self.login = login
         self.password = generate_password_hash(password)
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
+        self.is_superuser = is_superuser
 
     def check_password(self, password: str) -> bool:
         return check_password_hash(self.password, password)

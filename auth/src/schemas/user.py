@@ -38,7 +38,7 @@ class UserSchema(BaseModel):
     roles: List[RoleSchema] = Field(..., description="Список ролей пользователя")
 
 
-class UserUpdate(BaseModel):
+class UserUpdateSchema(BaseModel):
     """
     Схема для обновления данных пользователя
     """

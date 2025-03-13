@@ -42,3 +42,21 @@ docker-compose -p hyperspectrus up -d --build
 chmod +x backend/entrypoint.sh
 chmod +x auth/entrypoint.sh
 ```
+
+Создание миграциий:
+```shell
+docker exec -it learning-auth alembic revision --autogenerate -m "init"
+```
+
+Применение миграции (при перезапуске сервиса делается автоматически):
+```shell
+docker exec -it learning-auth alembic upgrade head
+```
+
+Создание суперпользователя:
+```shell
+docker-compose -p learning exec auth python manage/create_superuser.py \
+  --login superuser \
+  --password 1q2w3e \
+  --email admin@smartlearning.ru
+```

@@ -8,5 +8,8 @@ while ! nc -z "$DB_HOST" "$DB_PORT"; do
 done
 echo "PostgreSQL доступен!"
 
+echo "Применяем миграции..."
+alembic upgrade head
+
 echo "Запускаем сервис..."
 exec python src/main.py

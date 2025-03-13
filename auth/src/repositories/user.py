@@ -1,21 +1,24 @@
 from abc import ABC, abstractmethod
 from uuid import UUID
 from typing import List
+import logging
 
-from sqlalchemy import update, delete, insert
-from sqlalchemy.future import select
+from sqlalchemy import update, delete, insert, select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
 from sqlalchemy.exc import NoResultFound
 
 from src.models.user import User, user_roles
+from src.models.role import Role
 from src.repositories.base import BaseSQLRepository
-from src.schemas.user import UserUpdate
+from src.schemas.user import UserUpdateSchema
 
+logger = logging.getLogger(__name__)
 
 class BaseUserRepository(ABC):
 
     @abstractmethod
-    async def update(self, user_id: UUID, body: UserUpdate):
+    async def update(self, user_id: UUID, body: UserUpdateSchema):
         ...
 
 
@@ -43,7 +46,7 @@ class UserRepository(BaseUserRepository, BaseSQLRepository):
         users = result.scalars().unique().all()
         return users
 
-    async def update(self, user_id: UUID, body: UserUpdate):
+    async def update(self, user_id: UUID, body: UserUpdateSchema):
         """
         Обновляет данные пользователя
         """
@@ -72,3 +75,57 @@ class UserRepository(BaseUserRepository, BaseSQLRepository):
 
         await self.session.delete(user)
         await self.session.flush()
+
+    async def role_add(self, user_id: UUID, role_id: UUID):
+        """
+        Добавляет роль пользователю, если она ещё не назначена
+        """
+        user_query = await self.session.execute(select(User).filter_by(id=user_id))
+        user = user_query.scalars().first()
+        if not user:
+            raise NoResultFound(f"Пользователь с ID {user_id} не найден!")
+
+        role_query = await self.session.execute(select(Role).filter_by(id=role_id))
+        role = role_query.scalars().first()
+        if not role:
+            raise NoResultFound(f"Роль с ID {role_id} не найдена!")
+
+        existing_role_query = await self.session.execute(
+            select(user_roles).filter_by(user_id=user_id, role_id=role_id)
+        )
+        existing_role = existing_role_query.first()
+        if existing_role:
+            logger.warning(f"Пользователь {user_id} уже имеет роль {role_id}. Пропускаем")
+            return
+
+        stmt = insert(user_roles).values(user_id=user_id, role_id=role_id)
+
+        await self.session.execute(stmt)
+        logger.info(f"Роль {role_id} добавлена пользователю {user_id}!")
+
+    async def role_remove(self, user_id: UUID, role_id: UUID):
+        """
+        Удаляет роль у пользователя, если она назначена.
+        """
+        user_query = await self.session.execute(select(User).filter_by(id=user_id))
+        user = user_query.scalars().first()
+        if not user:
+            raise NoResultFound(f"Пользователь с ID {user_id} не найден!")
+
+        role_query = await self.session.execute(select(Role).filter_by(id=role_id))
+        role = role_query.scalars().first()
+        if not role:
+            raise NoResultFound(f"Роль с ID {role_id} не найдена!")
+
+        existing_role_query = await self.session.execute(
+            select(user_roles).filter_by(user_id=user_id, role_id=role_id)
+        )
+        existing_role = existing_role_query.first()
+        if not existing_role:
+            logger.warning(f"Пользователь {user_id} не имеет роли {role_id}. Нечего удалять")
+            return
+
+        stmt = delete(user_roles).filter_by(user_id=user_id, role_id=role_id)
+
+        await self.session.execute(stmt)
+        logger.info(f"Роль {role_id} удалена у пользователя {user_id}!")

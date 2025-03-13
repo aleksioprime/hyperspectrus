@@ -61,11 +61,11 @@ services:
 
   backend:
     build:
-      context: ./backend
+      context: ./back
     container_name: hyperspectrus-backend
     <<: *app
     volumes:
-      - ./backend:/usr/src/app/
+      - ./back:/usr/src/app/
     ports:
       - "8101:8000"
     healthcheck:
@@ -82,7 +82,7 @@ services:
 
   frontend:
     build:
-      context: ./frontend
+      context: ./front
       target: dev
       args:
         - VITE_LOGGING=${VITE_LOGGING}
@@ -90,7 +90,7 @@ services:
     <<: *app
     container_name: hyperspectrus-frontend
     volumes:
-      - ./frontend/app/src:/usr/src/app/src
+      - ./front/app/src:/usr/src/app/src
     ports:
       - "8102:5173"
     depends_on:

@@ -28,7 +28,6 @@ class Chromophore(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String, unique=True, nullable=False) # Название хромофора
     symbol = Column(String, unique=True, nullable=False) # Обозначение хромофора
-    notes = Column(String) # Заметка
 
 
 class ChromophoreSpectrum(Base):
@@ -55,7 +54,6 @@ class LED(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String, nullable=False) # Название светодиода
     central_wavelength_nm = Column(Integer, nullable=False) # Центральная длина волны светодиода (в нанометрах)
-    notes = Column(String) # Заметка
 
     spectra = relationship("LEDSpectrum", back_populates="led")
 

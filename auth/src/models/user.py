@@ -29,10 +29,12 @@ class User(Base):
     is_active = Column(Boolean, default=True, nullable=False)
     is_superuser = Column(Boolean, default=False, nullable=False)
     is_verified = Column(Boolean, default=False, nullable=False)
-    last_login = Column(DateTime(timezone=True), nullable=True)
+    last_activity = Column(DateTime(timezone=True), nullable=True)
 
-    # Связь с ролями
+    organization_id = Column(UUID(as_uuid=True), ForeignKey("organization.id"), nullable=True)
+
     roles = relationship("Role", secondary="user_roles", back_populates="users")
+    organization = relationship("Organization", back_populates="users")
 
     def __init__(self, login: str, password: str, email: str, first_name: str = "", last_name: str = "", is_superuser: bool = False) -> None:
         self.login = login
@@ -47,3 +49,13 @@ class User(Base):
 
     def __repr__(self) -> str:
         return f'<User {self.login}>'
+
+
+class Organization(Base):
+    __tablename__ = "organization"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
+    name = Column(String, unique=True, nullable=False)
+    description = Column(String)
+
+    users = relationship("User", back_populates="organization")

@@ -16,7 +16,7 @@ class Result(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     session_id = Column(UUID(as_uuid=True), ForeignKey('session.id'))  # Связь с сеансом
-    lesion_contour_path = Column(String, nullable=False)  # Путь к файлу с контуром пораженной области
+    contour_path = Column(String, nullable=False)  # Путь к файлу с контуром пораженной области
     s_coefficient = Column(Float, nullable=False)  # Коэффициент s
     mean_lesion_thb = Column(Float, nullable=False)  # Средняя концентрация THb в пораженной области
     mean_skin_thb = Column(Float, nullable=False)  # Средняя концентрация THb в коже

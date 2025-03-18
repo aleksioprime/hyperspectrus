@@ -16,7 +16,7 @@ class RawImage(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     session_id = Column(UUID(as_uuid=True), ForeignKey('session.id'))  # Связь с сеансом
-    wavelength_nm = Column(Integer, nullable=False)  # Длина волны
+    spectrum_id = Column(UUID(as_uuid=True), ForeignKey('spectrum.id'))  # Связь с длиной волны
     file_path = Column(String, nullable=False)  # Путь к файлу изображения
 
     session = relationship("Session", back_populates="raw_images")

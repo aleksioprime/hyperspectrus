@@ -24,6 +24,8 @@ Web-интерфейс (Vue.js):
 - Визуализация результатов (графики, отчеты, PDF/CSV)
 
 
+В сервисе авторизации и сервисе бэкенда миграции выполняются в разных схемах базы данных
+
 ## Запуск для разработчика
 
 Скачайте репозиторий:
@@ -45,18 +47,29 @@ chmod +x auth/entrypoint.sh
 
 Создание миграциий:
 ```shell
-docker exec -it learning-auth alembic revision --autogenerate -m "init"
+docker-compose -p hyperspectrus run migrations alembic revision --autogenerate -m "init"
+docker exec -it hyperspectrus-auth alembic revision --autogenerate -m "init"
+docker exec -it hyperspectrus-backend alembic revision --autogenerate -m "init"
 ```
 
 Применение миграции (при перезапуске сервиса делается автоматически):
 ```shell
-docker exec -it learning-auth alembic upgrade head
+docker-compose -p hyperspectrus run migrations alembic upgrade head
+docker exec -it hyperspectrus-auth alembic upgrade head
+docker exec -it hyperspectrus-backend alembic upgrade head
 ```
 
 Создание суперпользователя:
 ```shell
-docker-compose -p learning exec auth python manage/create_superuser.py \
+docker-compose -p hyperspectrus exec auth python manage/create_superuser.py \
   --login superuser \
   --password 1q2w3e \
-  --email admin@smartlearning.ru
+  --email admin@hyperspectrus.ru
 ```
+
+```
+docker exec -it hyperspectrus-postgres psql -h localhost -U admin -d hyperspectrus
+SET search_path TO auth_schema;
+```
+
+docker-compose -p hyperspectrus run migrations python -c "from back.src.db.postgres import Base; print(Base.metadata.tables.keys())"

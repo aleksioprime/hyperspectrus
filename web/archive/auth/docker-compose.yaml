@@ -1,0 +1,62 @@
+x-app: &app
+  env_file:
+    - ./.env
+  restart: always
+  platform: linux/amd64
+
+services:
+  postgres-auth:
+    image: postgres:14
+    container_name: hyperspectrus-postgres-auth
+    <<: *app
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres_volume_auth:/var/lib/postgresql/data/
+    environment:
+      TZ: "Europe/Moscow"
+      PGTZ: "Europe/Moscow"
+
+  redis-auth:
+    image: redis:6
+    container_name: hyperspectrus-redis-auth
+    <<: *app
+    volumes:
+      - redis_volume:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  auth:
+    build:
+      context: ./app
+    container_name: hyperspectrus-auth
+    <<: *app
+    volumes:
+      - ./app:/usr/src/app/
+    ports:
+      - "8100:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/ping"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    depends_on:
+      redis-auth:
+        condition: service_healthy
+      postgres-auth:
+        condition: service_healthy
+
+volumes:
+  postgres_volume_auth:
+  redis_volume_auth:

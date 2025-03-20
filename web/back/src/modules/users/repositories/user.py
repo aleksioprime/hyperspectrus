@@ -4,14 +4,12 @@ from typing import List
 import logging
 
 from sqlalchemy import update, delete, insert, select
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import joinedload
 from sqlalchemy.exc import NoResultFound
 
-from src.models.user import User, user_roles
-from src.models.role import Role
-from src.repositories.base import BaseSQLRepository
-from src.schemas.user import UserUpdateSchema
+from src.models.user import User, UserRoles, Role
+from src.modules.users.repositories.base import BaseSQLRepository
+from src.modules.users.schemas.user import UserUpdateSchema
 
 logger = logging.getLogger(__name__)
 
@@ -91,14 +89,14 @@ class UserRepository(BaseUserRepository, BaseSQLRepository):
             raise NoResultFound(f"Роль с ID {role_id} не найдена!")
 
         existing_role_query = await self.session.execute(
-            select(user_roles).filter_by(user_id=user_id, role_id=role_id)
+            select(UserRoles).filter_by(user_id=user_id, role_id=role_id)
         )
         existing_role = existing_role_query.first()
         if existing_role:
             logger.warning(f"Пользователь {user_id} уже имеет роль {role_id}. Пропускаем")
             return
 
-        stmt = insert(user_roles).values(user_id=user_id, role_id=role_id)
+        stmt = insert(UserRoles).values(user_id=user_id, role_id=role_id)
 
         await self.session.execute(stmt)
         logger.info(f"Роль {role_id} добавлена пользователю {user_id}!")
@@ -118,14 +116,14 @@ class UserRepository(BaseUserRepository, BaseSQLRepository):
             raise NoResultFound(f"Роль с ID {role_id} не найдена!")
 
         existing_role_query = await self.session.execute(
-            select(user_roles).filter_by(user_id=user_id, role_id=role_id)
+            select(UserRoles).filter_by(user_id=user_id, role_id=role_id)
         )
         existing_role = existing_role_query.first()
         if not existing_role:
             logger.warning(f"Пользователь {user_id} не имеет роли {role_id}. Нечего удалять")
             return
 
-        stmt = delete(user_roles).filter_by(user_id=user_id, role_id=role_id)
+        stmt = delete(UserRoles).filter_by(user_id=user_id, role_id=role_id)
 
         await self.session.execute(stmt)
         logger.info(f"Роль {role_id} удалена у пользователя {user_id}!")

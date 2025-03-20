@@ -8,17 +8,19 @@ from uuid import UUID
 from fastapi import APIRouter, Depends
 from starlette import status
 
-from src.dependencies.auth import get_user_by_jwt, get_user_with_check_roles
-from src.dependencies.user import get_user_service
-from src.schemas.user import UserUpdateSchema, UserJWT, UserSchema
-from src.schemas.role import RoleAssignment
-from src.services.user import UserService
 from src.constants.role import RoleName
+from src.modules.users.dependencies.auth import get_user_by_jwt, get_user_with_check_roles
+from src.modules.users.dependencies.user import get_user_service
+from src.modules.users.schemas.user import UserUpdateSchema, UserSchema
+from src.modules.users.schemas.auth import UserJWT
+from src.modules.users.schemas.role import RoleAssignment
+from src.modules.users.services.user import UserService
+
 
 router = APIRouter()
 
 @router.get(
-    path='/users',
+    path='/',
     summary='Получить всех пользователей',
     response_model=list[UserSchema],
     status_code=status.HTTP_200_OK,
@@ -34,7 +36,7 @@ async def get_all_users(
     return users
 
 @router.get(
-    path='/users/me',
+    path='/me',
     summary='Получить информацию о себе',
     response_model=UserSchema,
     status_code=status.HTTP_200_OK,
@@ -50,7 +52,7 @@ async def get_user_me(
     return user
 
 @router.patch(
-    path='/users/{user_id}',
+    path='/{user_id}',
     summary='Обновление пользователя',
     response_model=UserSchema,
     status_code=status.HTTP_200_OK,
@@ -68,7 +70,7 @@ async def update_user(
     return user
 
 @router.delete(
-    path='/users/{user_id}',
+    path='/{user_id}',
     summary='Удаление пользователя',
     status_code=status.HTTP_204_NO_CONTENT,
 )
@@ -84,7 +86,7 @@ async def delete_user(
 
 
 @router.post(
-    path='/users/{user_id}/role/add',
+    path='/{user_id}/role/add',
     summary='Назначить роль пользователю',
     status_code=status.HTTP_200_OK,
 )
@@ -101,7 +103,7 @@ async def add_role_to_user(
 
 
 @router.post(
-    path='/users/{user_id}/role/remove',
+    path='/{user_id}/role/remove',
     summary='Отозвать роль у пользователя',
     status_code=status.HTTP_200_OK,
 )

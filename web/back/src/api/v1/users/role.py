@@ -8,12 +8,12 @@ from uuid import UUID
 from fastapi import APIRouter, Depends
 from starlette import status
 
-from src.dependencies.auth import get_user_by_jwt, get_user_with_check_roles
-from src.dependencies.role import get_role_service
-from src.schemas.user import UserJWT
-from src.schemas.role import RoleUpdateSchema, RoleSchema
-from src.services.role import RoleService
 from src.constants.role import RoleName
+from src.modules.users.dependencies.auth import get_user_with_check_roles
+from src.modules.users.dependencies.role import get_role_service
+from src.modules.users.schemas.auth import UserJWT
+from src.modules.users.schemas.role import RoleUpdateSchema, RoleSchema
+from src.modules.users.services.role import RoleService
 
 router = APIRouter()
 

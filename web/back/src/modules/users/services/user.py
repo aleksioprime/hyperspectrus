@@ -1,10 +1,10 @@
 from uuid import UUID
 from typing import List
 
-from src.repositories.uow import UnitOfWork
-from src.schemas.user import UserUpdateSchema, UserSchema
-from src.serializers.user import BaseSerializer
-from src.models.user import User
+from src.modules.users.repositories.uow import UnitOfWork
+from src.modules.users.schemas.user import UserUpdateSchema, UserSchema
+from src.modules.users.serializers.user import BaseSerializer
+
 
 class UserService:
 

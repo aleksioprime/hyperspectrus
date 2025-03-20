@@ -3,11 +3,11 @@ from typing import Annotated
 from fastapi import Depends
 from redis.asyncio import Redis
 
-
-from src.dependencies.uow import get_unit_of_work
-from src.repositories.uow import UnitOfWork
-from src.services.role import RoleService
 from src.db.redis import get_redis
+from src.modules.users.dependencies.uow import get_unit_of_work
+from src.modules.users.repositories.uow import UnitOfWork
+from src.modules.users.services.role import RoleService
+
 
 
 async def get_role_service(

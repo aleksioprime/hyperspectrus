@@ -7,8 +7,8 @@ from uuid import UUID
 from typing import List, Optional
 
 from src.models.patient import Patient
-from src.schemas.patient import PatientSchema, PatientCreateSchema, PatientUpdateSchema, PatientDetailSchema, PatientQueryParams
-from src.exceptions.patient import PatientException
+from src.modules.patients.schemas.patient import PatientSchema, PatientCreateSchema, PatientUpdateSchema, PatientDetailSchema, PatientQueryParams
+from src.exceptions.base import BaseException
 
 
 class PatientRepository:
@@ -34,7 +34,7 @@ class PatientRepository:
             result = await self.session.execute(query)
             return result.scalars().all()
         except SQLAlchemyError as e:
-            raise PatientException("Ошибка получения пациентов пользователя", str(e))
+            raise BaseException("Ошибка получения пациентов пользователя", str(e))
 
     async def get_by_id(self, patient_id: UUID) -> PatientDetailSchema:
         """
@@ -50,7 +50,7 @@ class PatientRepository:
 
             return patient
         except SQLAlchemyError as e:
-            raise PatientException(f"Ошибка получения пациента: {str(e)}")
+            raise BaseException(f"Ошибка получения пациента: {str(e)}")
 
     async def create(self, body: PatientCreateSchema) -> PatientSchema:
         """
@@ -69,7 +69,7 @@ class PatientRepository:
             return new_patient
         except SQLAlchemyError as e:
             await self.session.rollback()
-            raise PatientException(f"Ошибка создания пациента: {str(e)}")
+            raise BaseException(f"Ошибка создания пациента: {str(e)}")
 
     async def update(self, patient_id: UUID, body: PatientUpdateSchema) -> Optional[PatientSchema]:
         """
@@ -94,7 +94,7 @@ class PatientRepository:
             return updated_patient
         except SQLAlchemyError as e:
             await self.session.rollback()
-            raise PatientException(f"Ошибка редактирования пациента: {str(e)}")
+            raise BaseException(f"Ошибка редактирования пациента: {str(e)}")
 
     async def delete(self, patient_id: UUID) -> bool:
         """
@@ -107,4 +107,4 @@ class PatientRepository:
             await self.session.commit()
         except SQLAlchemyError as e:
             await self.session.rollback()
-            raise PatientException(f"Ошибка удаления пациента: {str(e)}")
+            raise BaseException(f"Ошибка удаления пациента: {str(e)}")

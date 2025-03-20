@@ -7,12 +7,14 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from starlette import status
 
+
+from src.constants.role import RoleName
 from src.modules.users.dependencies.auth import get_auth_service, get_user_with_check_roles
 from src.modules.users.schemas.auth import RegisterSchema, AuthSchema
-from src.modules.users.schemas.user import UserJWT
+from src.modules.users.schemas.auth import UserJWT
 from src.modules.users.schemas.token import TokenSchema, RefreshTokenSchema, AccessTokenSchema
 from src.modules.users.services.auth import AuthService
-from src.constants.role import RoleName
+
 
 router = APIRouter()
 

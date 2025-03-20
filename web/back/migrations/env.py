@@ -1,92 +1,97 @@
+import asyncio
 from logging.config import fileConfig
-# Подключаем асинхронный движок SQLAlchemy
+
+from sqlalchemy import pool
+from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
-from sqlalchemy import pool, text
-# Подключаем Alembic
+
 from alembic import context
 
-# Загружаем настройки из проекта (например, URL базы данных)
 from src.core.config import settings
-# Импортируем базовый класс моделей (чтобы Alembic знал о таблицах)
-
 from src.db.postgres import Base
+from src.models.user import User, Organization, Role
 from src.models.patient import Patient, Session, RawImage, ReconstructedImage, Result
 from src.models.parameter import Device, Spectrum, Chromophore, OverlapCoefficient
 
-# Загружаем конфигурацию Alembic
+# this is the Alembic Config object, which provides
+# access to the values within the .ini file in use.
 config = context.config
-
-# Берем текущий раздел конфигурации (обычно `[alembic]` в `alembic.ini`)
 section = config.config_ini_section
-# Устанавливаем URL базы данных для Alembic, используя значение из `settings.db.dsn`
 config.set_section_option(section, 'ALEMBIC_URL', settings.db.dsn)
 
-# Включаем логирование Alembic, если файл конфигурации указан
+# Interpret the config file for Python logging.
+# This line sets up loggers basically.
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-# Указываем Alembic, где искать метаданные моделей
-# Это нужно, чтобы Alembic мог отслеживать изменения в структурах таблиц
-
+# add your model's MetaData object here
+# for 'autogenerate' support
+# from myapp import mymodel
+# target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
+
+# other values from the config, defined by the needs of env.py,
+# can be acquired:
+# my_important_option = config.get_main_option("my_important_option")
+# ... etc.
 
 
 def run_migrations_offline() -> None:
-    """
-    Запуск миграций в оффлайн-режиме (без подключения к базе данных).
+    """Run migrations in 'offline' mode.
 
-    В этом режиме Alembic просто генерирует SQL-файл с изменениями,
-    но не применяет их к реальной БД.
+    This configures the context with just a URL
+    and not an Engine, though an Engine is acceptable
+    here as well.  By skipping the Engine creation
+    we don't even need a DBAPI to be available.
+
+    Calls to context.execute() here emit the given string to the
+    script output.
+
     """
-    url = config.get_main_option("sqlalchemy.url")  # Получаем URL базы данных
+    url = config.get_main_option("sqlalchemy.url")
     context.configure(
         url=url,
         target_metadata=target_metadata,
-        literal_binds=True,  # Подставляет значения параметров прямо в SQL-запрос
+        literal_binds=True,
+        dialect_opts={"paramstyle": "named"},
     )
 
-    # Начинаем транзакцию и выполняем миграции
     with context.begin_transaction():
         context.run_migrations()
 
 
-def do_run_migrations(connection):
-    """
-    Запускает миграции в указанном соединении к базе данных (синхронно)
-    """
-    # Конфигурируем Alembic с текущим соединением и метаданными моделей
-    context.configure(
-        connection=connection,
-        target_metadata=target_metadata,
-        )
+def do_run_migrations(connection: Connection) -> None:
+    context.configure(connection=connection, target_metadata=target_metadata)
 
-    # Начинаем транзакцию и применяем миграции
     with context.begin_transaction():
         context.run_migrations()
 
 
-async def run_migrations_online() -> None:
+async def run_async_migrations() -> None:
+    """In this scenario we need to create an Engine
+    and associate a connection with the context.
+
     """
-    Запуск миграций в онлайн-режиме (с подключением к базе данных).
-    В этом режиме Alembic подключается к базе и применяет миграции сразу.
-    """
-    # Создаем асинхронный движок для работы с БД
+
     connectable = async_engine_from_config(
         config.get_section(config.config_ini_section, {}),
-        prefix="sqlalchemy.",  # Используем параметры, начинающиеся с "sqlalchemy."
-        poolclass=pool.NullPool,  # Отключаем пул соединений (каждый запрос — новое соединение)
+        prefix="sqlalchemy.",
+        poolclass=pool.NullPool,
     )
 
-    # Подключаемся к базе и запускаем миграции
     async with connectable.connect() as connection:
         await connection.run_sync(do_run_migrations)
 
+    await connectable.dispose()
 
-# Проверяем, в каком режиме работает Alembic (offline или online)
+
+def run_migrations_online() -> None:
+    """Run migrations in 'online' mode."""
+
+    asyncio.run(run_async_migrations())
+
+
 if context.is_offline_mode():
-    # Если оффлайн, просто генерируем SQL-команды
     run_migrations_offline()
 else:
-    # Если онлайн, подключаемся к базе и применяем миграции
-    import asyncio
-    asyncio.run(run_migrations_online())
+    run_migrations_online()

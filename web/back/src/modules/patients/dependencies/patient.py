@@ -2,12 +2,13 @@ from typing import Annotated
 from fastapi import Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from src.core.schemas import BasePaginationParams
+from src.core.dependencies import get_pagination_params
 from src.db.postgres import get_db_session
-from src.services.patient import PatientService
-from src.repositories.patient import PatientRepository
-from src.dependencies.base import get_pagination_params
-from src.schemas.patient import PatientQueryParams
-from src.schemas.base import BasePaginationParams
+from src.modules.patients.services.patient import PatientService
+from src.modules.patients.repositories.patient import PatientRepository
+from src.modules.patients.schemas.patient import PatientQueryParams
+
 
 
 def get_patient_params(

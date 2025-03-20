@@ -6,11 +6,11 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from redis.asyncio import Redis
 
 from src.db.redis import get_redis
-from src.dependencies.uow import get_unit_of_work
-from src.repositories.uow import UnitOfWork
-from src.services.auth import AuthService
-from src.exceptions.auth import JWTError, TokenValidationError
-from src.schemas.user import UserJWT
+from src.modules.users.dependencies.uow import get_unit_of_work
+from src.modules.users.repositories.uow import UnitOfWork
+from src.modules.users.services.auth import AuthService
+from src.exceptions.base import BaseException
+from src.modules.users.schemas.auth import UserJWT
 from src.utils.token import JWTHelper
 
 http_bearer = HTTPBearer()
@@ -31,12 +31,12 @@ async def get_user_by_jwt(
     token = credentials.credentials
 
     if await redis.get(name=token):
-        raise TokenValidationError("Токен невалидный")
+        raise BaseException("Токен невалидный")
 
     try:
         payload = JWTHelper().verify(token)
-    except JWTError as e:
-        raise JWTError(e.message)
+    except BaseException as e:
+        raise BaseException(e.message)
 
     return UserJWT(
         id=payload['sub'],

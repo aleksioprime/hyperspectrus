@@ -2,8 +2,8 @@ from uuid import UUID
 from typing import List
 from redis.asyncio import Redis
 
-from src.schemas.patient import PatientSchema, PatientCreateSchema, PatientUpdateSchema, PatientDetailSchema, PatientQueryParams
-from src.repositories.patient import PatientRepository
+from src.modules.patients.schemas.patient import PatientSchema, PatientCreateSchema, PatientUpdateSchema, PatientDetailSchema, PatientQueryParams
+from src.modules.patients.repositories.patient import PatientRepository
 
 class PatientService:
     """ Сервис для управления пациентами """

@@ -1,11 +1,13 @@
 from uuid import UUID
 from typing import List
+
 from redis.asyncio import Redis
 from sqlalchemy.exc import IntegrityError, NoResultFound
 
-from src.repositories.uow import UnitOfWork
-from src.schemas.role import RoleSchema, RoleUpdateSchema
-from src.exceptions.crud import CreateError, UpdateError, DeleteError, NotFoundError
+from src.exceptions.base import BaseException
+from src.modules.users.repositories.uow import UnitOfWork
+from src.modules.users.schemas.role import RoleSchema, RoleUpdateSchema
+
 
 class RoleService:
     """ Сервис для управления ролями. """
@@ -19,7 +21,7 @@ class RoleService:
             try:
                 role = await self.uow.role.create(body)
             except IntegrityError as exc:
-                raise CreateError(message='Role already exists!') from exc
+                raise BaseException("Role already exists!") from exc
 
         return role
 
@@ -37,7 +39,7 @@ class RoleService:
             try:
                 role = await self.uow.role.update(role_id, body)
             except NoResultFound as exc:
-                raise UpdateError(f"Role with id {role_id} not found.") from exc
+                raise BaseException(f"Role with id {role_id} not found.") from exc
         return role
 
     async def delete(self, role_id: UUID) -> None:
@@ -46,6 +48,6 @@ class RoleService:
             try:
                 await self.uow.role.delete(role_id)
             except NoResultFound as exc:
-                raise DeleteError(f"Role with id {role_id} not found") from exc
+                raise BaseException(f"Role with id {role_id} not found") from exc
             except Exception as e:
-                raise DeleteError(f"Failed to delete role with id {role_id}. Error: {str(e)}") from e
+                raise BaseException(f"Failed to delete role with id {role_id}. Error: {str(e)}") from e

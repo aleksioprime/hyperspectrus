@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from src.models.user import User
-from src.schemas.user import UserSchema, RoleSchema
+from src.modules.users.schemas.user import UserSchema, RoleSchema
 
 
 class BaseSerializer(ABC):

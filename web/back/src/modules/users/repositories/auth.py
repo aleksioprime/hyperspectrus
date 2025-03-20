@@ -3,10 +3,9 @@ from uuid import UUID
 
 from sqlalchemy import select
 
-from src.models.user import User
-from src.models.role import Role
-from src.repositories.base import BaseSQLRepository
-from src.schemas.auth import RegisterSchema
+from src.models.user import User, Role
+from src.modules.users.repositories.base import BaseSQLRepository
+from src.modules.users.schemas.auth import RegisterSchema
 
 
 class BaseAuthRepository(ABC):

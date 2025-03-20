@@ -1,7 +1,8 @@
 from src.db.postgres import async_session_maker
-from src.repositories.auth import AuthRepository
-from src.repositories.user import UserRepository
-from src.repositories.role import RoleRepository
+
+from src.modules.users.repositories.auth import AuthRepository
+from src.modules.users.repositories.user import UserRepository
+from src.modules.users.repositories.role import RoleRepository
 
 
 class UnitOfWork:

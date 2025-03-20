@@ -76,9 +76,9 @@ class JWTSettings(BaseSettings):
 
 
 class Settings(BaseSettings):
-    project_name: str = Field(alias="PROJECT_NAME", default="Subscription")
+    project_name: str = Field(alias="PROJECT_NAME", default="HyperSpectRus")
     project_description: str = Field(
-        alias="PROJECT_DESCRIPTION", default="Application for managing subscriptions"
+        alias="PROJECT_DESCRIPTION", default="Application for HyperSpectRus"
     )
     jwt: JWTSettings = JWTSettings()
     db: DBSettings = DBSettings()

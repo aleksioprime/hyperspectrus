@@ -9,11 +9,11 @@ from redis.asyncio import Redis
 from sqlalchemy.exc import IntegrityError
 
 from src.core.config import settings
-from src.exceptions.auth import RegisterError, LoginError, TokenValidationError
-from src.repositories.uow import UnitOfWork
+from src.exceptions.base import BaseException
 from src.models.user import User
-from src.schemas.auth import RegisterSchema, AuthSchema
-from src.schemas.token import TokenSchema, AccessTokenSchema
+from src.modules.users.repositories.uow import UnitOfWork
+from src.modules.users.schemas.auth import RegisterSchema, AuthSchema
+from src.modules.users.schemas.token import TokenSchema, AccessTokenSchema
 from src.utils.token import JWTHelper
 
 
@@ -78,7 +78,7 @@ class AuthService:
         try:
             user = await self.uow.auth.register(body)
         except IntegrityError as exc:
-            raise RegisterError(message='User already exists!') from exc
+            raise BaseException(message='User already exists!') from exc
 
         return user
 
@@ -107,7 +107,7 @@ class AuthService:
         """
         user: User = await self.uow.auth.get_user_by_login(body.login)
         if not user or not user.check_password(body.password):
-            raise LoginError('Wrong login or password')
+            raise BaseException('Wrong login or password')
 
         return user
 
@@ -117,7 +117,7 @@ class AuthService:
         """
         is_revoked = await self.redis.get(name=refresh_token)
         if is_revoked and is_revoked.decode() == "revoked":
-            raise TokenValidationError("Refresh token has been revoked")
+            raise BaseException("Refresh token has been revoked")
 
 
     async def _revoke_refresh_token(self, refresh_token: str):

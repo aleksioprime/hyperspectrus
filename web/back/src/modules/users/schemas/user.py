@@ -3,14 +3,6 @@ from uuid import UUID
 from pydantic import BaseModel, Field
 
 
-class UserJWT(BaseModel):
-    """
-    Схема для представления данных пользователя в JWT
-    """
-    id: UUID = Field(..., description="Уникальный идентификатор пользователя")
-    roles: list = Field(..., description="Список ролей пользователя")
-
-
 class RoleSchema(BaseModel):
     """
     Схема для представления данных о роли

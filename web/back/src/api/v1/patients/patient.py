@@ -9,11 +9,11 @@ from fastapi import APIRouter, Depends
 from starlette import status
 
 from src.constants.role import RoleName
-from src.dependencies.auth import JWTBearer
-from src.dependencies.patient import get_patient_service, get_patient_params
-from src.schemas.auth import UserJWT
-from src.schemas.patient import PatientSchema, PatientCreateSchema, PatientUpdateSchema, PatientDetailSchema, PatientQueryParams
-from src.services.patient import PatientService
+from src.core.dependencies import JWTBearer
+from src.modules.users.schemas.auth import UserJWT
+from src.modules.patients.dependencies.patient import get_patient_service, get_patient_params
+from src.modules.patients.schemas.patient import PatientSchema, PatientCreateSchema, PatientUpdateSchema, PatientDetailSchema, PatientQueryParams
+from src.modules.patients.services.patient import PatientService
 
 
 router = APIRouter()

@@ -4,7 +4,7 @@ from datetime import datetime, date
 
 from pydantic import BaseModel, Field, validator
 
-from src.schemas.base import BasePaginationParams
+from src.core.schemas import BasePaginationParams
 
 
 class PatientQueryParams(BasePaginationParams):

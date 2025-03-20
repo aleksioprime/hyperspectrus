@@ -4,9 +4,9 @@ from uuid import UUID
 from sqlalchemy import update, delete, insert, select
 from sqlalchemy.exc import NoResultFound
 
-from src.models.role import Role
-from src.repositories.base import BaseSQLRepository
-from src.schemas.role import RoleUpdateSchema
+from src.models.user import Role
+from src.modules.users.repositories.base import BaseSQLRepository
+from src.modules.users.schemas.role import RoleUpdateSchema
 
 
 class BaseRoleRepository(ABC):

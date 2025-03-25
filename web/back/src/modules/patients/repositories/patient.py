@@ -20,91 +20,45 @@ class PatientRepository:
         self.session = session
 
     async def get_all(self, params: PatientQueryParams) -> List[PatientSchema]:
-        """
-        Возвращает список пациентов по ID пользователя
-        """
-        try:
-            query = select(Patient)
+        """ Возвращает список пациентов """
+        query = select(Patient)
 
-            if params.organization:
-                query = query.where(Patient.organization_id == params.organization)
+        if params.organization:
+            query = query.where(Patient.organization_id == params.organization)
 
-            query = query.limit(params.limit).offset(params.offset * params.limit)
+        query = query.limit(params.limit).offset(params.offset * params.limit)
 
-            result = await self.session.execute(query)
-            return result.scalars().all()
-        except SQLAlchemyError as e:
-            raise BaseException("Ошибка получения пациентов пользователя", str(e))
+        result = await self.session.execute(query)
+        return result.scalars().unique().all()
 
     async def get_by_id(self, patient_id: UUID) -> PatientDetailSchema:
-        """
-        Возвращает пациента по его ID
-        """
-        try:
-            query = select(Patient).where(Patient.id == patient_id)
-            result = await self.session.execute(query)
-            patient = result.scalars().unique().one_or_none()
+        """ Возвращает пациента по его ID """
+        query = select(Patient).where(Patient.id == patient_id)
+        result = await self.session.execute(query)
+        return result.scalars().unique().one_or_none()
 
-            if not patient:
-                raise NoResultFound(f"Пациент с ID {patient_id} не найден")
-
-            return patient
-        except SQLAlchemyError as e:
-            raise BaseException(f"Ошибка получения пациента: {str(e)}")
-
-    async def create(self, body: PatientCreateSchema) -> PatientSchema:
-        """
-        Создаёт нового пациента
-        """
-        try:
-            new_patient = Patient(
-                organization_id=body.organization_id,
-                name=body.name,
-                birth_date=body.birth_date,
-                notes=body.notes
-                )
-            self.session.add(new_patient)
-            await self.session.commit()
-            await self.session.refresh(new_patient)
-            return new_patient
-        except SQLAlchemyError as e:
-            await self.session.rollback()
-            raise BaseException(f"Ошибка создания пациента: {str(e)}")
+    async def create(self, patient: Patient) -> PatientSchema:
+        """ Создаёт нового пациента """
+        self.session.add(patient)
 
     async def update(self, patient_id: UUID, body: PatientUpdateSchema) -> Optional[PatientSchema]:
-        """
-        Обновляет пациента по его ID
-        """
+        """ Обновляет пациента по его ID """
         update_data = {key: value for key, value in body.dict(exclude_unset=True).items()}
         if not update_data:
             raise NoResultFound(f"Нет данных для обновления")
 
-        try:
-            query = (
-                update(Patient)
-                .filter_by(id=patient_id)
-                .values(**update_data)
-                .execution_options(synchronize_session="fetch")
-            )
-            await self.session.execute(query)
-            await self.session.commit()
-
-            updated_patient = await self.get_by_id(patient_id)
-
-            return updated_patient
-        except SQLAlchemyError as e:
-            await self.session.rollback()
-            raise BaseException(f"Ошибка редактирования пациента: {str(e)}")
+        stmt = (
+            update(Patient)
+            .filter_by(id=patient_id)
+            .values(**update_data)
+        )
+        await self.session.execute(stmt)
+        return await self.get_by_id(patient_id)
 
     async def delete(self, patient_id: UUID) -> bool:
-        """
-        Удаляет пациента по его ID
-        """
-        try:
-            deleted_patient = await self.get_by_id(patient_id)
+        """ Удаляет пациента по его ID """
+        patient = await self.get_by_id(patient_id)
+        if not patient:
+            raise NoResultFound(f"Пациент с ID {patient_id} не найден")
 
-            await self.session.delete(deleted_patient)
-            await self.session.commit()
-        except SQLAlchemyError as e:
-            await self.session.rollback()
-            raise BaseException(f"Ошибка удаления пациента: {str(e)}")
+        await self.session.delete(patient)

@@ -1,9 +1,5 @@
 from src.db.postgres import async_session_maker
-
-from src.modules.users.repositories.auth import AuthRepository
-from src.modules.users.repositories.user import UserRepository
-from src.modules.users.repositories.role import RoleRepository
-from src.modules.users.repositories.organization import OrganizationRepository
+from src.modules.patients.repositories.patient import PatientRepository
 
 
 class UnitOfWork:
@@ -12,10 +8,7 @@ class UnitOfWork:
 
     async def __aenter__(self):
         self.session = self.session_factory()
-        self.auth = AuthRepository(self.session)
-        self.user = UserRepository(self.session)
-        self.role = RoleRepository(self.session)
-        self.organization = OrganizationRepository(self.session)
+        self.patient = PatientRepository(self.session)
 
     async def __aexit__(self, exc_type, exc_value, traceback):
         if exc_type is not None:

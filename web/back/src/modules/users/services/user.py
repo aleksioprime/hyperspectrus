@@ -1,7 +1,7 @@
 from uuid import UUID
 from typing import List
 
-from sqlalchemy.exc import IntegrityError, SQLAlchemyError
+from sqlalchemy.exc import IntegrityError
 
 from src.models.user import User
 from src.modules.users.repositories.uow import UnitOfWork

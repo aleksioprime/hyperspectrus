@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from uuid import UUID
 
-from sqlalchemy import update, delete, insert, select
+from sqlalchemy import update, select
 from sqlalchemy.exc import NoResultFound
 
 from src.models.user import Role
@@ -55,4 +55,3 @@ class RoleRepository(BaseRoleRepository, BaseSQLRepository):
 
         if role:
             await self.session.delete(role)
-            await self.session.flush()

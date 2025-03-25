@@ -56,7 +56,7 @@ class UserRepository(BaseUserRepository, BaseSQLRepository):
         self.session.add(user)
 
     async def update(self, user_id: UUID, body: UserUpdateSchema) -> User:
-        """ Обновляет данные пользователя по его ID """
+        """ Обновляет пользователя по его ID """
         update_data = {key: value for key, value in body.dict(exclude_unset=True).items()}
         if not update_data:
             raise NoResultFound("Нет данных для обновления")
@@ -76,7 +76,6 @@ class UserRepository(BaseUserRepository, BaseSQLRepository):
             raise NoResultFound(f"Пользователь с ID {user_id} не найден")
 
         await self.session.delete(user)
-        await self.session.flush()
 
     async def has_role(self, user_id: UUID, role_id: UUID) -> bool:
         """ Проверяет, есть ли у пользователя роль с указанным ID """

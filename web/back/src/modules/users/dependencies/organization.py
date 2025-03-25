@@ -4,11 +4,11 @@ from fastapi import Depends
 
 from src.modules.users.dependencies.uow import get_unit_of_work
 from src.modules.users.repositories.uow import UnitOfWork
-from src.modules.users.services.role import RoleService
+from src.modules.users.services.organization import OrganizationService
 
 
 
-async def get_role_service(
+async def get_organization_service(
         uow: Annotated[UnitOfWork, Depends(get_unit_of_work)],
 ):
-    return RoleService(uow=uow)
+    return OrganizationService(uow=uow)

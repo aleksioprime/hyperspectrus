@@ -37,9 +37,8 @@ async def get_patients(
 
 
 @router.get(
-    path='/patients/{patient_id}',
+    path='/{patient_id}',
     summary='Получить детальную информацию о пациенте',
-    description='Получает детальную информацию о пациенте',
     response_model=PatientDetailSchema,
     status_code=status.HTTP_200_OK,
 )
@@ -56,15 +55,14 @@ async def get_patient(
 
 
 @router.post(
-    path='/patients',
+    path='/',
     summary='Создаёт пациента',
-    description='Создаёт нового пациента',
     status_code=status.HTTP_201_CREATED,
 )
 async def create_patient(
+        body: PatientCreateSchema,
         service: Annotated[PatientService, Depends(get_patient_service)],
         user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
-        body: PatientCreateSchema,
 ) -> PatientSchema:
     """
     Создаёт нового пациента
@@ -74,9 +72,8 @@ async def create_patient(
 
 
 @router.patch(
-    path='/patients/{patient_id}',
+    path='/{patient_id}',
     summary='Обновляет пациента',
-    description='Обновляет данные существующего пациента',
     response_model=PatientSchema,
     status_code=status.HTTP_200_OK,
 )
@@ -87,16 +84,15 @@ async def update_patient(
         user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
 ) -> PatientSchema:
     """
-    Обновляет пациента
+    Обновляет пациента по его ID
     """
     patient = await service.update(patient_id, body)
     return patient
 
 
 @router.delete(
-    path='/patients/{patient_id}',
+    path='/{patient_id}',
     summary='Удаляет пациента',
-    description='Удаляет пациента по заданному идентификатору',
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_patient(
@@ -105,6 +101,6 @@ async def delete_patient(
         user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
 ) -> None:
     """
-    Удаляет пациента
+    Удаляет пациента по его ID
     """
     await service.delete(patient_id)

@@ -1,8 +1,7 @@
 from uuid import UUID
 from typing import List
 
-from redis.asyncio import Redis
-from sqlalchemy.exc import IntegrityError, NoResultFound, SQLAlchemyError
+from sqlalchemy.exc import IntegrityError, NoResultFound
 
 from src.exceptions.base import BaseException
 from src.models.user import Role
@@ -14,9 +13,8 @@ class RoleService:
     """
     Сервис для управления ролями
     """
-    def __init__(self, uow: UnitOfWork, redis: Redis):
+    def __init__(self, uow: UnitOfWork):
         self.uow = uow
-        self.redis = redis
 
     async def get_all(self) -> List[RoleSchema]:
         """

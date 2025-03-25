@@ -5,10 +5,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.core.schemas import BasePaginationParams
 from src.core.dependencies import get_pagination_params
 from src.db.postgres import get_db_session
-from src.modules.patients.services.patient import PatientService
-from src.modules.patients.repositories.patient import PatientRepository
+from src.modules.patients.dependencies.uow import get_unit_of_work
 from src.modules.patients.schemas.patient import PatientQueryParams
-
+from src.modules.patients.repositories.patient import PatientRepository
+from src.modules.patients.repositories.uow import UnitOfWork
+from src.modules.patients.services.patient import PatientService
 
 
 def get_patient_params(
@@ -24,19 +25,10 @@ def get_patient_params(
     )
 
 
-async def get_patient_repository(
-    session: Annotated[AsyncSession, Depends(get_db_session)],
-) -> PatientRepository:
-    """
-    Получает экземпляр PatientRepository с переданным AsyncSession (асинхронная сессия базы данных)
-    """
-    return PatientRepository(session)
-
-
 def get_patient_service(
-    repository: Annotated[PatientRepository, Depends(get_patient_repository)],
+    uow: Annotated[UnitOfWork, Depends(get_unit_of_work)],
 ) -> PatientService:
     """
-    Возвращает экземпляр PatientService с репозиторием
+    Возвращает экземпляр PatientService с переданным UnitOfWork (UoW)
     """
-    return PatientService(repository=repository)
+    return PatientService(uow=uow)

@@ -9,7 +9,7 @@ from sqlalchemy.exc import NoResultFound
 
 from src.models.user import User, UserRoles, Role
 from src.modules.users.repositories.base import BaseSQLRepository
-from src.modules.users.schemas.user import UserUpdateSchema
+from src.modules.users.schemas.user import UserUpdateSchema, UserQueryParams
 
 logger = logging.getLogger(__name__)
 
@@ -22,51 +22,55 @@ class BaseUserRepository(ABC):
 
 class UserRepository(BaseUserRepository, BaseSQLRepository):
 
-    async def get_user_by_id(self, user_id: UUID):
+    async def get_user_by_id(self, user_id: UUID) -> User | None:
         """
         Получает пользователя по его ID
         """
+        query = select(User).filter(User.id == user_id)
+        result = await self.session.execute(query)
+        return result.scalars().unique().one_or_none()
+
+    async def get_user_with_roles(self, user_id: UUID) -> User | None:
+        """ Получает пользователя по его ID вместе с ролями """
         query = (
             select(User)
             .options(joinedload(User.roles))
             .filter(User.id == user_id)
         )
         result = await self.session.execute(query)
-        user = result.scalars().unique().one_or_none()
-        return user
+        return result.scalars().unique().one_or_none()
 
-    async def get_user_all(self):
-        """
-        Получает всех пользователей
-        """
-        query = select(User).options(joinedload(User.roles))
+    async def get_user_all(self, params: UserQueryParams) -> List[User]:
+        """ Получает список всех пользователей с предзагрузкой ролей """
+        query = (
+            select(User)
+            .options(joinedload(User.roles))
+            .limit(params.limit)
+            .offset(params.offset)
+        )
         result = await self.session.execute(query)
-        users = result.scalars().unique().all()
-        return users
+        return result.scalars().unique().all()
 
-    async def update(self, user_id: UUID, body: UserUpdateSchema):
-        """
-        Обновляет данные пользователя
-        """
+    async def create(self, user: User) -> None:
+        """ Добавляет нового пользователя в текущую сессию """
+        self.session.add(user)
+
+    async def update(self, user_id: UUID, body: UserUpdateSchema) -> User:
+        """ Обновляет данные пользователя по его ID """
         update_data = {key: value for key, value in body.dict(exclude_unset=True).items()}
         if not update_data:
-            raise NoResultFound(f"Нет данных")
+            raise NoResultFound("Нет данных для обновления")
 
-        query = (
+        stmt = (
             update(User)
             .filter_by(id=user_id)
             .values(**update_data)
         )
-        await self.session.execute(query)
-
-        updated_user = await self.get_user_by_id(user_id)
-
-        return updated_user
+        await self.session.execute(stmt)
+        return await self.get_user_by_id(user_id)
 
     async def delete(self, user_id: UUID) -> None:
-        """
-        Удаляет пользователя по его ID
-        """
+        """ Удаляет пользователя по его ID """
         user = await self.get_user_by_id(user_id)
         if not user:
             raise NoResultFound(f"Пользователь с ID {user_id} не найден")
@@ -74,56 +78,36 @@ class UserRepository(BaseUserRepository, BaseSQLRepository):
         await self.session.delete(user)
         await self.session.flush()
 
-    async def role_add(self, user_id: UUID, role_id: UUID):
-        """
-        Добавляет роль пользователю, если она ещё не назначена
-        """
-        user_query = await self.session.execute(select(User).filter_by(id=user_id))
-        user = user_query.scalars().first()
-        if not user:
-            raise NoResultFound(f"Пользователь с ID {user_id} не найден!")
+    async def has_role(self, user_id: UUID, role_id: UUID) -> bool:
+        """ Проверяет, есть ли у пользователя роль с указанным ID """
+        query = select(UserRoles).filter_by(user_id=user_id, role_id=role_id)
+        result = await self.session.execute(query)
+        return result.first() is not None
 
-        role_query = await self.session.execute(select(Role).filter_by(id=role_id))
-        role = role_query.scalars().first()
-        if not role:
-            raise NoResultFound(f"Роль с ID {role_id} не найдена!")
+    async def get_role(self, role_id: UUID) -> Role | None:
+        """ Получает роль по её ID """
+        query = select(Role).filter_by(id=role_id)
+        result = await self.session.execute(query)
+        return result.scalars().first()
 
-        existing_role_query = await self.session.execute(
-            select(UserRoles).filter_by(user_id=user_id, role_id=role_id)
-        )
-        existing_role = existing_role_query.first()
-        if existing_role:
-            logger.warning(f"Пользователь {user_id} уже имеет роль {role_id}. Пропускаем")
-            return
-
+    async def add_role(self, user_id: UUID, role_id: UUID) -> None:
+        """ Добавляет роль к пользователю """
         stmt = insert(UserRoles).values(user_id=user_id, role_id=role_id)
-
         await self.session.execute(stmt)
-        logger.info(f"Роль {role_id} добавлена пользователю {user_id}!")
 
-    async def role_remove(self, user_id: UUID, role_id: UUID):
-        """
-        Удаляет роль у пользователя, если она назначена.
-        """
-        user_query = await self.session.execute(select(User).filter_by(id=user_id))
-        user = user_query.scalars().first()
-        if not user:
-            raise NoResultFound(f"Пользователь с ID {user_id} не найден!")
-
-        role_query = await self.session.execute(select(Role).filter_by(id=role_id))
-        role = role_query.scalars().first()
-        if not role:
-            raise NoResultFound(f"Роль с ID {role_id} не найдена!")
-
-        existing_role_query = await self.session.execute(
-            select(UserRoles).filter_by(user_id=user_id, role_id=role_id)
-        )
-        existing_role = existing_role_query.first()
-        if not existing_role:
-            logger.warning(f"Пользователь {user_id} не имеет роли {role_id}. Нечего удалять")
-            return
-
+    async def remove_role(self, user_id: UUID, role_id: UUID) -> None:
+        """ Удаляет роль у пользователя """
         stmt = delete(UserRoles).filter_by(user_id=user_id, role_id=role_id)
-
         await self.session.execute(stmt)
-        logger.info(f"Роль {role_id} удалена у пользователя {user_id}!")
+
+    async def get_or_create_default_role(self) -> Role:
+        """ Получает или создает роль по умолчанию """
+        query = select(Role).filter_by(name="user")
+        role = await self.session.scalar(query)
+
+        if not role:
+            role = Role(name="user", description="Default user role")
+            self.session.add(role)
+            await self.session.flush()
+
+        return role

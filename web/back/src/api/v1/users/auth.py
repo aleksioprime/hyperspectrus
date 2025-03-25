@@ -7,11 +7,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from starlette import status
 
-
-from src.constants.role import RoleName
-from src.modules.users.dependencies.auth import get_auth_service, get_user_with_check_roles
-from src.modules.users.schemas.auth import RegisterSchema, AuthSchema
-from src.modules.users.schemas.auth import UserJWT
+from src.modules.users.dependencies.auth import get_auth_service
+from src.modules.users.schemas.auth import AuthSchema
 from src.modules.users.schemas.token import TokenSchema, RefreshTokenSchema, AccessTokenSchema
 from src.modules.users.services.auth import AuthService
 
@@ -20,32 +17,13 @@ router = APIRouter()
 
 
 @router.post(
-    path='/register',
-    summary='Регистрирует пользователя',
-    status_code=status.HTTP_201_CREATED,
-    response_model=TokenSchema,
-)
-async def register(
-        body: RegisterSchema,
-        user: Annotated[UserJWT, Depends(get_user_with_check_roles([RoleName.ADMIN]))],
-        service: Annotated[AuthService, Depends(get_auth_service)],
-) -> TokenSchema:
-    """
-    Регистрирует нового пользователя, выдает токены и сохраняет refresh токен в базу данных.
-    Зарегистрировать пользователя может только администратор
-    """
-    user: TokenSchema = await service.register(body)
-    return user
-
-
-@router.post(
     path='/login',
     summary='Выполняет вход в аккаунт',
-    description='Авторизирует пользователя, выдает новые jwt токены и записывает вход в историю',
+    description='Авторизирует пользователя, выдает новые jwt токены',
     response_model=TokenSchema,
     status_code=status.HTTP_200_OK,
 )
-async def authenticate(
+async def login(
         body: AuthSchema,
         service: Annotated[AuthService, Depends(get_auth_service)],
 ) -> TokenSchema:

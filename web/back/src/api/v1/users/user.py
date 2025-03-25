@@ -8,16 +8,16 @@ from uuid import UUID
 from fastapi import APIRouter, Depends
 from starlette import status
 
+from src.core.schemas import UserJWT
+from src.core.security import JWTBearer
 from src.constants.role import RoleName
-from src.modules.users.dependencies.auth import get_user_by_jwt, get_user_with_check_roles
-from src.modules.users.dependencies.user import get_user_service
-from src.modules.users.schemas.user import UserUpdateSchema, UserSchema
-from src.modules.users.schemas.auth import UserJWT
+from src.modules.users.dependencies.user import get_user_service, get_user_params
+from src.modules.users.schemas.user import UserCreateSchema, UserUpdateSchema, UserSchema, UserQueryParams
 from src.modules.users.schemas.role import RoleAssignment
 from src.modules.users.services.user import UserService
 
-
 router = APIRouter()
+
 
 @router.get(
     path='/',
@@ -26,13 +26,14 @@ router = APIRouter()
     status_code=status.HTTP_200_OK,
 )
 async def get_all_users(
+        params: Annotated[UserQueryParams, Depends(get_user_params)],
         service: Annotated[UserService, Depends(get_user_service)],
-        user: Annotated[UserJWT, Depends(get_user_with_check_roles([RoleName.ADMIN]))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.ADMIN}))],
 ) -> list[UserSchema]:
     """
     Возвращает список всех пользователей
     """
-    users = await service.get_user_all()
+    users = await service.get_user_all(params)
     return users
 
 @router.get(
@@ -42,13 +43,31 @@ async def get_all_users(
     status_code=status.HTTP_200_OK,
 )
 async def get_user_me(
-    user: Annotated[UserJWT, Depends(get_user_by_jwt)],
     service: Annotated[UserService, Depends(get_user_service)],
+    user: Annotated[UserJWT, Depends(JWTBearer())],
 ):
     """
     Возвращает информацию о текущем пользователе
     """
     user = await service.get_user_by_id(user.id)
+    return user
+
+@router.post(
+    path='/',
+    summary='Создаёт пользователя',
+    status_code=status.HTTP_201_CREATED,
+    response_model=UserSchema,
+)
+async def register(
+        body: UserCreateSchema,
+        service: Annotated[UserService, Depends(get_user_service)],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.ADMIN}))],
+) -> UserSchema:
+    """
+    Регистрирует нового пользователя.
+    Зарегистрировать пользователя может только администратор
+    """
+    user: UserSchema = await service.create(body)
     return user
 
 @router.patch(
@@ -59,9 +78,9 @@ async def get_user_me(
 )
 async def update_user(
     user_id: UUID,
-    user: Annotated[UserJWT, Depends(get_user_with_check_roles([RoleName.ADMIN]))],
     body: UserUpdateSchema,
     service: Annotated[UserService, Depends(get_user_service)],
+    user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.ADMIN}))],
 ):
     """
     Обновляет информацию о пользователе
@@ -77,12 +96,12 @@ async def update_user(
 async def delete_user(
     user_id: UUID,
     service: Annotated[UserService, Depends(get_user_service)],
-    user: Annotated[UserJWT, Depends(get_user_with_check_roles([RoleName.ADMIN]))],
+    user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.ADMIN}))],
 ):
     """
     Удаляет пользователя
     """
-    await service.delete(user_id)
+    await service.delete(user_id, user.id)
 
 
 @router.post(
@@ -94,7 +113,7 @@ async def add_role_to_user(
         user_id: UUID,
         role_assignment: RoleAssignment,
         service: Annotated[UserService, Depends(get_user_service)],
-        user: Annotated[UserJWT, Depends(get_user_with_check_roles([RoleName.ADMIN]))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.ADMIN}))],
 ):
     """
     Назначает роль пользователю
@@ -111,7 +130,7 @@ async def remove_role_from_user(
         user_id: UUID,
         role_assignment: RoleAssignment,
         service: Annotated[UserService, Depends(get_user_service)],
-        user: Annotated[UserJWT, Depends(get_user_with_check_roles([RoleName.ADMIN]))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.ADMIN}))],
 ):
     """
     Отзывает роль у пользователя

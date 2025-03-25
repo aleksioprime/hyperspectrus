@@ -8,9 +8,9 @@ from uuid import UUID
 from fastapi import APIRouter, Depends
 from starlette import status
 
+from src.core.schemas import UserJWT
 from src.constants.role import RoleName
-from src.core.dependencies import JWTBearer
-from src.modules.users.schemas.auth import UserJWT
+from src.core.security import JWTBearer
 from src.modules.patients.dependencies.patient import get_patient_service, get_patient_params
 from src.modules.patients.schemas.patient import PatientSchema, PatientCreateSchema, PatientUpdateSchema, PatientDetailSchema, PatientQueryParams
 from src.modules.patients.services.patient import PatientService
@@ -19,15 +19,15 @@ from src.modules.patients.services.patient import PatientService
 router = APIRouter()
 
 @router.get(
-    path='/patients',
+    path='/',
     summary='Получить всех пациентов',
     response_model=list[PatientSchema],
     status_code=status.HTTP_200_OK,
 )
 async def get_patients(
+        params: Annotated[PatientQueryParams, Depends(get_patient_params)],
         service: Annotated[PatientService, Depends(get_patient_service)],
         user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
-        params: Annotated[PatientQueryParams, Depends(get_patient_params)],
 ) -> list[PatientSchema]:
     """
     Возвращает список всех пациентов организации

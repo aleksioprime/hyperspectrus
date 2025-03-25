@@ -16,7 +16,7 @@ class Device(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String(255), unique=True, nullable=False)  # Модель устройства
 
-    spectrums = relationship("Spectrum", back_populates="device")
+    spectra = relationship("Spectrum", back_populates="device")
     sessions = relationship("Session", back_populates="device")
 
 
@@ -28,7 +28,7 @@ class Spectrum(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     wavelength = Column(Integer, nullable=False) # Длина волны спектра (в нанометрах)
-    device_id = Column(UUID(as_uuid=True), ForeignKey('device.id'), nullable=False)  # Связь с устройством
+    device_id = Column(UUID(as_uuid=True), ForeignKey('devices.id'), nullable=False)  # Связь с устройством
 
     device = relationship("Device", back_populates="spectra")
     overlaps = relationship("OverlapCoefficient", back_populates="spectrum")

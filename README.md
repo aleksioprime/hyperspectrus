@@ -47,22 +47,18 @@ chmod +x auth/entrypoint.sh
 
 Создание миграциий:
 ```shell
-docker-compose -p hyperspectrus run migrations alembic revision --autogenerate -m "init"
-docker exec -it hyperspectrus-auth alembic revision --autogenerate -m "init"
-docker exec -it hyperspectrus-backend alembic revision --autogenerate -m "init"
+docker exec -it hyperspectrus-backend alembic revision --autogenerate -m "init migration"
 ```
 
 Применение миграции (при перезапуске сервиса делается автоматически):
 ```shell
-docker-compose -p hyperspectrus run migrations alembic upgrade head
-docker exec -it hyperspectrus-auth alembic upgrade head
 docker exec -it hyperspectrus-backend alembic upgrade head
 ```
 
 Создание суперпользователя:
 ```shell
-docker-compose -p hyperspectrus exec auth python manage/create_superuser.py \
-  --login superuser \
+docker-compose -p hyperspectrus exec backend python scripts/create_superuser.py \
+  --username superuser \
   --password 1q2w3e \
   --email admin@hyperspectrus.ru
 ```

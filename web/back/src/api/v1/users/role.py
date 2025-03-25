@@ -8,42 +8,43 @@ from uuid import UUID
 from fastapi import APIRouter, Depends
 from starlette import status
 
+from src.core.schemas import UserJWT
+from src.core.security import JWTBearer
 from src.constants.role import RoleName
-from src.modules.users.dependencies.auth import get_user_with_check_roles
 from src.modules.users.dependencies.role import get_role_service
-from src.modules.users.schemas.auth import UserJWT
 from src.modules.users.schemas.role import RoleUpdateSchema, RoleSchema
 from src.modules.users.services.role import RoleService
 
 router = APIRouter()
 
 @router.get(
-    path='/roles',
+    path='/',
     summary='Получить все роли пользователей',
     response_model=list[RoleSchema],
     status_code=status.HTTP_200_OK,
 )
 async def get_role_all(
         service: Annotated[RoleService, Depends(get_role_service)],
-        user: Annotated[UserJWT, Depends(get_user_with_check_roles([RoleName.ADMIN]))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.ADMIN}))],
 ) -> list[RoleSchema]:
     """
     Возвращает список всех ролей
     """
-    roles = await service.get_role_all()
+    roles = await service.get_all()
     return roles
 
 
 @router.post(
-    path='/roles',
+    path='/',
     summary='Создаёт роль',
     description='Создаёт роль, если пользователь авторизован',
     status_code=status.HTTP_201_CREATED,
 )
 async def create_role(
-        service: Annotated[RoleService, Depends(get_role_service)],
-        user: Annotated[UserJWT, Depends(get_user_with_check_roles([RoleName.ADMIN]))],
         body: RoleUpdateSchema,
+        service: Annotated[RoleService, Depends(get_role_service)],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.ADMIN}))],
+
 ) -> RoleSchema:
     """
     Создаёт новую роль
@@ -53,7 +54,7 @@ async def create_role(
 
 
 @router.patch(
-    path='/roles/{role_id}',
+    path='/{role_id}',
     summary='Обновляет роль',
     description='Обновляет данные существующей роли',
     response_model=RoleSchema,
@@ -63,7 +64,7 @@ async def update_role(
         role_id: UUID,
         body: RoleUpdateSchema,
         service: Annotated[RoleService, Depends(get_role_service)],
-        user: Annotated[UserJWT, Depends(get_user_with_check_roles([RoleName.ADMIN]))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.ADMIN}))],
 ) -> RoleSchema:
     """
     Обновляет роль
@@ -73,7 +74,7 @@ async def update_role(
 
 
 @router.delete(
-    path='/roles/{role_id}',
+    path='/{role_id}',
     summary='Удаляет роль',
     description='Удаляет роль по заданному идентификатору',
     status_code=status.HTTP_204_NO_CONTENT,
@@ -81,7 +82,7 @@ async def update_role(
 async def delete_role(
         role_id: UUID,
         service: Annotated[RoleService, Depends(get_role_service)],
-        user: Annotated[UserJWT, Depends(get_user_with_check_roles([RoleName.ADMIN]))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.ADMIN}))],
 ) -> None:
     """
     Удаляет роль

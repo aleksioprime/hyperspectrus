@@ -53,7 +53,7 @@ class User(Base):
                  is_superuser: bool = False,
                  organization_id: Optional[UUID] = None
                  ) -> None:
-        self.login = username
+        self.username = username
         self.hashed_password = generate_password_hash(password)
         self.first_name = first_name
         self.last_name = last_name
@@ -66,7 +66,7 @@ class User(Base):
         return check_password_hash(self.hashed_password, password)
 
     def __repr__(self) -> str:
-        return f'<User {self.login}>'
+        return f'<User {self.username}>'
 
 
 class Role(Base):
@@ -96,6 +96,7 @@ class Organization(Base):
     description = Column(String, nullable=True)
 
     users = relationship("User", back_populates="organization")
+    patients = relationship("Patient", back_populates="organization")
 
     def __repr__(self) -> str:
         return f'<Organization {self.name}>'

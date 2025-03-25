@@ -18,59 +18,41 @@ class BaseRoleRepository(ABC):
 class RoleRepository(BaseRoleRepository, BaseSQLRepository):
 
     async def get_role_all(self) -> list[Role]:
-        """
-        Получает список всех ролей
-        """
+        """ Получает список всех ролей """
         query = select(Role)
         result = await self.session.execute(query)
         return result.scalars().all()
 
     async def get_role_by_id(self, role_id: UUID) -> Role:
+        """ Получает роль по её ID """
         query = select(Role).where(Role.id == role_id)
         result = await self.session.execute(query)
-        role = result.scalars().one_or_none()
-        if not role:
-            raise NoResultFound(f"Роль с ID {role_id} не найдена.")
-        return role
+        return result.scalars().one_or_none()
 
-    async def create(self, body: RoleUpdateSchema) -> Role:
-        """
-        Создаёт новую роль
-        """
-        role = Role(
-            name=body.name,
-            description=body.description,
-        )
-
+    async def create(self, role: Role) -> None:
+        """ Создаёт новую роль """
         self.session.add(role)
-        await self.session.flush()
-
-        return role
 
     async def update(self, role_id: UUID, body: RoleUpdateSchema) -> Role:
-        """
-        Обновляет данные роли по её ID
-        """
-        update_data = {key: value for key, value in body.dict(exclude_unset=True).items()}
+        """ Обновляет роль по её ID """
+        update_data = {k: v for k, v in body.dict(exclude_unset=True).items()}
         if not update_data:
-            raise NoResultFound(f"Нет данных")
+            raise NoResultFound("Нет данных для обновления")
 
-        query = (
+        stmt = (
             update(Role)
-            .filter_by(id=role_id)
+            .where(Role.id == role_id)
             .values(**update_data)
         )
-        await self.session.execute(query)
-
-        updated_role = await self.get_role_by_id(role_id)
-
-        return updated_role
+        await self.session.execute(stmt)
+        return await self.get_role_by_id(role_id)
 
     async def delete(self, role_id: UUID) -> None:
-        """
-        Удаляет роль по её ID
-        """
+        """ Удаляет роль по её ID """
         role = await self.get_role_by_id(role_id)
+        if not role:
+            raise NoResultFound(f"Роль с ID {role_id} не найдена")
 
-        await self.session.delete(role)
-        await self.session.flush()
+        if role:
+            await self.session.delete(role)
+            await self.session.flush()

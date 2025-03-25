@@ -19,7 +19,7 @@ class Patient(Base):
     birth_date = Column(Date, nullable=False)  # Дата рождения
     created_at = Column(DateTime(timezone=True), default=func.now())  # Дата создания записи
     notes = Column(String, nullable=True)  # Дополнительные заметки
-    organization_id = Column(UUID(as_uuid=True), nullable=True) # ID организации
+    organization_id = Column(UUID(as_uuid=True), ForeignKey('organizations.id'), nullable=True) # ID организации
 
     sessions = relationship("Session", back_populates="patient")
     organization = relationship("Organization", back_populates="patients")
@@ -36,8 +36,8 @@ class Session(Base):
     __tablename__ = 'sessions'
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    patient_id = Column(UUID(as_uuid=True), ForeignKey('patient.id'))  # Связь с пациентом
-    device_id = Column(UUID(as_uuid=True), ForeignKey('device.id'), nullable=False)  # Связь с девайсом
+    patient_id = Column(UUID(as_uuid=True), ForeignKey('patients.id'))  # Связь с пациентом
+    device_id = Column(UUID(as_uuid=True), ForeignKey('devices.id'), nullable=False)  # Связь с девайсом
     date = Column(DateTime(timezone=True), default=func.now())  # Дата и время сеанса
     operator_id = Column(UUID(as_uuid=True), nullable=False)  # ID оператора
     notes = Column(String)  # Дополнительные заметки
@@ -72,8 +72,8 @@ class ReconstructedImage(Base):
     __tablename__ = 'reconstructed_images'
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    session_id = Column(UUID(as_uuid=True), ForeignKey('session.id'))  # Связь с сеансом
-    chromophore_id = Column(UUID(as_uuid=True), ForeignKey('chromophore.id'))  # Связь с хромофором
+    session_id = Column(UUID(as_uuid=True), ForeignKey('sessions.id'))  # Связь с сеансом
+    chromophore_id = Column(UUID(as_uuid=True), ForeignKey('chromophores.id'))  # Связь с хромофором
     file_path = Column(String, nullable=False)  # Путь к файлу изображения
 
     session = relationship("Session", back_populates="reconstructed_images")

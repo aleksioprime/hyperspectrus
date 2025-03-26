@@ -1,14 +1,12 @@
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
-from sqlalchemy import update
-from sqlalchemy.orm import joinedload
-from sqlalchemy.exc import SQLAlchemyError, NoResultFound
 from uuid import UUID
 from typing import List, Optional
 
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select, update
+from sqlalchemy.exc import NoResultFound
+
 from src.models.patient import Patient
-from src.modules.patients.schemas.patient import PatientSchema, PatientCreateSchema, PatientUpdateSchema, PatientDetailSchema, PatientQueryParams
-from src.exceptions.base import BaseException
+from src.modules.patients.schemas.patient import PatientSchema, PatientUpdateSchema, PatientDetailSchema, PatientQueryParams
 
 
 class PatientRepository:

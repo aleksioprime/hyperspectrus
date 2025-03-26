@@ -1,6 +1,5 @@
 from src.db.postgres import async_session_maker
-from src.modules.patients.repositories.patient import PatientRepository
-from src.modules.patients.repositories.session import SessionRepository
+from src.modules.parameters.repositories.device import DeviceRepository
 
 
 class UnitOfWork:
@@ -9,8 +8,7 @@ class UnitOfWork:
 
     async def __aenter__(self):
         self.session = self.session_factory()
-        self.patient = PatientRepository(self.session)
-        self.session_repo = SessionRepository(self.session)
+        self.device = DeviceRepository(self.session)
 
     async def __aexit__(self, exc_type, exc_value, traceback):
         if exc_type is not None:

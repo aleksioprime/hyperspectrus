@@ -1,6 +1,7 @@
 fastapi==0.115.5
 uvicorn==0.30.3
 pydantic-settings==2.4.0
+python-multipart==0.0.20
 SQLAlchemy==2.0.36
 redis==5.0.4
 orjson==3.10.7

@@ -1,6 +1,7 @@
 from src.db.postgres import async_session_maker
 from src.modules.patients.repositories.patient import PatientRepository
 from src.modules.patients.repositories.session import SessionRepository
+from src.modules.patients.repositories.raw_image import RawImageRepository
 
 
 class UnitOfWork:
@@ -11,6 +12,7 @@ class UnitOfWork:
         self.session = self.session_factory()
         self.patient = PatientRepository(self.session)
         self.session_repo = SessionRepository(self.session)
+        self.raw_image = RawImageRepository(self.session)
 
     async def __aexit__(self, exc_type, exc_value, traceback):
         if exc_type is not None:

@@ -56,7 +56,7 @@ async def get_session(
 
 @router.post(
     path='/',
-    summary='Создаёт сеанс',
+    summary='Создать сеанс',
     status_code=status.HTTP_201_CREATED,
 )
 async def create_session(
@@ -73,7 +73,7 @@ async def create_session(
 
 @router.patch(
     path='/{session_id}',
-    summary='Обновляет сеанс',
+    summary='Обновить сеанс',
     response_model=SessionSchema,
     status_code=status.HTTP_200_OK,
 )
@@ -92,7 +92,7 @@ async def update_session(
 
 @router.delete(
     path='/{session_id}',
-    summary='Удаляет сеанс',
+    summary='Удалить сеанс',
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_session(

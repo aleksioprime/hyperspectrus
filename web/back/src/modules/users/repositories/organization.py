@@ -49,9 +49,8 @@ class OrganizationRepository(BaseOrganizationRepository, BaseSQLRepository):
 
     async def delete(self, organization_id: UUID) -> None:
         """ Удаляет организацию по её ID """
-        organization = await self.get_organization_by_id(organization_id)
-        if not organization:
+        result = await self.get_organization_by_id(organization_id)
+        if not result:
             raise NoResultFound(f"Организация с ID {organization_id} не найдена")
 
-        if organization:
-            await self.session.delete(organization)
+        await self.session.delete(result)

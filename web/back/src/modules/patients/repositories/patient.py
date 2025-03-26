@@ -55,8 +55,8 @@ class PatientRepository:
 
     async def delete(self, patient_id: UUID) -> bool:
         """ Удаляет пациента по его ID """
-        patient = await self.get_by_id(patient_id)
-        if not patient:
+        result = await self.get_by_id(patient_id)
+        if not result:
             raise NoResultFound(f"Пациент с ID {patient_id} не найден")
 
-        await self.session.delete(patient)
+        await self.session.delete(result)

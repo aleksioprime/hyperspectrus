@@ -72,8 +72,8 @@ class SessionRepository:
 
     async def delete(self, session_id: UUID) -> bool:
         """ Удаляет сеанс по его ID """
-        session = await self.get_by_id(session_id)
-        if not session:
+        result = await self.get_by_id(session_id)
+        if not result:
             raise NoResultFound(f"Сеанс с ID {session_id} не найден")
 
-        await self.session.delete(session)
+        await self.session.delete(result)

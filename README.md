@@ -36,6 +36,7 @@ cd hyperspectrus
 
 Запустите сервис локально:
 ```
+cd web
 docker-compose -p hyperspectrus up -d --build
 ```
 

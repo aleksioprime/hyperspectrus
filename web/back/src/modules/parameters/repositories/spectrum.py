@@ -51,9 +51,8 @@ class SpectrumRepository:
 
     async def delete(self, spectrum_id: UUID) -> None:
         """ Удаляет спектр по его ID """
-        spectrum = await self.get_by_id(spectrum_id)
-        if not spectrum:
+        result = await self.get_by_id(spectrum_id)
+        if not result:
             raise NoResultFound(f"Спектр с ID {spectrum_id} не найден")
 
-        if spectrum:
-            await self.session.delete(spectrum)
+        await self.session.delete(result)

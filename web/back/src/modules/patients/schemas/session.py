@@ -76,7 +76,7 @@ class ReconstructedImageSchema(BaseModel):
 
 class ResultSchema(BaseModel):
     id: UUID = Field(..., description="ID результата")
-    contour_path: str = Field(..., description="Путь к файлу с контуром пораженной области")
+    contour_path: str | None = Field(None, description="Путь к файлу с контуром пораженной области")
     s_coefficient: float = Field(..., description="Коэффициент s")
     mean_lesion_thb: float = Field(..., description="Средняя концентрация THb в поражённой области")
     mean_skin_thb: float = Field(..., description="Средняя концентрация THb в коже")

@@ -71,11 +71,11 @@ class UserRepository(BaseUserRepository, BaseSQLRepository):
 
     async def delete(self, user_id: UUID) -> None:
         """ Удаляет пользователя по его ID """
-        user = await self.get_user_by_id(user_id)
-        if not user:
+        result = await self.get_user_by_id(user_id)
+        if not result:
             raise NoResultFound(f"Пользователь с ID {user_id} не найден")
 
-        await self.session.delete(user)
+        await self.session.delete(result)
 
     async def has_role(self, user_id: UUID, role_id: UUID) -> bool:
         """ Проверяет, есть ли у пользователя роль с указанным ID """

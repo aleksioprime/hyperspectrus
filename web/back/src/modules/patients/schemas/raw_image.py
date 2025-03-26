@@ -12,6 +12,9 @@ class RawImageQueryParams(BasePaginationParams):
 
 
 class RawImageSchema(BaseModel):
+    """
+    Схема для отображения информации об исходных изображениях
+    """
     id: UUID = Field(..., description="ID исходного изображения")
     session_id: UUID = Field(..., description="ID сеанса")
     spectrum_id: UUID = Field(..., description="ID длины волны")
@@ -22,5 +25,8 @@ class RawImageSchema(BaseModel):
 
 
 class RawImageUpdateSchema(BaseModel):
+    """
+    Схема для редактирования информации об исходном изображении
+    """
     spectrum_id: UUID | None = Field(None, description="Новый ID длины волны")
     file_path: str | None = Field(None, description="Новый путь к файлу изображения")

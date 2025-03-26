@@ -49,9 +49,8 @@ class RoleRepository(BaseRoleRepository, BaseSQLRepository):
 
     async def delete(self, role_id: UUID) -> None:
         """ Удаляет роль по её ID """
-        role = await self.get_role_by_id(role_id)
-        if not role:
+        result = await self.get_role_by_id(role_id)
+        if not result:
             raise NoResultFound(f"Роль с ID {role_id} не найдена")
 
-        if role:
-            await self.session.delete(role)
+        await self.session.delete(result)

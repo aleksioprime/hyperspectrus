@@ -60,9 +60,8 @@ class DeviceRepository:
 
     async def delete(self, device_id: UUID) -> None:
         """ Удаляет устройство по его ID """
-        device = await self.get_device_by_id(device_id)
-        if not device:
+        result = await self.get_device_by_id(device_id)
+        if not result:
             raise NoResultFound(f"Устройство с ID {device_id} не найдено")
 
-        if device:
-            await self.session.delete(device)
+        await self.session.delete(result)

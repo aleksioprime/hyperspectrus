@@ -88,8 +88,8 @@ class Result(Base):
     __tablename__ = 'results'
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    session_id = Column(UUID(as_uuid=True), ForeignKey('sessions.id'))  # Связь с сеансом
-    contour_path = Column(String, nullable=False)  # Путь к файлу с контуром пораженной области
+    session_id = Column(UUID(as_uuid=True), ForeignKey('sessions.id'), unique=True)  # Связь с сеансом
+    contour_path = Column(String, nullable=True)  # Путь к файлу с контуром пораженной области
     s_coefficient = Column(Float, nullable=False)  # Коэффициент s
     mean_lesion_thb = Column(Float, nullable=False)  # Средняя концентрация THb в пораженной области
     mean_skin_thb = Column(Float, nullable=False)  # Средняя концентрация THb в коже

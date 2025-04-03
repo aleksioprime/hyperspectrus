@@ -49,7 +49,7 @@ async def get_user_me(
     """
     Возвращает информацию о текущем пользователе
     """
-    user = await service.get_user_by_id(user.id)
+    user = await service.get_user_by_id(user.user_id)
     return user
 
 @router.post(
@@ -101,7 +101,7 @@ async def delete_user(
     """
     Удаляет пользователя
     """
-    await service.delete(user_id, user.id)
+    await service.delete(user_id, user.user_id)
 
 
 @router.post(

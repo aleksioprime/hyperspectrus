@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 node:21.6.1-bullseye AS builder
+FROM --platform=linux/amd64 node:20-bullseye AS builder
 
 # Устанавливаем рабочий каталог контейнера
 WORKDIR /usr/src/app

@@ -1,5 +1,5 @@
 {
-  "name": "app",
+  "name": "hyperspectrus",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -13,9 +13,18 @@
     "test:e2e:dev": "start-server-and-test 'vite dev --port 4173' http://localhost:4173 'cypress open --e2e'"
   },
   "dependencies": {
+    "@mdi/font": "^7.4.47",
+    "axios": "^1.8.4",
+    "bootstrap": "^5.3.3",
+    "bootstrap-icons": "^1.11.3",
+    "jwt-decode": "^4.0.0",
     "pinia": "^3.0.1",
+    "sass": "^1.86.1",
+    "sass-loader": "^16.0.5",
+    "vite-plugin-vuetify": "^2.1.0",
     "vue": "^3.5.13",
-    "vue-router": "^4.5.0"
+    "vue-router": "^4.5.0",
+    "vuetify": "^3.8.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.1",

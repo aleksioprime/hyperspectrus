@@ -6,6 +6,7 @@ export const routes = [
     name: "home",
     component: () => import("@/views/PatientView.vue"),
     meta: {
+      title: 'Главная страница',
       middlewares: [isLoggedIn],
     },
   },
@@ -14,6 +15,7 @@ export const routes = [
     name: "login",
     component: () => import("@/views/Login.vue"),
     meta: {
+      title: 'Авторизация',
       layout: "login",
     },
   },

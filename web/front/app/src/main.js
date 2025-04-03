@@ -53,4 +53,10 @@ Object.entries(components).forEach(([name, component]) => {
 app.mount("#app");
 
 // Log environment variables for debugging
-logger.info(`Loaded environment variables:`, import.meta.env)
+logger.info(`Loaded environment variables:`, import.meta.env);
+
+router.afterEach((to) => {
+  const defaultTitle = 'HyperspectRus'
+  document.title = (to.meta.title ? `${to.meta.title} | ` : '') + defaultTitle
+
+})

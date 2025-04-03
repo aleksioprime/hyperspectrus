@@ -1,53 +1,55 @@
 <template>
-    <!-- Навигационное меню (боковая панель) -->
-    <v-navigation-drawer v-model="drawer" app :temporary="mobile" :width="240">
-      <v-list>
-        <!-- Заголовок меню -->
-        <v-list-item>
-          <v-list-item-title class="text-h6">Меню</v-list-item-title>
-        </v-list-item>
+  <!-- Навигационное меню (боковая панель) -->
+  <v-navigation-drawer v-model="drawer" app :temporary="mobile" :width="240">
+    <v-list>
+      <!-- Заголовок меню -->
+      <v-list-item>
+        <v-list-item-title class="text-h6">Меню</v-list-item-title>
+      </v-list-item>
 
-        <!-- Разделитель -->
-        <v-divider />
+      <!-- Разделитель -->
+      <v-divider />
 
-        <!-- Список пунктов меню -->
-        <v-list-item v-for="item in menuItems" :key="item.title" :title="item.title" :prepend-icon="item.icon" link
-          @click="drawer = false" />
-      </v-list>
-    </v-navigation-drawer>
+      <!-- Список пунктов меню -->
+      <v-list-item v-for="item in menuItems" :key="item.title" :title="item.title" :prepend-icon="item.icon" link
+        @click="drawer = false" />
+    </v-list>
+  </v-navigation-drawer>
 
-    <!-- Верхняя панель приложения -->
-    <v-app-bar app color="primary" dark>
-      <!-- Иконка открытия/закрытия боковой панели -->
-      <v-app-bar-nav-icon @click="drawer = !drawer" />
+  <!-- Верхняя панель приложения -->
+  <v-app-bar app color="primary" dark>
+    <!-- Иконка открытия/закрытия боковой панели -->
+    <v-app-bar-nav-icon @click="drawer = !drawer" />
 
-      <!-- Заголовок -->
-      <v-toolbar-title>Моё приложение</v-toolbar-title>
+    <!-- Заголовок -->
+    <v-toolbar-title>Моё приложение</v-toolbar-title>
 
-      <!-- Разделитель пространства между заголовком и кнопками справа -->
-      <v-spacer />
+    <!-- Разделитель пространства между заголовком и кнопками справа -->
+    <v-spacer />
 
-      <!-- Кнопка переключения темы (тёмная / светлая) -->
-      <v-btn icon @click="toggleTheme" :title="isDark ? 'Светлая тема' : 'Тёмная тема'">
-        <v-icon>{{ isDark ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
-      </v-btn>
+    <!-- Кнопка переключения темы (тёмная / светлая) -->
+    <v-btn icon @click="toggleTheme" :title="isDark ? 'Светлая тема' : 'Тёмная тема'">
+      <v-icon>{{ isDark ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
+    </v-btn>
 
-      <!-- Блок авторизации -->
-      <template v-if="authStore.isAuthenticated">
-        <!-- Кнопка выхода -->
-        <v-btn text @click="logout">Выйти</v-btn>
-      </template>
-      <template v-else>
-        <!-- Кнопка входа (редирект на страницу логина) -->
-        <v-btn text :to="{ name: 'login' }">Войти</v-btn>
-      </template>
-    </v-app-bar>
+    <!-- Блок авторизации -->
+    <template v-if="authStore.isAuthenticated">
+      <!-- Кнопка выхода -->
+      <v-btn text @click="logout">Выйти</v-btn>
+    </template>
+    <template v-else>
+      <!-- Кнопка входа (редирект на страницу логина) -->
+      <v-btn text :to="{ name: 'login' }">Войти</v-btn>
+    </template>
+  </v-app-bar>
 
-    <!-- Основной контент страницы -->
-    <v-main app class="pa-4">
+  <!-- Основной контент страницы -->
+  <v-main app>
+    <div class="pa-4">
       <!-- Слот для контента, передаваемого в layout -->
       <slot />
-    </v-main>
+    </div>
+  </v-main>
 </template>
 
 <script setup>
@@ -93,5 +95,4 @@ async function logout() {
 
 <style>
 /* Стилизация основной области приложения */
-
 </style>

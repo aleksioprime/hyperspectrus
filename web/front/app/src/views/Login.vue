@@ -104,7 +104,7 @@ async function handleLogin() {
 onMounted(async () => {
   const accessToken = jwtService.getAccessToken();
 
-  if (accessToken && authStore.isAuthenticated) {
+  if (accessToken && authStore.isAuthenticated()) {
     router.push({ name: "home" });
   }
 })

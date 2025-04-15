@@ -34,6 +34,7 @@ class UserSchema(BaseModel):
     last_name: Optional[str] = Field(None, description="Фамилия пользователя")
     username: Optional[str] = Field(None, description="Логин пользователя")
     email: Optional[str] = Field(None, description="Email пользователя")
+    organization_id: Optional[str] = Field(None, description="ID организации")
     roles: List[RoleSchema] = Field(..., description="Список ролей пользователя")
 
 
@@ -48,6 +49,7 @@ class UserCreateSchema(BaseModel):
     email: str = Field(..., description="Email пользователя")
     first_name: str = Field(..., description="Имя пользователя")
     last_name: str = Field(..., description="Фамилия пользователя")
+    organization_id: Optional[str] = Field(None, description="ID организации")
 
 
 class UserUpdateSchema(BaseModel):
@@ -58,3 +60,4 @@ class UserUpdateSchema(BaseModel):
     first_name: Optional[str] = Field(None, description="Имя пользователя для обновления")
     last_name: Optional[str] = Field(None, description="Фамилия пользователя для обновления")
     email: Optional[str] = Field(None, description="Email пользователя")
+    organization_id: Optional[str] = Field(None, description="ID организации")

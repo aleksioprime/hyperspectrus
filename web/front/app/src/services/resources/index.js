@@ -1,13 +1,11 @@
-import { GenerateResource } from "./generate.resource";
 import { UserResource } from "./user.resource";
 import { AuthResource } from "./auth.resource";
-import { RequestResource } from "./request.resource";
-import { CommentResource } from "./comment.resources";
+import { PatientResource } from "./patient.resource";
+import { SessionResource } from "./session.resource";
 
 export default {
-    generate: new GenerateResource(),
     user: new UserResource(),
     auth: new AuthResource(),
-    request: new RequestResource(),
-    comment: new CommentResource(),
+    patient: new PatientResource(),
+    session: new SessionResource(),
 };

@@ -6,6 +6,6 @@ export class UserResource extends ApiService {
   }
 
   getUserInfo() {
-    return this.$get(`api/v1/user/me`, params);
+    return this.$get(`/api/v1/user/me`, params);
   }
 }

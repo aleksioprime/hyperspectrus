@@ -3,6 +3,7 @@ from typing import List
 
 from sqlalchemy.exc import IntegrityError
 
+from src.core.schemas import PaginatedResponse
 from src.exceptions.base import BaseException
 from src.models.patient import Patient
 from src.modules.patients.schemas.patient import (
@@ -20,16 +21,23 @@ class PatientService:
         Выдаёт список пациентов
         """
         async with self.uow:
-            patients = await self.uow.patient.get_all(params)
+            patients, total = await self.uow.patient.get_all_with_count(params)
 
-        return patients
+        return PaginatedResponse[PatientSchema](
+            items=patients,
+            total=total,
+            limit=params.limit,
+            offset=params.offset,
+            has_next=(params.offset + 1) * params.limit < total,
+            has_previous=params.offset > 0
+        )
 
     async def get_by_id(self, patient_id: UUID) -> PatientDetailSchema:
         """
         Выдаёт пациента по его ID
         """
         async with self.uow:
-            patient = await self.uow.patient.get_by_id(patient_id)
+            patient = await self.uow.patient.get_with_sessions_by_id(patient_id)
 
             if not patient:
                 raise BaseException(f"Пациент с ID {patient_id} не найден")

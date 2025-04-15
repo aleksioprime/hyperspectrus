@@ -18,23 +18,6 @@ from src.modules.patients.services.session import SessionService
 
 router = APIRouter()
 
-@router.get(
-    path='/',
-    summary='Получить все сеансы',
-    response_model=list[SessionSchema],
-    status_code=status.HTTP_200_OK,
-)
-async def get_sessions(
-        params: Annotated[SessionQueryParams, Depends(get_session_params)],
-        service: Annotated[SessionService, Depends(get_session_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
-) -> list[SessionSchema]:
-    """
-    Возвращает список всех сеансов пациента
-    """
-    sessions = await service.get_all(params)
-    return sessions
-
 
 @router.get(
     path='/{session_id}',
@@ -43,6 +26,7 @@ async def get_sessions(
     status_code=status.HTTP_200_OK,
 )
 async def get_session(
+        patient_id: UUID,
         session_id: UUID,
         service: Annotated[SessionService, Depends(get_session_service)],
         user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
@@ -50,7 +34,7 @@ async def get_session(
     """
     Получает детальную информацию о сеансе
     """
-    session = await service.get_detail_by_id(session_id)
+    session = await service.get_detail_by_id(patient_id, session_id)
     return session
 
 
@@ -60,6 +44,7 @@ async def get_session(
     status_code=status.HTTP_201_CREATED,
 )
 async def create_session(
+        patient_id: UUID,
         body: SessionCreateSchema,
         service: Annotated[SessionService, Depends(get_session_service)],
         user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
@@ -67,7 +52,7 @@ async def create_session(
     """
     Создаёт новый сеанс
     """
-    session = await service.create(body, user.user_id)
+    session = await service.create(body, user.user_id, patient_id)
     return session
 
 
@@ -78,6 +63,7 @@ async def create_session(
     status_code=status.HTTP_200_OK,
 )
 async def update_session(
+        patient_id: UUID,
         session_id: UUID,
         body: SessionUpdateSchema,
         service: Annotated[SessionService, Depends(get_session_service)],
@@ -86,7 +72,7 @@ async def update_session(
     """
     Обновляет сеанс по его ID
     """
-    session = await service.update(session_id, body)
+    session = await service.update(body, patient_id, session_id)
     return session
 
 
@@ -96,6 +82,7 @@ async def update_session(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_session(
+        patient_id: UUID,
         session_id: UUID,
         service: Annotated[SessionService, Depends(get_session_service)],
         user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
@@ -103,4 +90,4 @@ async def delete_session(
     """
     Удаляет сеанс по его ID
     """
-    await service.delete(session_id)
+    await service.delete(patient_id, session_id)

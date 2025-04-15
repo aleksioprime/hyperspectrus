@@ -1,7 +1,21 @@
 from uuid import UUID
+from typing import Generic, TypeVar, List
 
 from fastapi import Query
 from pydantic import BaseModel, Field
+from pydantic.generics import GenericModel
+
+
+T = TypeVar("T")
+
+
+class PaginatedResponse(GenericModel, Generic[T]):
+    items: List[T]
+    total: int
+    limit: int
+    offset: int
+    has_next: bool
+    has_previous: bool
 
 
 class BasePaginationParams(BaseModel):

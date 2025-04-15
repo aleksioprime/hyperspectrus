@@ -8,7 +8,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends
 from starlette import status
 
-from src.core.schemas import UserJWT
+from src.core.schemas import UserJWT, PaginatedResponse
 from src.constants.role import RoleName
 from src.core.security import JWTBearer
 from src.modules.patients.dependencies.patient import get_patient_service, get_patient_params
@@ -21,14 +21,14 @@ router = APIRouter()
 @router.get(
     path='/',
     summary='Получить всех пациентов',
-    response_model=list[PatientSchema],
+    response_model=PaginatedResponse[PatientSchema],
     status_code=status.HTTP_200_OK,
 )
 async def get_patients(
         params: Annotated[PatientQueryParams, Depends(get_patient_params)],
         service: Annotated[PatientService, Depends(get_patient_service)],
         user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
-) -> list[PatientSchema]:
+) -> PaginatedResponse[PatientSchema]:
     """
     Возвращает список всех пациентов организации
     """

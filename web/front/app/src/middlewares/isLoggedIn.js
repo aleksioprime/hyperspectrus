@@ -5,7 +5,7 @@ export const isLoggedIn = async ({ to }) => {
   const authStore = useAuthStore();
 
   // Получаем access_token из локального хранилища
-  let accessToken = jwtService.getAccessToken();
+  const accessToken = jwtService.getAccessToken();
 
   // Если токен отсутствует или невалиден → пробуем обновить
   if (!accessToken || !authStore.isAuthenticated) {
@@ -23,11 +23,9 @@ export const isLoggedIn = async ({ to }) => {
     return { name: "login" };
   }
 
-  // const result = await authStore.getMe();
-
-  // if (!result) {
-  //   return { name: "login", query: { redirect: to.fullPath } };
-  // }
+  if (!authStore.user) {
+    await authStore.getMe();
+  }
 
   return true;
 };

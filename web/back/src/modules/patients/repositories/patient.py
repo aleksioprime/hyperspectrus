@@ -2,7 +2,8 @@ from uuid import UUID
 from typing import List, Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, update
+from sqlalchemy import select, update, func
+from sqlalchemy.orm import selectinload
 from sqlalchemy.exc import NoResultFound
 
 from src.models.patient import Patient
@@ -29,9 +30,37 @@ class PatientRepository:
         result = await self.session.execute(query)
         return result.scalars().unique().all()
 
+    async def get_all_with_count(self, params: PatientQueryParams) -> tuple[list[PatientSchema], int]:
+        """ Возвращает постраничный список пациентов и их общее количество """
+        query = select(Patient)
+        if params.organization:
+            query = query.where(Patient.organization_id == params.organization)
+
+        total_query = select(func.count()).select_from(query.subquery())
+
+        paginated_query = query.limit(params.limit).offset(params.offset * params.limit)
+
+        total_result = await self.session.execute(total_query)
+        result = await self.session.execute(paginated_query)
+
+        total = total_result.scalar()
+        items = result.scalars().unique().all()
+
+        return items, total
+
     async def get_by_id(self, patient_id: UUID) -> PatientDetailSchema:
         """ Возвращает пациента по его ID """
         query = select(Patient).where(Patient.id == patient_id)
+        result = await self.session.execute(query)
+        return result.scalars().unique().one_or_none()
+
+    async def get_with_sessions_by_id(self, patient_id: UUID) -> Optional[Patient]:
+        """ Возвращает пациента по его ID с сессиями """
+        query = (
+            select(Patient)
+            .options(selectinload(Patient.sessions))
+            .where(Patient.id == patient_id)
+        )
         result = await self.session.execute(query)
         return result.scalars().unique().one_or_none()
 

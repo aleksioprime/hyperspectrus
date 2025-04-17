@@ -13,11 +13,11 @@ export class SessionResource extends ApiService {
     return this.$post(`/api/v1/patients/${patientId}/sessions/`, data);
   }
 
-  partialUpdatePatient(patientId, sessionId, data) {
+  partialUpdateSession(patientId, sessionId, data) {
     return this.$patch(`/api/v1/patients/${patientId}/sessions/${sessionId}`, data);
   }
 
-  deletePatient(patientId, sessionId, data) {
-    return this.$delete(`/api/v1/patients/${patientId}/sessions/${sessionId}`, data);
+  deleteSession(patientId, sessionId) {
+    return this.$delete(`/api/v1/patients/${patientId}/sessions/${sessionId}`);
   }
 }

@@ -42,6 +42,7 @@ class SessionRepository:
             select(Session)
             .options(
                 joinedload(Session.patient),
+                joinedload(Session.operator),
                 joinedload(Session.device),
                 joinedload(Session.raw_images),
                 joinedload(Session.reconstructed_images),

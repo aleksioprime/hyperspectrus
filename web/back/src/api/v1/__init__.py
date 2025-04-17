@@ -14,6 +14,6 @@ router.include_router(session.router, prefix="/patients/{patient_id}/sessions", 
 router.include_router(raw_image.router, prefix="/raw_images", tags=["raw_image"])
 router.include_router(result.router, prefix="/results", tags=["results"])
 router.include_router(device.router, prefix="/devices", tags=["devices"])
-router.include_router(spectrum.router, prefix="/spectra", tags=["spectra"])
+router.include_router(spectrum.router, prefix="/devices/{device_id}/spectra", tags=["spectra"])
 router.include_router(chromophore.router, prefix="/chromophores", tags=["chromophores"])
 router.include_router(overlap.router, prefix="/overlaps", tags=["overlaps"])

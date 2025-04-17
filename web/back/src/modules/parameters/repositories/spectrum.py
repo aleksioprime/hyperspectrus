@@ -5,7 +5,7 @@ from sqlalchemy import update, select
 from sqlalchemy.exc import NoResultFound
 
 from src.models.parameter import Spectrum
-from src.modules.parameters.schemas.spectrum import SpectrumUpdateSchema, SpectrumQueryParams
+from src.modules.parameters.schemas.spectrum import SpectrumUpdateSchema
 
 
 class SpectrumRepository:
@@ -13,14 +13,10 @@ class SpectrumRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_all(self, params: SpectrumQueryParams) -> list[Spectrum]:
+    async def get_all(self, device_id: UUID) -> list[Spectrum]:
         """ Получает список всех cпектров """
         query = select(Spectrum)
-
-        if params.device:
-            query = query.where(Spectrum.device_id == params.device)
-
-        query = query.limit(params.limit).offset(params.offset * params.limit)
+        query = query.where(Spectrum.device_id == device_id)
 
         result = await self.session.execute(query)
         return result.scalars().unique().all()

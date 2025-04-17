@@ -104,11 +104,21 @@ class PatientSchema(BaseModel):
         from_attributes = True
 
 
+class UserSchema(BaseModel):
+    id: UUID = Field(..., description="ID оператора")
+    first_name: str = Field(..., description="Имя оператора")
+    last_name: str = Field(..., description="Фамилия оператора")
+
+    class Config:
+        from_attributes = True
+
+
 class SessionDetailSchema(SessionSchema):
     """
     Расширенная схема сеанса с вложенными объектами
     """
     patient: PatientSchema | None = Field(None, description="Информация о пациенте")
+    operator: UserSchema | None = Field(None, description="Информация об операторе")
     device: DeviceSchema = Field(..., description="Информация об используемом устройстве")
     raw_images: list[RawImageSchema] = Field(default_factory=list, description="Список исходных изображений")
     reconstructed_images: list[ReconstructedImageSchema] = Field(default_factory=list, description="Список восстановленных изображений")

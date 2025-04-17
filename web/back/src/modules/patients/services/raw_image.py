@@ -8,7 +8,7 @@ from fastapi import UploadFile
 from src.exceptions.base import BaseException
 from src.models.patient import RawImage
 from src.modules.patients.schemas.raw_image import (
-    RawImageSchema, RawImageUpdateSchema, RawImageQueryParams)
+    RawImageSchema, RawImageUpdateSchema)
 from src.modules.patients.repositories.uow import UnitOfWork
 
 
@@ -17,15 +17,6 @@ class RawImageService:
     def __init__(self, uow: UnitOfWork, media_root: str = "./media/raw_images"):
         self.uow = uow
         self.media_root = media_root
-
-    async def get_all(self, params: RawImageQueryParams) -> List[RawImageSchema]:
-        """
-        Выдаёт список исходных изображений
-        """
-        async with self.uow:
-            raw_images = await self.uow.raw_image.get_all(params)
-
-        return raw_images
 
     async def upload_files(
         self,
@@ -46,6 +37,7 @@ class RawImageService:
         for file, spectrum_id in zip(files, spectrum_ids):
             file_ext = os.path.splitext(file.filename)[1]
             filename = f"{uuid.uuid4()}{file_ext}"
+            relative_path = f"/raw_images/{session_id}/{filename}"
             save_path = os.path.join(self.media_root, str(session_id), filename)
 
             # Сохраняем файл
@@ -56,7 +48,7 @@ class RawImageService:
             raw_images.append(RawImage(
                 session_id=session_id,
                 spectrum_id=spectrum_id,
-                file_path=save_path,
+                file_path=f"/media{relative_path}",
             ))
 
         async with self.uow:

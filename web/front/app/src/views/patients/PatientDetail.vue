@@ -68,6 +68,9 @@
             <v-btn icon size="small" @click="openSession(session.id)" :title="'Открыть сеанс'">
               <v-icon color="primary">mdi-eye</v-icon>
             </v-btn>
+            <v-btn icon size="small" @click="editSession(session)" :title="'Редактировать сеанс'">
+              <v-icon color="orange">mdi-pencil</v-icon>
+            </v-btn>
             <v-btn icon size="small" @click="deleteSession(session.id)" :title="'Удалить сеанс'">
               <v-icon color="red">mdi-delete</v-icon>
             </v-btn>
@@ -88,11 +91,11 @@
         {{ sessionDialog.editing ? "Редактировать сеанс" : "Новый сеанс" }}
       </v-card-title>
       <v-card-text>
-        <SessionForm v-model="sessionDialog.form" @submit="submitSessionDialog" />
+        <SessionForm ref="formSessionRef" v-model="sessionDialog.form" @submit="submitSessionDialog" />
       </v-card-text>
       <v-card-actions class="justify-end">
         <v-btn @click="sessionDialog.visible = false">Отмена</v-btn>
-        <v-btn color="primary" @click="submitSessionDialog">
+        <v-btn color="primary" @click="formSessionRef?.submit()">
           {{ sessionDialog.editing ? "Сохранить" : "Создать" }}
         </v-btn>
       </v-card-actions>
@@ -114,74 +117,125 @@
   </v-dialog>
 
   <v-snackbar v-model="snackbar.show" :color="snackbar.color" :timeout="snackbar.timeout">
-  {{ snackbar.text }}
-</v-snackbar>
+    {{ snackbar.text }}
+  </v-snackbar>
 
 </template>
 
 <script setup>
 import { onMounted, ref, computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { usePatientStore } from "@/stores/patient";
 import { format } from "date-fns";
 import ru from "date-fns/locale/ru";
 
-import { useSnackbar } from "@/composables/useSnackbar";
-const { showSuccess, snackbar } = useSnackbar();
+// Сторы
+import { usePatientStore } from "@/stores/patient";
+import { useAuthStore } from "@/stores/auth";
+import { useSessionStore } from "@/stores/session";
 
+// UI & компоненты
 import SessionForm from "@/components/sessions/SessionForm.vue";
+import { useSnackbar } from "@/composables/useSnackbar";
 
+// --- Инициализация ---
 const route = useRoute();
 const router = useRouter();
 const patientStore = usePatientStore();
-
-import { useAuthStore } from "@/stores/auth";
+const sessionStore = useSessionStore();
 const authStore = useAuthStore();
 const currentUser = computed(() => authStore.user);
+const { showSuccess, snackbar } = useSnackbar();
 
-import { useSessionStore } from "@/stores/session";
-const sessionStore = useSessionStore();
+// Пациент
+const patient = ref(null);
 
-// Состояние модалок
-const sessionDialog = ref({
-  visible: false,
-  editing: false,
-  form: {
-    id: null,
-    date: "",
-    operator_id: "",
-    notes: "",
-  },
-});
-
-const confirmDelete = ref({
-  visible: false,
-  sessionId: null,
-});
-
+// Breadcrumbs
 const breadcrumbs = computed(() => [
   { title: "Главная", to: { name: "home" }, disabled: false },
   { title: "Пациенты", to: { name: "patient" }, disabled: false },
   { title: patient.value?.full_name || "Загрузка...", disabled: true },
 ]);
 
-const patient = ref(null);
-
+// Загрузка пациента
 onMounted(async () => {
   patient.value = await patientStore.loadPatientDetailed(route.params.id);
 });
 
-const formatDate = (dateStr) => {
-  return format(new Date(dateStr), "d MMMM yyyy", { locale: ru });
+// --- Форматирование дат ---
+const formatDate = (dateStr) => format(new Date(dateStr), "d MMMM yyyy", { locale: ru });
+const formatDateTime = (dateStr) => format(new Date(dateStr), "d MMMM yyyy HH:mm", { locale: ru });
+
+// --- Управление формой сеанса ---
+const formSessionRef = ref();
+
+const sessionDialog = ref({
+  visible: false,
+  editing: false,
+  form: {
+    id: null,
+    device_id: null,
+    date: "",
+    operator_id: "",
+    notes: "",
+  },
+});
+
+// Открыть форму добавления
+const addSession = () => {
+  sessionDialog.value = {
+    visible: true,
+    editing: false,
+    form: {
+      id: null,
+      device_id: null,
+      date: new Date().toISOString().slice(0, 16),
+      operator_id: currentUser.value?.id,
+      notes: "",
+    },
+  };
 };
 
-const formatDateTime = (dateStr) => {
-  return format(new Date(dateStr), "d MMMM yyyy HH:mm", { locale: ru });
+// Открыть форму редактирования
+const editSession = (session) => {
+  sessionDialog.value = {
+    visible: true,
+    editing: true,
+    form: {
+      id: session.id,
+      device_id: session.device_id,
+      date: session.date.slice(0, 16),
+      operator_id: session.operator_id,
+      notes: session.notes || "",
+    },
+  };
 };
 
-const openSession = (sessionId) => {
-  router.push({ name: "session-detail", params: { id: sessionId } });
+// Обработка отправки формы
+const submitSessionDialog = async () => {
+  const form = sessionDialog.value.form;
+
+  if (!form.date || !form.operator_id || !form.device_id) return;
+
+  if (sessionDialog.value.editing) {
+    const updated = await sessionStore.updateSession(patient.value.id, form.id, form);
+    if (updated) {
+      const index = patient.value.sessions.findIndex(s => s.id === form.id);
+      if (index !== -1) patient.value.sessions[index] = { ...patient.value.sessions[index], ...updated };
+      showSuccess("Сеанс обновлён");
+    }
+  } else {
+    const newSession = await sessionStore.createSession(patient.value.id, form);
+    if (newSession) {
+      patient.value.sessions.unshift(newSession);
+      showSuccess("Сеанс добавлен");
+    }
+  }
+
+  sessionDialog.value.visible = false;
 };
+
+// --- Удаление сеанса ---
+const confirmDelete = ref({ visible: false, sessionId: null });
 
 const deleteSession = (id) => {
   confirmDelete.value = {
@@ -195,49 +249,16 @@ const confirmDeleteSession = async () => {
   const patientId = patient.value.id;
 
   const success = await sessionStore.deleteSession(patientId, sessionId);
-
   if (success) {
     patient.value.sessions = patient.value.sessions.filter(s => s.id !== sessionId);
     showSuccess("Сеанс успешно удалён");
   }
+
   confirmDelete.value.visible = false;
 };
 
-const addSession = () => {
-  sessionDialog.value = {
-    visible: true,
-    editing: false,
-    form: {
-      id: null,
-      date: new Date().toISOString().slice(0, 16),
-      operator_id: currentUser.value?.id, // <-- вот здесь
-      notes: "",
-    },
-  };
+// --- Переход на детальную страницу сеанса ---
+const openSession = (sessionId) => {
+  router.push({ name: "session-detail", params: { patient_id: patient.value.id, id: sessionId } });
 };
-
-const submitSessionDialog = async () => {
-  const form = sessionDialog.value.form;
-
-  if (!form.date || !form.operator_id) return;
-
-  if (sessionDialog.value.editing) {
-    const updated = await sessionStore.updateSession(patient.value.id, form.id, form);
-    if (updated) {
-      const index = patient.value.sessions.findIndex(s => s.id === form.id);
-      if (index !== -1) {
-        patient.value.sessions[index] = { ...patient.value.sessions[index], ...updated };
-      }
-    }
-  } else {
-    console.log("ID пациента: ", patient.value.id)
-    const newSession = await sessionStore.createSession(patient.value.id, form);
-    if (newSession) {
-      patient.value.sessions.unshift(newSession);
-    }
-  }
-
-  sessionDialog.value.visible = false;
-};
-
 </script>

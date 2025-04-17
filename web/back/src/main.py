@@ -1,10 +1,12 @@
 import uvicorn
 import logging
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import ORJSONResponse
+from fastapi.staticfiles import StaticFiles
 from redis.asyncio import Redis
 
 from src.db import redis
@@ -46,6 +48,8 @@ app.add_middleware(
     allow_methods=["*"],  # Разрешить все методы (GET, POST и т.д.)
     allow_headers=["*"],  # Разрешить все заголовки
 )
+
+app.mount("/media", StaticFiles(directory=os.path.abspath("media")), name="media")
 
 
 # Подключение роутера для версии v1

@@ -6,7 +6,7 @@ from sqlalchemy import select, update, func
 from sqlalchemy.orm import selectinload
 from sqlalchemy.exc import NoResultFound
 
-from src.models.patient import Patient
+from src.models.patient import Patient, Session
 from src.modules.patients.schemas.patient import PatientSchema, PatientUpdateSchema, PatientDetailSchema, PatientQueryParams
 
 
@@ -58,7 +58,12 @@ class PatientRepository:
         """ Возвращает пациента по его ID с сессиями """
         query = (
             select(Patient)
-            .options(selectinload(Patient.sessions))
+            .options(
+                selectinload(Patient.sessions)
+                .joinedload(Session.device),
+                selectinload(Patient.sessions)
+                .joinedload(Session.operator),
+            )
             .where(Patient.id == patient_id)
         )
         result = await self.session.execute(query)

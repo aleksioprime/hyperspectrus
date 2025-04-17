@@ -1,15 +1,6 @@
 from uuid import UUID
 from pydantic import BaseModel, Field
 
-from src.core.schemas import BasePaginationParams
-
-
-class RawImageQueryParams(BasePaginationParams):
-    session: UUID | None
-
-    class Config:
-        arbitrary_types_allowed = True
-
 
 class RawImageSchema(BaseModel):
     """

@@ -44,6 +44,8 @@ class User(Base):
     roles = relationship("Role", secondary=UserRoles.__table__, back_populates="users")
     organization = relationship("Organization", back_populates="users")
 
+    sessions = relationship("Session", back_populates="operator")
+
     def __init__(self, username: str,
                  password: str,
                  email: str,

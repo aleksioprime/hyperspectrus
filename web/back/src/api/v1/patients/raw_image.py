@@ -11,30 +11,12 @@ from starlette import status
 from src.core.schemas import UserJWT
 from src.constants.role import RoleName
 from src.core.security import JWTBearer
-from src.modules.patients.dependencies.raw_image import get_raw_image_service, get_raw_image_params
-from src.modules.patients.schemas.raw_image import RawImageSchema, RawImageUpdateSchema, RawImageQueryParams
+from src.modules.patients.dependencies.raw_image import get_raw_image_service
+from src.modules.patients.schemas.raw_image import RawImageSchema, RawImageUpdateSchema
 from src.modules.patients.services.raw_image import RawImageService
 
 
 router = APIRouter()
-
-@router.get(
-    path='/',
-    summary='Получить все исходные изображения',
-    response_model=list[RawImageSchema],
-    status_code=status.HTTP_200_OK,
-)
-async def get_raw_images(
-        params: Annotated[RawImageQueryParams, Depends(get_raw_image_params)],
-        service: Annotated[RawImageService, Depends(get_raw_image_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
-) -> list[RawImageSchema]:
-    """
-    Возвращает список всех исходных изображений
-    """
-    raw_images = await service.get_all(params)
-    return raw_images
-
 
 @router.post(
     path='/upload',

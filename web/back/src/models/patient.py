@@ -39,13 +39,14 @@ class Session(Base):
     patient_id = Column(UUID(as_uuid=True), ForeignKey('patients.id'))  # Связь с пациентом
     device_id = Column(UUID(as_uuid=True), ForeignKey('devices.id'), nullable=False)  # Связь с девайсом
     date = Column(DateTime(timezone=True), default=func.now())  # Дата и время сеанса
-    operator_id = Column(UUID(as_uuid=True), nullable=False)  # ID оператора
+    operator_id = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)  # ID оператора
     notes = Column(String)  # Дополнительные заметки
 
     patient = relationship("Patient", back_populates="sessions")
+    device = relationship("Device", back_populates="sessions")
+    operator = relationship("User", back_populates="sessions")
     raw_images = relationship("RawImage", back_populates="session")
     reconstructed_images = relationship("ReconstructedImage", back_populates="session")
-    device = relationship("Device", back_populates="sessions")
     result = relationship("Result", back_populates="session", uselist=False, single_parent=True)
 
 

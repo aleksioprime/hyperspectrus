@@ -29,6 +29,15 @@ export const routes = [
     },
   },
   {
+    path: '/patients/:patient_id/sessions/:id',
+    name: 'session-detail',
+    component: () => import('@/views/sessions/SessionDetail.vue'),
+    meta: {
+      title: '',
+      middlewares: [isLoggedIn],
+    },
+  },
+  {
     path: "/profile",
     name: "profile",
     component: () => import("@/views/ProfileView.vue"),

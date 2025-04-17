@@ -11,8 +11,8 @@ from starlette import status
 from src.core.schemas import UserJWT
 from src.constants.role import RoleName
 from src.core.security import JWTBearer
-from src.modules.parameters.dependencies.spectrum import get_spectrum_service, get_spectrum_params
-from src.modules.parameters.schemas.spectrum import SpectrumSchema, SpectrumCreateSchema, SpectrumUpdateSchema, SpectrumQueryParams
+from src.modules.parameters.dependencies.spectrum import get_spectrum_service
+from src.modules.parameters.schemas.spectrum import SpectrumSchema, SpectrumCreateSchema, SpectrumUpdateSchema
 from src.modules.parameters.services.spectrum import SpectrumService
 
 
@@ -25,14 +25,15 @@ router = APIRouter()
     status_code=status.HTTP_200_OK,
 )
 async def get_spectrums(
-        params: Annotated[SpectrumQueryParams, Depends(get_spectrum_params)],
+        device_id: UUID,
         service: Annotated[SpectrumService, Depends(get_spectrum_service)],
         user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
 ) -> list[SpectrumSchema]:
     """
-    Возвращает список всех спектров
+    Возвращает список всех спектров выбранного устройства
+
     """
-    spectrums = await service.get_all(params)
+    spectrums = await service.get_all(device_id)
     return spectrums
 
 

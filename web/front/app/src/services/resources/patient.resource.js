@@ -21,7 +21,7 @@ export class PatientResource extends ApiService {
     return this.$patch(`/api/v1/patients/${id}`, data);
   }
 
-  deletePatient(id, data) {
-    return this.$delete(`/api/v1/patients/${id}`, data);
+  deletePatient(id) {
+    return this.$delete(`/api/v1/patients/${id}`);
   }
 }

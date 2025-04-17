@@ -1,14 +1,13 @@
 import os
 from uuid import UUID
-from typing import List, Optional
+from typing import Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import update, select, delete
-from sqlalchemy.orm import joinedload
 from sqlalchemy.exc import NoResultFound
 
 from src.models.patient import RawImage
-from src.modules.patients.schemas.raw_image import RawImageSchema, RawImageUpdateSchema, RawImageQueryParams
+from src.modules.patients.schemas.raw_image import RawImageSchema, RawImageUpdateSchema
 
 
 class RawImageRepository:
@@ -18,18 +17,6 @@ class RawImageRepository:
 
     def __init__(self, session: AsyncSession):
         self.session = session
-
-    async def get_all(self, params: RawImageQueryParams) -> List[RawImageSchema]:
-        """ Возвращает список исходных изображений """
-        query = select(RawImage)
-
-        if params.session:
-            query = query.where(RawImage.session_id == params.session)
-
-        query = query.limit(params.limit).offset(params.offset * params.limit)
-
-        result = await self.session.execute(query)
-        return result.scalars().unique().all()
 
     async def get_by_id(self, image_id: UUID) -> RawImageSchema:
         """ Возвращает данные исходного изображения по его ID """

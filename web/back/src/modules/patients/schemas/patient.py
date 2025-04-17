@@ -73,6 +73,8 @@ class SessionSchema(BaseModel):
     """
     id: UUID = Field(..., description="Уникальный идентификатор сессии")
     date: datetime = Field(..., description="Дата проведения сессии")
+    device_id: UUID = Field(..., description="ID устройства, используемого в сеансе")
+    operator_id: UUID = Field(..., description="ID оператора")
     notes: Optional[str] = Field(None, description="Дополнительные заметки о сессии")
 
     class Config:

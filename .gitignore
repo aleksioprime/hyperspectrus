@@ -1,5 +1,6 @@
 logs
 records
+archive
 __pycache__
 .python-version
 .pytest_cache

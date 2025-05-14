@@ -1,37 +1,74 @@
-### Автоматический запуск сервера при старте Raspberry
+# Запуск программы на Raspberry Pi
 
-Скопируйте сервер на Raspberry:
+Тестируемая конфигурация:
+
+- Микрокомпьютер: Raspberry Pi 3 B+
+- Камера: USB HD-камера 2MP CMOS OV2710 1080P
+- Экран: сенсорный экран Waveshare 3.5inch RPi LCD (C)
+- Операционная система: Raspberry PI OS (Legacy, 32-bit) - Debian Bullseye
+
+Справочная информация:
+
+- https://www.waveshare.com/wiki/3.5inch_RPi_LCD_(C)
+- https://www.waveshare.com/wiki/3.5inch_RPi_LCD_(C)_Manual_Configuration
+
+
+## Подготовка окружения (можно через SSH)
+
+Установите и запустите драйвера для LCD:
+```
+git clone https://github.com/waveshare/LCD-show.git
+cd LCD-show/
+chmod +x LCD35C-show
+./LCD35C-show
 ```
 
+Установите библиотеку OpenCV:
+```
+sudo apt install libopenblas0 libatlas-base-dev
+pip install opencv-python==4.11.0.86
+pip install pillow==11.2.1
 ```
 
-Создаём systemd-сервис:
-
-```bash
-sudo nano /etc/systemd/system/autoupdate.service
+Установите библиотеку PyQT:
+```
+sudo apt install qtbase5-dev qt5-qmake
+pip install pyqt5 --only-binary=:all:
 ```
 
-Добавляем в файл:
+## Запуск программы
 
-```ini
-[Unit]
-Description=Автообновление прошивки
-After=network.target
-
-[Service]
-ExecStart=/usr/bin/python3 /home/pi/autoupdate_server.py
-WorkingDirectory=/home/pi/
-Restart=always
-User=pi
-
-[Install]
-WantedBy=multi-user.target
+Скопируйте проект:
+```
+wget https://github.com/aleksioprime/hyperspectrus/archive/refs/heads/main.zip
+unzip main.zip
+cd hyperspectrus-main
 ```
 
-Активируем сервис:
+Создайте файл для автозапуска:
+```
+mkdir -p ~/.config/autostart
+nano ~/.config/autostart/camera-app.desktop
+```
 
-```bash
-sudo systemctl daemon-reload
-sudo systemctl enable autoupdate.service
-sudo systemctl start autoupdate.service
+Содержимое файла:
+```
+[Desktop Entry]
+Type=Application
+Name=CameraApp
+Exec=/usr/bin/python3 /home/pi/hyperspectrus/run.py
+X-GNOME-Autostart-enabled=true
+```
+
+Уберите системную панель и рабочий стол.
+Откройте файл:
+```
+nano ~/.config/lxsession/LXDE-pi/autostart
+```
+
+Закомментируйте строки:
+```
+#@lxpanel --profile LXDE-pi
+#@pcmanfm --desktop --profile LXDE-pi
+#@xscreensaver -no-splash
 ```

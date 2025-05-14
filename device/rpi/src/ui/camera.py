@@ -13,6 +13,7 @@ class CameraWidget(QWidget):
 
         self.label = QLabel()
         self.label.setAlignment(Qt.AlignCenter)
+        self.label.setScaledContents(False)
 
         layout = QVBoxLayout()
         layout.addWidget(self.label)
@@ -28,7 +29,10 @@ class CameraWidget(QWidget):
             rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             h, w, ch = rgb.shape
             img = QImage(rgb.data, w, h, ch * w, QImage.Format_RGB888)
-            self.label.setPixmap(QPixmap.fromImage(img))
+            pixmap = QPixmap.fromImage(img).scaled(
+                self.label.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation
+            )
+            self.label.setPixmap(pixmap)
 
     def get_frame(self):
         ret, frame = self.cap.read()

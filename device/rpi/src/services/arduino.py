@@ -1,8 +1,8 @@
 
-from PyQt5.QtCore import QThread, pyqtSignal
 import time
 import serial
 import glob
+from PyQt5.QtCore import QThread, pyqtSignal
 
 
 class ArduinoController:
@@ -34,18 +34,33 @@ class ArduinoController:
                 continue
         return None
 
-    def send_and_wait(self, command: str, expected_reply: str, timeout: float = 2.0):
-        if self.ser:
+    def send_and_wait(self, command: str, expected_response: str, timeout: float = 3.0) -> bool:
+        if not self.ser or not self.ser.is_open:
+            print("⚠️ Порт закрыт или не инициализирован")
+            return False
+
+        try:
             self.ser.reset_input_buffer()
             self.ser.write((command + '\n').encode())
-            start = time.time()
-            while time.time() - start < timeout:
-                if self.ser.in_waiting:
-                    line = self.ser.readline().decode().strip()
-                    if line == expected_reply:
-                        return True
-            print(f"⚠️ Ответ от Arduino не получен: {expected_reply}")
+        except serial.SerialException as e:
+            print(f"⚠️ Не удалось отправить команду {command!r}: {e}")
             return False
+
+        end_time = time.time() + timeout
+        while time.time() < end_time:
+            try:
+                if self.ser.in_waiting:
+                    line = self.ser.readline().decode(errors='ignore').strip()
+                    print(f"← Arduino: {line}")
+                    if line == expected_response:
+                        return True
+            except serial.SerialException as e:
+                print(f"⚠️ Ошибка чтения из порта: {e}")
+                return False
+            time.sleep(0.05)
+
+        print(f"⚠️ Таймаут: не получен {expected_response!r} на {command!r}")
+        return False
 
     def close(self):
         if self.ser:

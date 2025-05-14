@@ -2,7 +2,7 @@ import time
 
 from PyQt5.QtWidgets import QApplication, QMessageBox, QLabel, QWidget, QPushButton, QVBoxLayout, QHBoxLayout, QSizePolicy
 from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import Qt, QSize, QTimer
+from PyQt5.QtCore import QSize, QTimer
 
 from config.settings import icon_path, SPECTRA
 from services.photo import save_photo, clear_photos, get_photos
@@ -21,7 +21,6 @@ class CameraApp(QWidget):
         - мониторингом подключения Arduino в фоновом потоке.
         """
         super().__init__()
-        self.setCursor(Qt.BlankCursor)
         self.setWindowTitle("Hyperspectrus")
         self.setFixedSize(480, 320)
 
@@ -136,8 +135,8 @@ class CameraApp(QWidget):
         self.status_bar.setText(f"Подсветка: {r},{g},{b} (фото {self.photo_index + 1})")
 
         if not self.arduino.send_and_wait(f"SET {r},{g},{b}", "OK"):
-            self.status_bar.setText("❌ Подсветка не включилась")
             self.arduino.close()
+            self.abort_shooting("не удалось включить подсветку")
             return
 
         # Делаем снимок через задержку, чтобы свет успел включиться
@@ -155,8 +154,8 @@ class CameraApp(QWidget):
 
         # Оповещаем Arduino об окончании съёмки и ждём подтверждение отключения
         if not self.arduino.send_and_wait("PHOTO_DONE", "OFF_DONE"):
-            self.status_bar.setText("❌ Подсветка не отключилась")
             self.arduino.close()
+            self.abort_shooting("не удалось выключить подсветку")
             return
 
         self.photo_index += 1
@@ -225,3 +224,9 @@ class CameraApp(QWidget):
         self.arduino_watcher.stop()
         self.camera_widget.close()
         event.accept()
+
+    def abort_shooting(self, reason: str):
+        """Прерывает серию съёмок, очищает фото, показывает причину и активирует интерфейс."""
+        self.status_bar.setText(f"❌ Съёмка прервана: {reason}")
+        clear_photos()
+        self.update_buttons_state()

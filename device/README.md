@@ -20,7 +20,18 @@
 git clone https://github.com/waveshare/LCD-show.git
 cd LCD-show/
 chmod +x LCD35C-show
-./LCD35C-show
+./LCD35C-show 180
+```
+
+Для поворота экрана откройте файл настроек:
+```
+sudo nano /boot/config.txt
+```
+Измените строку:
+```
+...
+dtoverlay=waveshare35c:rotate=270
+...
 ```
 
 Установите библиотеку OpenCV:
@@ -42,8 +53,27 @@ pip install pyqt5 --only-binary=:all:
 ```
 wget https://github.com/aleksioprime/hyperspectrus/archive/refs/heads/main.zip
 unzip main.zip
-cd hyperspectrus-main
+mv hyperspectrus-main/devices/rpi ~/hyperspectrus
+cd ~/hyperspectrus
+chmod +x kiosk.sh
 ```
+
+Сделать скрипт исполняемым:
+```
+chmod +x ~/kiosk.sh
+```
+
+Включение режима KIOSK:
+```
+./kiosk.sh enable
+```
+
+Отключение режима KIOSK:
+```
+./kiosk.sh disable
+```
+
+## Ручная настройка автозапуска:
 
 Создайте файл для автозапуска:
 ```
@@ -56,19 +86,27 @@ nano ~/.config/autostart/camera-app.desktop
 [Desktop Entry]
 Type=Application
 Name=CameraApp
-Exec=/usr/bin/python3 /home/pi/hyperspectrus/run.py
+Exec=/usr/bin/python3 /home/pi/hyperspectrus/src/run.py
 X-GNOME-Autostart-enabled=true
 ```
 
 Уберите системную панель и рабочий стол.
 Откройте файл:
 ```
+mkdir -p ~/.config/lxsession/LXDE-pi
 nano ~/.config/lxsession/LXDE-pi/autostart
 ```
 
-Закомментируйте строки:
+Запишите следующие строки:
 ```
-#@lxpanel --profile LXDE-pi
-#@pcmanfm --desktop --profile LXDE-pi
-#@xscreensaver -no-splash
+@xset s off
+@xset -dpms
+@xset s noblank
+@unclutter -idle 0
+```
+
+Для включения рабочего стола нужно добавить эти строки (для выключение - закомментировать #):
+```
+@lxpanel --profile LXDE-pi
+@pcmanfm --desktop --profile LXDE-pi
 ```

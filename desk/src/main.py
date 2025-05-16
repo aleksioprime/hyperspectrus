@@ -1,47 +1,52 @@
 import sys
-from PyQt5 import uic
-from PyQt5.QtCore import QTimer
-from PyQt5.QtWidgets import QApplication, QMainWindow
+from PyQt6.QtWidgets import QApplication, QMainWindow, QTabWidget, QWidget, QVBoxLayout, QMessageBox
+from auth.login import LoginDialog
+from widgets.patient import PatientsWidget
+from widgets.session import SessionsWidget
+from widgets.queue import QueueWidget
 
-from src.ui.video import VideoWindow
-from src.ui.research import ResearchWindow
-
-
-class App(QMainWindow):
+class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        uic.loadUi("src/forms/main.ui", self)
+        self.setWindowTitle("Клиника — рабочее место")
+        self.tabs = QTabWidget()
+        self.setCentralWidget(self.tabs)
+        self.patients_tab = QWidget(); self.sessions_tab = QWidget(); self.queue_tab = QWidget()
+        self.tabs.addTab(self.patients_tab, "Пациенты")
+        self.tabs.addTab(self.sessions_tab, "Сессии")
+        self.tabs.addTab(self.queue_tab, "Очередь")
+        self.init_patients_tab()
+        self.current_patient_id = None
+        self.current_session_id = None
 
-        self.actionShoot.triggered.connect(self.open_video_window)
-        self.actionResearch.triggered.connect(self.open_research_window)
-        self.actionExit.triggered.connect(self.close)
+    def init_patients_tab(self):
+        layout = QVBoxLayout(self.patients_tab)
+        self.patients_widget = PatientsWidget(self.on_patient_selected)
+        layout.addWidget(self.patients_widget)
 
-        # Создаём и сразу показываем VideoWindow
-        self.video_window = VideoWindow()
-        self.video_window.show()
+    def on_patient_selected(self, patient_id):
+        self.current_patient_id = patient_id
+        # Инициализация вкладки сессий
+        self.sessions_tab.setLayout(QVBoxLayout())
+        self.sessions_widget = SessionsWidget(patient_id, self.on_session_selected)
+        self.sessions_tab.layout().addWidget(self.sessions_widget)
+        self.tabs.setCurrentWidget(self.sessions_tab)
 
-        self.research_window = None
+    def on_session_selected(self, session_id):
+        self.current_session_id = session_id
+        self.queue_tab.setLayout(QVBoxLayout())
+        self.queue_widget = QueueWidget(session_id)
+        self.queue_tab.layout().addWidget(self.queue_widget)
+        self.tabs.setCurrentWidget(self.queue_tab)
 
-        # Главное окно скрываем
-        QTimer.singleShot(0, self.hide)
-
-    def open_video_window(self):
-        if self.video_window is None:
-            self.video_window = VideoWindow()
-
-        self.video_window.show()
-        self.research_window.hide()
-
-    def open_research_window(self):
-        if self.research_window is None:
-            self.research_window = ResearchWindow()
-
-        self.research_window.show()
-        self.video_window.hide()
-
+def main():
+    app = QApplication(sys.argv)
+    login = LoginDialog()
+    if login.exec() != login.Accepted:
+        sys.exit()
+    window = MainWindow()
+    window.show()
+    sys.exit(app.exec())
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    ex = App()
-    ex.show()
-    sys.exit(app.exec())
+    main()

@@ -53,24 +53,24 @@ pip install pyqt5 --only-binary=:all:
 ```
 wget https://github.com/aleksioprime/hyperspectrus/archive/refs/heads/main.zip
 unzip main.zip
-mv hyperspectrus-main/devices/rpi ~/hyperspectrus
-cd ~/hyperspectrus
-chmod +x kiosk.sh
+mkdir ~/hyperspectrus
+mv hyperspectrus-main/device/rpi/* ~/hyperspectrus/
+chmod +x ~/hyperspectrus/kiosk.sh
 ```
 
-Сделать скрипт исполняемым:
+Удаление скачанных файлов:
 ```
-chmod +x ~/kiosk.sh
+rm -rf ~/main.zip ~/hyperspectrus-main
 ```
 
 Включение режима KIOSK:
 ```
-./kiosk.sh enable
+./hyperspectrus/kiosk.sh enable
 ```
 
 Отключение режима KIOSK:
 ```
-./kiosk.sh disable
+./hyperspectrus/kiosk.sh disable
 ```
 
 ## Ручная настройка автозапуска:

@@ -1,3 +1,0 @@
-PyQt5==5.15.11
-opencv-python=4.11.0.86
-paramiko==3.5.1

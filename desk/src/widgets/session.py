@@ -19,6 +19,327 @@ from db.db import SessionLocal
 from db.models import Session, RawImage, DeviceBinding, Chromophore, OverlapCoefficient, Result, ReconstructedImage
 
 
+class DownloadWorker(QObject):
+    progress = pyqtSignal(str)
+    finished = pyqtSignal(int, str)
+    error = pyqtSignal(str)
+
+    def __init__(self, session_id, device_api_url, parent=None):
+        super().__init__(parent)
+        self.session_id = session_id
+        self.device_api_url = device_api_url
+        self.task_id = None # This will be set before running, if needed, or passed to run()
+
+    def run(self):
+        """
+        Downloads photos from the device, saves them, and updates the database.
+        This method is intended to be run in a separate thread.
+        """
+        if self.task_id is None: # task_id should be set before calling run
+            self.error.emit("ID задачи не найден")
+            self.finished.emit(0, "Ошибка: ID задачи не был предоставлен.")
+            return
+
+        try:
+            self.progress.emit("Запрос списка фотографий...")
+            url = f"{self.device_api_url}/tasks/{self.task_id}/photos"
+            resp = requests.get(url, timeout=10)
+            resp.raise_for_status()
+            photos_data = resp.json()
+
+            if not photos_data:
+                self.progress.emit("Нет фотографий для загрузки.")
+                self.finished.emit(0, "Нет новых фотографий для загрузки.")
+                return
+
+            saved_count = 0
+            total_photos = len(photos_data)
+            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            photos_root = os.path.join(base_dir, "downloaded_photos")
+            session_dir = os.path.join(photos_root, f"session_{self.session_id}")
+            os.makedirs(session_dir, exist_ok=True)
+
+            session_db = SessionLocal()
+            try:
+                for i, photo_info in enumerate(photos_data):
+                    spectrum_id = photo_info.get("spectrum_id")
+                    self.progress.emit(f"Загрузка фото {i+1}/{total_photos} (Spectrum ID: {spectrum_id})...")
+
+                    exists = session_db.query(RawImage).filter_by(session_id=self.session_id, spectrum_id=spectrum_id).first()
+                    if exists:
+                        self.progress.emit(f"Фото {i+1}/{total_photos} (Spectrum ID: {spectrum_id}) уже существует. Пропуск.")
+                        continue
+
+                    download_url_suffix = photo_info.get("download_url")
+                    if not download_url_suffix:
+                        self.progress.emit(f"Отсутствует URL для загрузки фото {i+1}/{total_photos}. Пропуск.")
+                        continue
+                    
+                    download_url = f"{self.device_api_url}/{download_url_suffix.lstrip('/')}"
+                    
+                    img_resp = requests.get(download_url, timeout=20)
+                    if img_resp.status_code == 200:
+                        fname = os.path.join(session_dir, f"spectrum_{spectrum_id}.jpg")
+                        with open(fname, "wb") as f:
+                            f.write(img_resp.content)
+                        
+                        raw_image = RawImage(
+                            session_id=self.session_id,
+                            file_path=fname,
+                            spectrum_id=spectrum_id
+                        )
+                        session_db.add(raw_image)
+                        saved_count += 1
+                    else:
+                        error_msg = f"Не удалось скачать фото с spectrum_id={spectrum_id}. Статус: {img_resp.status_code}"
+                        self.progress.emit(error_msg)
+                        # Decide if this is a critical error or if we should continue
+                        # For now, let's continue but report it later via finished or a specific error signal.
+
+                session_db.commit()
+                self.finished.emit(saved_count, f"Загружено новых фото: {saved_count}")
+            except Exception as db_e:
+                session_db.rollback()
+                self.error.emit(f"Ошибка базы данных: {db_e}")
+                self.finished.emit(saved_count, f"Ошибка базы данных при сохранении. Загружено: {saved_count}")
+            finally:
+                session_db.close()
+
+        except requests.exceptions.RequestException as req_e:
+            self.error.emit(f"Ошибка сети: {req_e}")
+            self.finished.emit(0, f"Ошибка сети: {req_e}")
+        except Exception as e:
+            self.error.emit(f"Непредвиденная ошибка: {e}")
+            self.finished.emit(0, f"Непредвиденная ошибка: {e}")
+
+
+class ProcessWorker(QObject):
+    progress = pyqtSignal(str)
+    finished = pyqtSignal(bool, object)  # bool: success, object: results_dict or error_message
+    error = pyqtSignal(str) # For unexpected errors
+
+    def __init__(self, session_id, parent=None):
+        super().__init__(parent)
+        self.session_id = session_id
+
+    def run(self):
+        """
+        Performs image processing: calculation of chromophore concentrations, segmentation, and saving results.
+        """
+        db = None
+        try:
+            self.progress.emit("Начало обработки...")
+            db = SessionLocal()
+
+            # 1. Получаем все raw-фото для этой сессии, отсортированные по длине волны
+            self.progress.emit("1/12: Загрузка сырых снимков из БД...")
+            raw_images = (
+                db.query(RawImage)
+                .filter_by(session_id=self.session_id)
+                .options(joinedload(RawImage.spectrum))
+                .all()
+            )
+            if not raw_images:
+                self.finished.emit(False, "Нет сырых снимков для обработки. Загрузите их с устройства.")
+                return
+
+            raw_images = sorted(raw_images, key=lambda x: x.spectrum.wavelength)
+            n_spectra = len(raw_images)
+            self.progress.emit(f"1/12: Найдено {n_spectra} сырых снимков.")
+
+            # Проверяем размер всех картинок
+            self.progress.emit("2/12: Проверка размеров изображений...")
+            shapes = [Image.open(ri.file_path).size for ri in raw_images]
+            if len(set(shapes)) != 1:
+                self.finished.emit(False, "Все снимки должны быть одного размера!")
+                return
+            W, H = shapes[0]
+            self.progress.emit(f"2/12: Размер изображений {W}x{H} OK.")
+
+            # 2. Сборка гиперкуба (n_spectra, H, W)
+            self.progress.emit("3/12: Сборка гиперкуба...")
+            cube = np.stack(
+                [np.array(Image.open(ri.file_path).convert("L"), dtype=np.float32) for ri in raw_images],
+                axis=0
+            )
+            self.progress.emit("3/12: Гиперкуб собран.")
+
+            # 3. Получаем коэффициенты перекрытия (матрицу) для всех спектров и хромофоров
+            self.progress.emit("4/12: Загрузка коэффициентов перекрытия...")
+            chromophores = db.query(Chromophore).order_by(Chromophore.id).all()
+            n_chroms = len(chromophores)
+            if n_chroms == 0:
+                self.finished.emit(False, "В базе данных отсутствуют хромофоры.")
+                return
+            
+            overlap_matrix = np.zeros((n_spectra, n_chroms), dtype=np.float32)
+            for i, ri in enumerate(raw_images):
+                for j, chrom in enumerate(chromophores):
+                    coef = (
+                        db.query(OverlapCoefficient)
+                        .filter_by(spectrum_id=ri.spectrum_id, chromophore_id=chrom.id)
+                        .first()
+                    )
+                    if coef is None:
+                        # self.finished.emit(False, f"Отсутствует коэффициент перекрытия для спектра {ri.spectrum.wavelength}nm и хромофора {chrom.symbol}.")
+                        # return # This might be too strict, allow processing with zero if missing
+                        overlap_matrix[i, j] = 0.0 
+                        self.progress.emit(f"Предупреждение: Коэффициент для {ri.spectrum.wavelength}nm / {chrom.symbol} не найден, используется 0.0")
+                    else:
+                        overlap_matrix[i, j] = coef.coefficient
+            self.progress.emit("4/12: Коэффициенты перекрытия загружены.")
+
+            # 4. Ищем референс-снимки (пропущено, как и в оригинале)
+            self.progress.emit("5/12: Поиск референсных снимков (пропущено)...")
+            # ref_cube = None; ref_found = False
+
+            # 5. Преобразуем к оптической плотности (OD)
+            self.progress.emit("6/12: Расчет оптической плотности (OD)...")
+            cube_norm = np.clip(cube / 255.0, 1e-6, 1.0) # Add epsilon to avoid log(0)
+            OD = -np.log10(cube_norm)
+            self.progress.emit("6/12: OD рассчитана.")
+
+            # 6. Вычисляем концентрации всех хромофоров
+            self.progress.emit("7/12: Расчет карт концентраций хромофоров...")
+            concentration_maps = np.zeros((n_chroms, H, W), dtype=np.float32)
+            for y in range(H):
+                for x in range(W):
+                    y_vec = OD[:, y, x]
+                    try:
+                        x_vec, residuals, rank, s = np.linalg.lstsq(overlap_matrix, y_vec, rcond=None)
+                        concentration_maps[:, y, x] = x_vec
+                    except np.linalg.LinAlgError as lae:
+                        # self.progress.emit(f"Ошибка линейной алгебры при расчете пикселя ({x},{y}): {lae}") # Too verbose
+                        concentration_maps[:, y, x] = 0 # Fallback for problematic pixels
+            self.progress.emit("7/12: Карты концентраций рассчитаны.")
+
+            # 7. Суммируем Hb + HbO2
+            self.progress.emit("8/12: Расчет общей концентрации гемоглобина (THb)...")
+            idx_hbo2 = next((i for i, c in enumerate(chromophores) if c.symbol.lower() in ["hbo2", "hb02"]), None)
+            idx_hb = next((i for i, c in enumerate(chromophores) if c.symbol.lower() == "hb"), None)
+
+            if idx_hbo2 is not None and idx_hb is not None:
+                thb_map = np.abs(concentration_maps[idx_hbo2]) + np.abs(concentration_maps[idx_hb])
+            elif idx_hbo2 is not None: # Only HbO2 found
+                thb_map = np.abs(concentration_maps[idx_hbo2])
+                self.progress.emit("Предупреждение: Хромофор Hb не найден, THb = |HbO2|.")
+            elif idx_hb is not None: # Only Hb found
+                thb_map = np.abs(concentration_maps[idx_hb])
+                self.progress.emit("Предупреждение: Хромофор HbO2 не найден, THb = |Hb|.")
+            elif n_chroms > 0 : # Fallback if specific Hb symbols are not found
+                thb_map = np.abs(concentration_maps[0])
+                self.progress.emit(f"Предупреждение: Hb и HbO2 не найдены. THb основан на первом хромофоре: {chromophores[0].symbol}.")
+            else: # Should have been caught by n_chroms == 0 earlier
+                 self.finished.emit(False, "Нет хромофоров для расчета THb.")
+                 return
+            self.progress.emit("8/12: THb рассчитан.")
+
+            # 8. Сегментация по Otsu
+            self.progress.emit("9/12: Сегментация изображения (Otsu)...")
+            thb_norm = (thb_map - np.nanmin(thb_map)) / (np.nanmax(thb_map) - np.nanmin(thb_map) + 1e-8)
+            thb_img_uint8 = (thb_norm * 255).astype(np.uint8)
+            try:
+                threshold_value = threshold_otsu(thb_img_uint8)
+            except Exception as otsu_e: # Catch potential errors if image is flat
+                self.progress.emit(f"Ошибка Otsu: {otsu_e}. Используется порог 128.")
+                threshold_value = 128 
+            mask_lesion = thb_img_uint8 >= threshold_value
+            mask_skin = thb_img_uint8 < threshold_value
+            self.progress.emit("9/12: Сегментация завершена.")
+
+            # 9. Статистики
+            self.progress.emit("10/12: Расчет статистик...")
+            mean_lesion_thb = float(np.nanmean(thb_map[mask_lesion])) if np.any(mask_lesion) else 0.0
+            mean_skin_thb = float(np.nanmean(thb_map[mask_skin])) if np.any(mask_skin) else 0.0
+            s_coefficient = mean_lesion_thb / mean_skin_thb if mean_skin_thb > 1e-6 else 0.0 # Avoid division by zero
+            self.progress.emit("10/12: Статистики рассчитаны.")
+
+            # 10. Сохраняем изображения (THb и сегментация)
+            self.progress.emit("11/12: Сохранение карт изображений...")
+            # Ensure base directory from a raw image exists
+            base_photo_dir = os.path.dirname(raw_images[0].file_path)
+            processed_dir = os.path.join(base_photo_dir, f"processed_{self.session_id}")
+            os.makedirs(processed_dir, exist_ok=True)
+
+            thb_img_path = os.path.join(processed_dir, "thb_map.png")
+            Image.fromarray((thb_norm * 255).astype(np.uint8)).save(thb_img_path)
+            mask_img_path = os.path.join(processed_dir, "mask_otsu.png")
+            Image.fromarray((mask_lesion * 255).astype(np.uint8)).save(mask_img_path)
+
+            # 11. Удаляем старые записи из базы и сохраняем ReconstructedImage для каждого хромофора
+            self.progress.emit("12/12: Обновление БД и сохранение реконструированных изображений...")
+            old_reconstructed_imgs = db.query(ReconstructedImage).filter_by(session_id=self.session_id).all()
+            for old_img in old_reconstructed_imgs:
+                try:
+                    if os.path.isfile(old_img.file_path):
+                        os.remove(old_img.file_path)
+                except Exception as e_remove:
+                    self.progress.emit(f"Не удалось удалить старый файл {old_img.file_path}: {e_remove}")
+                db.delete(old_img)
+            db.flush()
+
+            for i, chrom in enumerate(chromophores):
+                img_path = os.path.join(processed_dir, f"{chrom.symbol.replace('/', '_')}.png") # Sanitize filename
+                # Normalize individual chromophore map
+                chrom_map_data = concentration_maps[i]
+                min_val = np.nanmin(chrom_map_data)
+                max_val = np.nanmax(chrom_map_data)
+                range_val = max_val - min_val + 1e-8 # Add epsilon for flat images
+                
+                img_norm = (chrom_map_data - min_val) / range_val
+                Image.fromarray((img_norm * 255).astype(np.uint8)).save(img_path)
+                
+                rec_img = ReconstructedImage(
+                    id=str(uuid.uuid4()),
+                    session_id=self.session_id,
+                    chromophore_id=chrom.id,
+                    file_path=img_path,
+                )
+                db.add(rec_img)
+
+            # 12. Сохраняем результат (Result)
+            old_result = db.query(Result).filter_by(session_id=self.session_id).first()
+            if old_result:
+                db.delete(old_result)
+                db.flush()
+
+            result_obj = Result(
+                id=str(uuid.uuid4()),
+                session_id=self.session_id,
+                contour_path=mask_img_path,
+                thb_path=thb_img_path,
+                s_coefficient=s_coefficient,
+                mean_lesion_thb=mean_lesion_thb,
+                mean_skin_thb=mean_skin_thb,
+                notes="Автоматическая обработка (поточная)"
+            )
+            db.add(result_obj)
+            db.commit()
+            self.progress.emit("12/12: Результаты сохранены в БД.")
+
+            results_data = {
+                "s_coefficient": s_coefficient,
+                "mean_lesion_thb": mean_lesion_thb,
+                "mean_skin_thb": mean_skin_thb,
+                "thb_map_path": thb_img_path,
+                "mask_path": mask_img_path,
+                "chromophore_images": {chrom.symbol: os.path.join(processed_dir, f"{chrom.symbol.replace('/', '_')}.png") for chrom in chromophores}
+            }
+            self.finished.emit(True, results_data)
+
+        except Exception as e:
+            if db:
+                db.rollback()
+            detailed_error_msg = f"Ошибка в ProcessWorker: {type(e).__name__} - {e}"
+            import traceback
+            detailed_error_msg += f"\nTraceback: {traceback.format_exc()}"
+            self.error.emit(detailed_error_msg) # For unexpected errors
+            self.finished.emit(False, f"Ошибка обработки: {e}") # General message for UI
+        finally:
+            if db:
+                db.close()
+
+
 class SessionWidget(QWidget):
     """
     Окно просмотра и управления результатами сеанса.
@@ -155,10 +476,14 @@ class SessionWidget(QWidget):
 
         # --- Сигналы ---
         self.refresh_status_btn.clicked.connect(self.update_task_status)
-        self.download_photos_btn.clicked.connect(self.download_photos)
+        self.download_photos_btn.clicked.connect(self.start_photo_download)
         self.process_btn.clicked.connect(self.process_results)
 
         # --- Инициализация данных ---
+        self.thread = None
+        self.download_worker = None
+        self.processing_thread = None # Added for ProcessWorker
+        self.process_worker = None    # Added for ProcessWorker
         self.update_task_status()
         self.load_raw_photos()
         self.load_proc_photos()
@@ -352,217 +677,170 @@ class SessionWidget(QWidget):
         """
         return self.raw_table.rowCount() > 0
 
-    def download_photos(self):
-        """
-        Скачивает фото через API устройства, сохраняет их в отдельную папку для каждой сессии,
-        добавляет записи в таблицу RawImage с указанием spectrum_id.
-        """
+    def start_photo_download(self):
         if self.task_id is None:
-            QMessageBox.warning(self, "Ошибка", "ID задачи не найден")
+            QMessageBox.warning(self, "Ошибка", "ID задачи не найден. Обновите статус.")
             return
-        try:
-            url = f"{self.device_api_url}/tasks/{self.task_id}/photos"
-            resp = requests.get(url, timeout=10)
-            resp.raise_for_status()
-            photos = resp.json()
-            saved_count = 0
-            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-            photos_root = os.path.join(base_dir, "downloaded_photos")
-            session_dir = os.path.join(photos_root, f"session_{self.session.id}")
-            os.makedirs(session_dir, exist_ok=True)
-            session_db = SessionLocal()
-            for photo in photos:
-                spectrum_id = photo.get("spectrum_id")
-                # Проверяем, не существует ли уже такой снимок в базе
-                exists = session_db.query(RawImage).filter_by(session_id=self.session.id, spectrum_id=spectrum_id).first()
-                if exists:
-                    continue
-                # Скачиваем фото
-                download_url = f"{self.device_api_url}/{photo.get('download_url')}"
-                if not download_url:
-                    continue
-                img_resp = requests.get(download_url, timeout=20)
-                if img_resp.status_code == 200:
-                    fname = os.path.join(session_dir, f"spectrum_{spectrum_id}.jpg")
-                    with open(fname, "wb") as f:
-                        f.write(img_resp.content)
-                    raw_image = RawImage(
-                        session_id=self.session.id,
-                        file_path=fname,
-                        spectrum_id=spectrum_id
-                    )
-                    session_db.add(raw_image)
-                    saved_count += 1
-                else:
-                    QMessageBox.warning(self, "Ошибка", f"Не удалось скачать фото с spectrum_id={spectrum_id}")
-            session_db.commit()
-            session_db.close()
-            QMessageBox.information(self, "Готово", f"Загружено фото: {saved_count}")
-            self.load_raw_photos()
-            self.process_btn.setEnabled(self.has_photos())
-        except Exception as e:
-            QMessageBox.warning(self, "Ошибка", f"Ошибка загрузки фото: {e}")
+
+        if self.thread is not None and self.thread.isRunning():
+            QMessageBox.information(self, "Загрузка", "Загрузка уже выполняется.")
+            return
+
+        self.thread = QThread(self)
+        self.download_worker = DownloadWorker(self.session.id, self.device_api_url)
+        self.download_worker.task_id = self.task_id
+        self.download_worker.moveToThread(self.thread)
+
+        # Connect signals and slots
+        self.download_worker.progress.connect(self.on_download_progress)
+        self.download_worker.finished.connect(self.on_download_finished)
+        self.download_worker.error.connect(self.on_download_error)
+
+        self.thread.started.connect(self.download_worker.run)
+        # Clean up worker and thread
+        self.download_worker.finished.connect(self.thread.quit)
+        self.thread.finished.connect(self.thread.deleteLater)
+        self.download_worker.finished.connect(self.download_worker.deleteLater)
+        # Also ensure cleanup on error
+        self.download_worker.error.connect(self.thread.quit) # Ensure thread quits on error
+        # self.thread.finished.connect(self.download_worker.deleteLater) # Already connected via finished
+
+        self.download_photos_btn.setEnabled(False)
+        self.status_label.setText("Статус: Загрузка фото...")
+        self.thread.start()
+
+    def on_download_progress(self, message: str):
+        self.status_label.setText(f"Статус: {message}")
+
+    def on_download_finished(self, saved_count: int, message: str):
+        QMessageBox.information(self, "Загрузка завершена", f"{message}\nСохранено фото: {saved_count}")
+        self.load_raw_photos() # Refresh the list of raw photos
+        self.process_btn.setEnabled(self.has_photos())
+        self.download_photos_btn.setEnabled(True)
+        self.status_label.setText(f"Статус: Загрузка завершена. {message}")
+        # Reset thread and worker references
+        self.thread = None
+        self.download_worker = None
+
+
+    def on_download_error(self, message: str):
+        QMessageBox.warning(self, "Ошибка загрузки", message)
+        self.download_photos_btn.setEnabled(True)
+        self.status_label.setText(f"Статус: Ошибка загрузки. {message}")
+        # Reset thread and worker references
+        if self.thread and self.thread.isRunning(): # Ensure thread is quit if error signal is emitted before finished
+            self.thread.quit()
+            self.thread.wait() # Wait for thread to finish before deleting
+        self.thread = None
+        self.download_worker = None
+
+    def on_processing_thread_finished(self):
+        """Slot to clean up processing thread and worker."""
+        if self.processing_thread: # Check if it hasn't been set to None already
+            self.processing_thread.deleteLater()
+        if self.process_worker: # Check if it hasn't been set to None already
+            self.process_worker.deleteLater()
+        self.processing_thread = None
+        self.process_worker = None
+        # Re-enable buttons after thread is confirmed finished
+        self.process_btn.setEnabled(self.has_photos()) # Enable only if photos are present
+        self.download_photos_btn.setEnabled(True)
 
 
     def process_results(self):
         """
-        Расчет концентраций всех хромофоров, сегментация, сохранение.
+        Initiates image processing in a separate thread using ProcessWorker.
         """
+        if self.processing_thread is not None and self.processing_thread.isRunning():
+            QMessageBox.information(self, "Обработка", "Процесс обработки уже запущен.")
+            return
 
-        db = SessionLocal()
-
-        # 1. Получаем все raw-фото для этой сессии, отсортированные по длине волны
-        raw_images = (
-            db.query(RawImage)
-            .filter_by(session_id=self.session.id)
-            .options(joinedload(RawImage.spectrum))
-            .all()
-        )
-        if not raw_images:
+        if not self.has_photos():
             QMessageBox.warning(self, "Нет фото", "Сначала загрузите снимки с устройства!")
-            db.close()
             return
 
-        raw_images = sorted(raw_images, key=lambda x: x.spectrum.wavelength)
-        n_spectra = len(raw_images)
-        # Проверяем размер всех картинок
-        shapes = [Image.open(ri.file_path).size for ri in raw_images]
-        if len(set(shapes)) != 1:
-            QMessageBox.warning(self, "Ошибка", "Все снимки должны быть одного размера!")
-            db.close()
-            return
-        W, H = shapes[0]
+        self.processing_thread = QThread(self)
+        self.process_worker = ProcessWorker(session_id=self.session.id)
+        self.process_worker.moveToThread(self.processing_thread)
 
-        # 2. Сборка гиперкуба (n_spectra, H, W)
-        cube = np.stack(
-            [np.array(Image.open(ri.file_path).convert("L"), dtype=np.float32) for ri in raw_images],
-            axis=0
-        )
-        # 3. Получаем коэффициенты перекрытия (матрицу) для всех спектров и хромофоров
-        chromophores = db.query(Chromophore).order_by(Chromophore.id).all()
-        n_chroms = len(chromophores)
-        overlap_matrix = np.zeros((n_spectra, n_chroms), dtype=np.float32)
-        for i, ri in enumerate(raw_images):
-            for j, chrom in enumerate(chromophores):
-                coef = (
-                    db.query(OverlapCoefficient)
-                    .filter_by(spectrum_id=ri.spectrum_id, chromophore_id=chrom.id)
-                    .first()
-                )
-                overlap_matrix[i, j] = coef.coefficient if coef else 0.0
+        # Connect signals for progress, completion, and errors
+        self.process_worker.progress.connect(self.on_processing_progress)
+        self.process_worker.finished.connect(self.on_processing_finished)
+        self.process_worker.error.connect(self.on_processing_error) # For unhandled exceptions in worker
 
-        # 4. Ищем референс-снимки (например, через device_binding или шаблон). Если нет — делаем без референса
-        # (Можно добавить поиск сессии-калибровки по patient/device_binding)
-        ref_cube = None
-        ref_found = False
-        # Попробуем искать в отдельной папке или по специальной сессии
-        # ref_images = ...
-        # if ref_images: ref_cube = ...
+        # Connect thread lifecycle signals
+        self.processing_thread.started.connect(self.process_worker.run)
+        # When worker signals it's done (finished or error), tell the thread to quit
+        self.process_worker.finished.connect(self.processing_thread.quit)
+        self.process_worker.error.connect(self.processing_thread.quit)
+        
+        # When the thread actually finishes, schedule cleanup
+        self.processing_thread.finished.connect(self.on_processing_thread_finished)
 
-        # 5. Преобразуем к оптической плотности (OD)
-        cube_norm = np.clip(cube / 255.0, 1e-6, 1.0)
-        OD = -np.log10(cube_norm)
-        # Если есть референс:
-        # OD = -np.log10(cube_norm / (ref_cube / 255.0))
 
-        # 6. Вычисляем концентрации всех хромофоров
-        concentration_maps = np.zeros((n_chroms, H, W), dtype=np.float32)
-        for y in range(H):
-            for x in range(W):
-                y_vec = OD[:, y, x]
-                try:
-                    # Решаем переопределенную систему (Ax = y) через np.linalg.lstsq
-                    x_vec, *_ = np.linalg.lstsq(overlap_matrix, y_vec, rcond=None)
-                    concentration_maps[:, y, x] = x_vec
-                except Exception:
-                    concentration_maps[:, y, x] = 0
+        # Update UI: disable buttons, show status
+        self.process_btn.setEnabled(False)
+        self.download_photos_btn.setEnabled(False) # Disable photo downloads during processing
+        self.status_label.setText("Статус: Обработка изображений...")
+        
+        self.processing_thread.start()
 
-        # 7. Суммируем Hb + HbO2 (пример: символы "Hb" и "HbO2")
-        idx_hbo2 = next((i for i, c in enumerate(chromophores) if c.symbol.lower() in ["hbo2", "hb02"]), None)
-        idx_hb = next((i for i, c in enumerate(chromophores) if c.symbol.lower() == "hb"), None)
-        if idx_hbo2 is not None and idx_hb is not None:
-            thb_map = np.abs(concentration_maps[idx_hbo2]) + np.abs(concentration_maps[idx_hb])
+    def on_processing_progress(self, message: str):
+        """Handles progress updates from ProcessWorker."""
+        self.status_label.setText(f"Статус: Обработка... {message}")
+
+    def on_processing_finished(self, success: bool, results_or_error: object):
+        """Handles the finished signal from ProcessWorker."""
+        if success:
+            results_dict = results_or_error
+            s_coefficient = results_dict.get("s_coefficient", 0.0)
+            mean_lesion_thb = results_dict.get("mean_lesion_thb", 0.0)
+            mean_skin_thb = results_dict.get("mean_skin_thb", 0.0)
+
+            # Update UI labels for analysis results
+            self.analys_label.setText("Общий анализ: выполнен (поточная)") # Indicate it's from threaded processing
+            self.s_coefficient.setText(f"S-коэффициент: {s_coefficient:.3f}")
+            self.lesion_thb.setText(f"Thb (очаг): {mean_lesion_thb:.3f}")
+            self.skin_thb.setText(f"Thb (кожа): {mean_skin_thb:.3f}")
+            
+            self.load_proc_photos() # Refresh the table of processed images
+            self.refresh_session_data() # Refresh session data which might update other UI parts
+
+            QMessageBox.information(
+                self, 
+                "Обработка завершена",
+                f"Готово!\nS-коэффициент: {s_coefficient:.2f}\nTHb (очаг): {mean_lesion_thb:.2f}\nTHb (кожа): {mean_skin_thb:.2f}"
+            )
+            self.status_label.setText("Статус: Обработка успешно завершена.")
         else:
-            thb_map = np.abs(concentration_maps[0])  # fallback, если нет обоих
+            error_message = str(results_or_error)
+            QMessageBox.warning(self, "Ошибка обработки", error_message)
+            self.status_label.setText(f"Статус: Ошибка обработки. {error_message}")
 
-        # 8. Сегментация по Otsu (делим на очаг и кожу)
-        thb_norm = (thb_map - np.nanmin(thb_map)) / (np.nanmax(thb_map) - np.nanmin(thb_map) + 1e-8)
-        thb_img_uint8 = (thb_norm * 255).astype(np.uint8)
-        try:
-            threshold = threshold_otsu(thb_img_uint8)
-        except Exception:
-            threshold = 128
-        mask_lesion = thb_img_uint8 >= threshold
-        mask_skin = thb_img_uint8 < threshold
+        # Buttons are re-enabled in on_processing_thread_finished to ensure thread is fully done.
+        # However, process_btn logic might need adjustment based on state (e.g. if it can be retried)
+        # For now, it's handled by on_processing_thread_finished.
 
-        # 9. Статистики
-        mean_lesion = float(np.nanmean(thb_map[mask_lesion])) if np.any(mask_lesion) else 0.0
-        mean_skin = float(np.nanmean(thb_map[mask_skin])) if np.any(mask_skin) else 0.0
-        s_coefficient = mean_lesion / mean_skin if mean_skin > 0 else 0.0
+    def on_processing_error(self, message: str):
+        """Handles unexpected errors from ProcessWorker."""
+        QMessageBox.critical(self, "Критическая ошибка обработки", f"Произошла непредвиденная ошибка: {message}")
+        self.status_label.setText(f"Статус: Критическая ошибка обработки! {message}")
+        # Buttons re-enabled by on_processing_thread_finished after thread quits.
 
-        # 10. Сохраняем изображения (THb и сегментация)
-        session_dir = os.path.join(
-            os.path.dirname(raw_images[0].file_path), f"processed_{self.session.id}"
-        )
-        os.makedirs(session_dir, exist_ok=True)
-        thb_img_path = os.path.join(session_dir, "thb_map.png")
-        Image.fromarray((thb_norm * 255).astype(np.uint8)).save(thb_img_path)
-        mask_img_path = os.path.join(session_dir, "mask_otsu.png")
-        Image.fromarray((mask_lesion * 255).astype(np.uint8)).save(mask_img_path)
+    def closeEvent(self, event):
+        # Ensure download thread is cleaned up if widget is closed
+        if self.thread is not None and self.thread.isRunning():
+            self.status_label.setText("Статус: Завершение загрузки фото...")
+            self.thread.quit()
+            self.thread.wait(3000) # Wait up to 3 seconds
+        
+        # Ensure processing thread is cleaned up if widget is closed
+        if self.processing_thread is not None and self.processing_thread.isRunning():
+            self.status_label.setText("Статус: Завершение обработки...")
+            self.processing_thread.quit()
+            self.processing_thread.wait(5000) # Wait up to 5 seconds
 
-        # 11. Удаляем старые записи из базы и сохраняем ReconstructedImage для каждого хромофора
-        old_imgs = db.query(ReconstructedImage).filter_by(session_id=self.session.id).all()
-        for old_img in old_imgs:
-            try:
-                if os.path.isfile(old_img.file_path):
-                    os.remove(old_img.file_path)  # Удалить старый файл (если есть)
-            except Exception as e:
-                print(f"Не удалось удалить файл {old_img.file_path}: {e}")
-            db.delete(old_img)
-        db.flush()  # чтобы гарантировать удаление перед добавлением новых
-
-        for i, chrom in enumerate(chromophores):
-            img_path = os.path.join(session_dir, f"{chrom.symbol}.png")
-            img_norm = (concentration_maps[i] - np.nanmin(concentration_maps[i])) / (
-                np.nanmax(concentration_maps[i]) - np.nanmin(concentration_maps[i]) + 1e-8
-            )
-            Image.fromarray((img_norm * 255).astype(np.uint8)).save(img_path)
-            rec_img = ReconstructedImage(
-                id=str(uuid.uuid4()),
-                session_id=self.session.id,
-                chromophore_id=chrom.id,
-                file_path=img_path,
-            )
-            db.add(rec_img)
-
-        # 12. Сохраняем результат (Result)
-        old_result = db.query(Result).filter_by(session_id=self.session.id).first()
-        if old_result:
-            db.delete(old_result)
-            db.flush()
-
-        result_obj = Result(
-            id=str(uuid.uuid4()),
-            session_id=self.session.id,
-            contour_path=mask_img_path,
-            thb_path=thb_img_path,
-            s_coefficient=s_coefficient,
-            mean_lesion_thb=mean_lesion,
-            mean_skin_thb=mean_skin,
-            notes="Автоматическая обработка"
-        )
-        db.add(result_obj)
-        db.commit()
-        db.close()
-
-        self.load_proc_photos()
-
-        QMessageBox.information(
-            self, "Обработка",
-            f"Готово!\nS-коэффициент: {s_coefficient:.2f}\nTHb (очаг): {mean_lesion:.2f}\nTHb (кожа): {mean_skin:.2f}"
-        )
-        self.refresh_session_data()
-
+        super().closeEvent(event)
 
     def showEvent(self, event):
         super().showEvent(event)
@@ -573,8 +851,3 @@ class SessionWidget(QWidget):
         y = (screen.height() - size.height()) // 2
         self.move(x, y)
 
-    def closeEvent(self, event):
-        """
-        Действия при закрытии окна (если потребуется).
-        """
-        event.accept()

@@ -1,32 +1,47 @@
+from models.db import SessionLocal, PhotoTask, Photo
 import os
-import shutil
 import cv2
+import datetime
+
 from config.settings import PHOTO_DIR
 
+"""
+Работа с фотографиями: сохранение, удаление, выборка для задачи.
+"""
 
-def ensure_photo_dir():
-    """Гарантирует, что директория для фото существует"""
-    os.makedirs(PHOTO_DIR, exist_ok=True)
+def clear_photos_for_task(task_id):
+    """
+    Удаляет все фото, связанные с задачей, из файловой системы и базы.
+    """
+    db = SessionLocal()
+    photos = db.query(Photo).filter(Photo.task_id == task_id).all()
+    for photo in photos:
+        try:
+            os.remove(photo.path)
+        except FileNotFoundError:
+            pass
+        db.delete(photo)
+    db.commit()
+    db.close()
 
-
-def clear_photos():
-    """Удаляет все фотографии в директории и заново создаёт её."""
-    if os.path.exists(PHOTO_DIR):
-        shutil.rmtree(PHOTO_DIR)
-    ensure_photo_dir()
-
-
-def save_photo(frame, index):
-    """Сохраняет кадр с камеры в файл с номером index."""
-    ensure_photo_dir()
-    path = os.path.join(PHOTO_DIR, f"photo_{index:02d}.jpg")
+def save_photo_for_task(task_id, frame, index):
+    """
+    Сохраняет кадр OpenCV для задачи с индексом.
+    """
+    filename = f"task{task_id}_photo_{index:02d}.jpg"
+    path = os.path.join(PHOTO_DIR, filename)
     cv2.imwrite(path, frame)
+    db = SessionLocal()
+    photo = Photo(task_id=task_id, path=path, index=index)
+    db.add(photo)
+    db.commit()
+    db.close()
 
-
-def get_photos():
-    """Возвращает список путей к файлам фотографий."""
-    ensure_photo_dir()
-    return sorted([
-        os.path.join(PHOTO_DIR, f) for f in os.listdir(PHOTO_DIR)
-        if f.endswith(".jpg")
-    ])
+def get_photos_for_task(task_id):
+    """
+    Возвращает список путей к фотографиям задачи по порядку.
+    """
+    db = SessionLocal()
+    photos = db.query(Photo).filter(Photo.task_id == task_id).order_by(Photo.index).all()
+    db.close()
+    return [photo.path for photo in photos]

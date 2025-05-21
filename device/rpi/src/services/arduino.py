@@ -1,15 +1,20 @@
-
 import time
 import serial
 import glob
 from PyQt5.QtCore import QThread, pyqtSignal
 
+"""
+Класс ArduinoController — для управления подсветкой через Arduino.
+ArduinoWatcher — фоновый поток для мониторинга подключения Arduino.
+"""
 
 class ArduinoController:
+    """
+    Управляет подключением к Arduino для управления подсветкой.
+    """
     def __init__(self, baudrate=9600, timeout=1, wait=True):
         self.ser = None
         self.port = None
-
         port = self.find_port()
         if port:
             try:
@@ -23,11 +28,12 @@ class ArduinoController:
             print("❌ Порт Arduino не найден")
 
     def find_port(self):
-        # Поиск среди доступных устройств
+        """
+        Поиск Arduino среди доступных устройств.
+        """
         candidates = glob.glob("/dev/ttyUSB*") + glob.glob("/dev/ttyACM*")
         for path in candidates:
             try:
-                # Проверка возможности открытия
                 with serial.Serial(path, timeout=1) as test:
                     return path
             except serial.SerialException:
@@ -35,6 +41,9 @@ class ArduinoController:
         return None
 
     def send_and_wait(self, command: str, expected_response: str, timeout: float = 3.0) -> bool:
+        """
+        Отправляет команду Arduino и ждёт подтверждения/ответа.
+        """
         if not self.ser or not self.ser.is_open:
             print("⚠️ Порт закрыт или не инициализирован")
             return False
@@ -58,16 +67,20 @@ class ArduinoController:
                 print(f"⚠️ Ошибка чтения из порта: {e}")
                 return False
             time.sleep(0.05)
-
         print(f"⚠️ Таймаут: не получен {expected_response!r} на {command!r}")
         return False
 
     def close(self):
+        """
+        Закрывает соединение с Arduino.
+        """
         if self.ser:
             self.ser.close()
 
-
 class ArduinoWatcher(QThread):
+    """
+    Поток для мониторинга подключения Arduino.
+    """
     status_changed = pyqtSignal(bool, str)  # найден?, порт
 
     def __init__(self, check_interval=2):
@@ -82,14 +95,15 @@ class ArduinoWatcher(QThread):
             available = ctrl.ser is not None
             port = ctrl.port if ctrl.ser else ""
             ctrl.close()
-
             if available != self._last_status:
                 self._last_status = available
                 self.status_changed.emit(available, port)
-
             time.sleep(self.check_interval)
 
     def stop(self):
+        """
+        Останавливает поток мониторинга.
+        """
         self._running = False
         self.quit()
         self.wait()

@@ -1,23 +1,20 @@
 import os
 
+"""
+Глобальные настройки проекта: директории для фотографий и иконок.
+"""
+
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 PHOTO_DIR = os.path.join(BASE_DIR, 'photos')
-PHOTO_SERIES_COUNT = 5
 
-
+# Гарантируем, что директория для фото существует
 if not os.path.exists(PHOTO_DIR):
     os.makedirs(PHOTO_DIR)
 
 ICON_DIR = os.path.join(BASE_DIR, 'assets', 'icons')
+
 def icon_path(name):
+    """
+    Возвращает путь к иконке с именем name. Цвет иконок: #018073
+    """
     return os.path.join(ICON_DIR, name)
-
-SPECTRA = [
-    (255, 0, 0),     # Красный
-    (0, 255, 0),     # Зелёный
-    (0, 0, 255),     # Синий
-    (255, 255, 0),   # Жёлтый
-    (255, 255, 255), # Белый
-]
-
-##018073

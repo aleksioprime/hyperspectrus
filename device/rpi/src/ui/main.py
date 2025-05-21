@@ -1,4 +1,6 @@
 import os
+import shutil
+
 from PyQt5.QtWidgets import (
     QApplication, QMessageBox, QLabel, QWidget, QPushButton,
     QVBoxLayout, QHBoxLayout, QSizePolicy, QComboBox
@@ -48,6 +50,13 @@ class CameraApp(QWidget):
         self.task_combo.setContentsMargins(0, 0, 0, 0)
         self.task_combo.currentIndexChanged.connect(self.update_buttons_state)
 
+        self.clear_tasks_btn = QPushButton()
+        self.clear_tasks_btn.setIcon(QIcon(icon_path("delete_task.png")))  # Подберите свой значок
+        self.clear_tasks_btn.setIconSize(QSize(28, 28))
+        self.clear_tasks_btn.setFixedSize(38, 38)
+        self.clear_tasks_btn.setToolTip("Удалить все задачи")
+        self.clear_tasks_btn.clicked.connect(self.clear_all_tasks)
+
         self.hotspot_toggle_btn = QPushButton()
         self.hotspot_toggle_btn.setCheckable(True)
         self.hotspot_toggle_btn.setIconSize(QSize(28, 28))
@@ -66,8 +75,8 @@ class CameraApp(QWidget):
         top_panel = QHBoxLayout()
         top_panel.setContentsMargins(6, 0, 6, 6)
         top_panel.setSpacing(4)
-        top_panel.addWidget(lbl)
         top_panel.addWidget(self.task_combo, stretch=1)
+        top_panel.addWidget(self.clear_tasks_btn)
         top_panel.addWidget(self.hotspot_toggle_btn)
         top_panel.addWidget(self.ip_btn)
 
@@ -170,7 +179,6 @@ class CameraApp(QWidget):
         db = SessionLocal()
         tasks = db.query(PhotoTask).order_by(PhotoTask.created_at.desc()).all()
         db.close()
-        current_id = self.task_combo.currentData()
         self.task_combo.blockSignals(True)
         self.task_combo.clear()
         self.tasks_map = {}
@@ -182,16 +190,48 @@ class CameraApp(QWidget):
             self.gallery_btn.setEnabled(False)
             self.delete_btn.setEnabled(False)
         else:
-            sel_index = 0
             for idx, task in enumerate(tasks):
-                text = f"{task.id}: {task.title} [{task.status}]"
+                text = f"{task.title} [{task.status}]"
                 self.task_combo.addItem(text, task.id)
                 self.tasks_map[task.id] = task
-                if task.id == current_id:
-                    sel_index = idx
-            self.task_combo.setCurrentIndex(sel_index)
             self.task_combo.setEnabled(True)
+            last_index = self.task_combo.count() - 1
+            self.task_combo.setCurrentIndex(last_index)
+
         self.task_combo.blockSignals(False)
+        self.clear_tasks_btn.setEnabled(bool(tasks))
+        self.update_buttons_state()
+
+    def clear_all_tasks(self):
+        """Удаляет все задачи и связанные фотографии."""
+        reply = QMessageBox.question(
+            self, "Очистить все задачи",
+            "Вы уверены, что хотите удалить ВСЕ задачи и связанные фотографии?",
+            QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+        )
+        if reply != QMessageBox.Yes:
+            return
+
+        db = SessionLocal()
+        tasks = db.query(PhotoTask).all()
+        task_ids = [task.id for task in tasks]
+        for task in tasks:
+            db.delete(task)  # это сработает с cascade
+        db.commit()
+        db.close()
+
+        # Теперь удаляем папки
+        from config.settings import PHOTO_DIR  # или свой путь
+        for task_id in task_ids:
+            dir_path = os.path.join(PHOTO_DIR, f"task_{task_id}")
+            if os.path.isdir(dir_path):
+                try:
+                    shutil.rmtree(dir_path)
+                except Exception as e:
+                    print(f"Ошибка удаления папки {dir_path}: {e}")
+
+        self.status_bar.setText("Все задачи и фотографии удалены")
+        self.update_tasks()
         self.update_buttons_state()
 
     def on_arduino_status_changed(self, available: bool, port: str):
@@ -254,7 +294,8 @@ class CameraApp(QWidget):
             self.update_tasks()
             self.update_buttons_state()
             return
-        r, g, b = self.current_spectra[self.photo_index]
+        spec = self.current_spectra[self.photo_index]
+        r, g, b = spec["rgb"]
         self.status_bar.setText(f"Подсветка: {r},{g},{b} (фото {self.photo_index + 1})")
         if not self.arduino.send_and_wait(f"SET {r},{g},{b}", "OK"):
             self.arduino.close()
@@ -266,7 +307,8 @@ class CameraApp(QWidget):
         """Сохраняет снимок и выключает подсветку для следующего."""
         frame = self.camera_widget.get_frame()
         if frame is not None:
-            save_photo_for_task(self.current_task_id, frame, self.photo_index)
+            spectrum_id = self.current_spectra[self.photo_index]["id"]
+            save_photo_for_task(self.current_task_id, frame, spectrum_id)
         if not self.arduino.send_and_wait("PHOTO_DONE", "OFF_DONE"):
             self.arduino.close()
             self.abort_shooting("не удалось выключить подсветку")
@@ -308,7 +350,7 @@ class CameraApp(QWidget):
     def update_buttons_state(self):
         """Включает/отключает кнопки по состоянию Arduino, фото, статуса задачи и процесса съёмки."""
         if self.shooting_in_progress:
-            for btn in [self.photo_btn, self.gallery_btn, self.delete_btn]:
+            for btn in [self.photo_btn, self.gallery_btn, self.delete_btn, self.clear_tasks_btn]:
                 btn.setEnabled(False)
             self.hotspot_toggle_btn.setEnabled(False)
             self.task_combo.setEnabled(False)
@@ -323,7 +365,7 @@ class CameraApp(QWidget):
         self.task_combo.setEnabled(True)
 
     def disable_all_buttons(self):
-        for btn in [self.photo_btn, self.gallery_btn, self.delete_btn]:
+        for btn in [self.photo_btn, self.gallery_btn, self.delete_btn, self.clear_tasks_btn]:
             btn.setEnabled(False)
         self.hotspot_toggle_btn.setEnabled(False)
         self.task_combo.setEnabled(False)

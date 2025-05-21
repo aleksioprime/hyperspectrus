@@ -1,6 +1,7 @@
 logs
 records
 archive
+downloaded_photos
 __pycache__
 .python-version
 .pytest_cache

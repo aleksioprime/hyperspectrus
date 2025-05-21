@@ -1,5 +1,6 @@
 import os
 import datetime
+import uuid
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, JSON, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship, sessionmaker
@@ -19,10 +20,10 @@ class PhotoTask(Base):
     Модель задачи на фотосессию: название, список спектров, статус, время создания.
     """
     __tablename__ = 'photo_tasks'
-    id = Column(Integer, primary_key=True)
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     title = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
-    spectra = Column(JSON, nullable=False)  # Список спектров [[R,G,B], ...]
+    spectra = Column(JSON, nullable=False) # [{'id': '...', 'rgb': [R,G,B]}, ...]
     status = Column(String, default="pending")  # pending/completed
     photos = relationship("Photo", back_populates="task", cascade="all, delete-orphan")
 
@@ -31,10 +32,10 @@ class Photo(Base):
     Фото, привязанное к задаче (task), содержит путь, индекс и время съемки.
     """
     __tablename__ = 'photos'
-    id = Column(Integer, primary_key=True)
-    task_id = Column(Integer, ForeignKey('photo_tasks.id'))
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     path = Column(String, nullable=False)
-    index = Column(Integer)
+    task_id = Column(String(36), ForeignKey('photo_tasks.id'), nullable=False)
+    spectrum_id = Column(String, nullable=False)
     taken_at = Column(DateTime, default=datetime.datetime.utcnow)
 
     task = relationship("PhotoTask", back_populates="photos")

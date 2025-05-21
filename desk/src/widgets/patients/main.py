@@ -124,16 +124,6 @@ class PatientsWidget(QWidget):
 
     # ===== МЕТОДЫ =====
 
-    def center_on_screen(self):
-        """
-        Центрирует окно на экране (опционально).
-        """
-        screen = self.screen().availableGeometry()
-        size = self.geometry()
-        x = (screen.width() - size.width()) // 2
-        y = (screen.height() - size.height()) // 2
-        self.move(x, y)
-
     def open_settings(self):
         """
         Открывает окно настроек пользователя/системы.
@@ -340,7 +330,7 @@ class PatientsWidget(QWidget):
             session.query(Session)
             .options(
                 joinedload(Session.patient),
-                joinedload(Session.device),
+                joinedload(Session.device_binding).joinedload(DeviceBinding.device),
                 joinedload(Session.operator)
             )
             .filter_by(patient_id=patient.id)
@@ -355,24 +345,16 @@ class PatientsWidget(QWidget):
     def open_session(self):
         """
         Открывает окно просмотра выбранного сеанса.
+        Передаёт в SessionWidget объект сеанса и API-URL устройства.
         """
         s = self.get_selected_session()
         if not s:
             QMessageBox.warning(self, "Ошибка", "Выберите сеанс для открытия.")
             return
 
-        # Получаем ip-адрес устройства для передачи в SessionWidget
-        session = SessionLocal()
-        device_binding = session.query(DeviceBinding).filter_by(device_id=s.device_id, user_id=self.user.id).first()
-        session.close()
-
-        if device_binding:
-            device_api_url = f"http://{device_binding.ip_address}:8080"
-        else:
-            device_api_url = None  # Можно задать значение по умолчанию
 
         # Создаём и показываем окно SessionWidget
-        self.session_widget = SessionWidget(session=s, device_api_url=device_api_url)
+        self.session_widget = SessionWidget(session=s)
         self.session_widget.show()
 
     def add_session(self):
@@ -398,7 +380,13 @@ class PatientsWidget(QWidget):
                 QMessageBox.warning(self, "Ошибка", "Не выбраны спектры!")
                 return
 
-            spectra = [[s.rgb_r, s.rgb_g, s.rgb_b] for s in data["spectra"]]
+            spectra = [
+                {
+                    "id": str(s.id),
+                    "rgb": [c if c is not None else 0 for c in (s.rgb_r, s.rgb_g, s.rgb_b)]
+                }
+                for s in data["spectra"]
+            ]
             try:
                 # Получаем результат создания задачи на устройстве
                 task_info = create_device_task(
@@ -418,9 +406,9 @@ class PatientsWidget(QWidget):
                 patient_id=patient.id,
                 date=data["date"],
                 notes=data["notes"] or "",
-                device_id=data["device_binding"].device_id,
+                device_binding_id=data["device_binding"].id,
                 operator_id=self.user.id,
-                device_task_id=task_id,  # Сохраняем id задачи устройства
+                device_task_id=task_id,
             )
             session.add(new_session)
             session.commit()

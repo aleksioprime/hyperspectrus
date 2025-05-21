@@ -7,103 +7,153 @@ from pydantic import BaseModel
 
 from models.db import SessionLocal, PhotoTask, Photo, init_db
 
-"""
-FastAPI-сервер: REST-API для управления задачами и просмотром фото.
-"""
-
 app = FastAPI()
 
+# ----------------------- Pydantic схемы ----------------------------
+
+class SpectrumIn(BaseModel):
+    # Схема для одного спектра при создании задачи (id справочника и параметры RGB)
+    id: str
+    rgb: List[int]
+
 class PhotoTaskIn(BaseModel):
+    # Схема запроса создания задачи: название + список спектров (каждый - id + rgb)
     title: str
-    spectra: List[List[int]]
+    spectra: List[SpectrumIn]
+
+class SpectrumOut(SpectrumIn):
+    # Схема для вывода спектра в API-ответах (совпадает с входной)
+    pass
 
 class PhotoTaskOut(BaseModel):
-    id: int
+    # Схема для вывода задачи (id, название, список спектров, статус)
+    id: str
     title: str
-    spectra: List[List[int]]
+    spectra: List[SpectrumOut]
     status: str
+
+# ----------------------- API эндпойнты ----------------------------
 
 @app.get("/tasks", response_model=List[PhotoTaskOut])
 def list_tasks():
     """
     Получить список всех задач.
+    Возвращает все задачи с их спектрами и статусами.
     """
     db = SessionLocal()
-    tasks = db.query(PhotoTask).all()
-    result = [
-        PhotoTaskOut(id=task.id, title=task.title, spectra=task.spectra, status=task.status)
-        for task in tasks
-    ]
-    db.close()
-    return result
+    try:
+        tasks = db.query(PhotoTask).all()
+        # Поскольку spectra хранится как JSON-список dict'ов, отдаём его как есть
+        result = [
+            PhotoTaskOut(id=task.id, title=task.title, spectra=task.spectra, status=task.status)
+            for task in tasks
+        ]
+        return result
+    finally:
+        db.close()
 
 @app.post("/tasks", response_model=PhotoTaskOut)
 def create_task(task: PhotoTaskIn):
     """
     Создать новую задачу (серия спектров).
+    - title: строка (название задачи)
+    - spectra: список объектов {"id": ..., "rgb": [...]}
     """
     db = SessionLocal()
-    obj = PhotoTask(title=task.title, spectra=task.spectra)
-    db.add(obj)
-    db.commit()
-    db.refresh(obj)
-    db.close()
-    return PhotoTaskOut(id=obj.id, title=obj.title, spectra=obj.spectra, status=obj.status)
+    try:
+        # Преобразуем spectra в список dict'ов для записи как JSON в БД
+        obj = PhotoTask(title=task.title, spectra=[s.dict() for s in task.spectra])
+        db.add(obj)
+        db.commit()
+        db.refresh(obj)
+        # Возвращаем полную инфу о задаче (id, title, spectra, status)
+        return PhotoTaskOut(
+            id=obj.id, title=obj.title, spectra=obj.spectra, status=obj.status
+        )
+    finally:
+        db.close()
 
 @app.delete("/tasks/{task_id}")
-def delete_task(task_id: int):
+def delete_task(task_id: str):
     """
     Удалить задачу и все связанные с ней фото.
     """
     db = SessionLocal()
-    task = db.query(PhotoTask).get(task_id)
-    if not task:
+    try:
+        task = db.query(PhotoTask).get(task_id)
+        if not task:
+            raise HTTPException(status_code=404, detail="Задача не найдена")
+        # Если есть каскад в модели, можно удалить только task
+        db.query(Photo).filter(Photo.task_id == task_id).delete()
+        db.delete(task)
+        db.commit()
+        return {"ok": True}
+    finally:
         db.close()
-        raise HTTPException(status_code=404, detail="Задача не найдена")
-    db.delete(task)
-    db.commit()
-    db.close()
-    return {"ok": True}
 
 @app.get("/tasks/{task_id}/photos")
-def get_photos(task_id: int):
+def get_photos(task_id: str):
     """
     Получить список фото по задаче.
+    Возвращает список словарей:
+    - spectrum_id: id спектра из справочника
+    - download_url: относительный путь для скачивания через API
     """
     db = SessionLocal()
-    photos = db.query(Photo).filter(Photo.task_id == task_id).order_by(Photo.index).all()
-    db.close()
-    return [{"index": p.index, "path": p.path} for p in photos]
+    try:
+        photos = db.query(Photo).filter(Photo.task_id == task_id).order_by(Photo.spectrum_id).all()
+        result = []
+        for p in photos:
+            result.append({
+                "spectrum_id": p.spectrum_id,
+                "download_url": f"/tasks/{task_id}/photos/{p.spectrum_id}/download"
+            })
+        return result
+    finally:
+        db.close()
 
 @app.get("/tasks/{task_id}/status")
-def get_task_status(task_id: int):
+def get_task_status(task_id: str):
     """
-    Получить статус задачи по её ID (например: pending, completed).
+    Получить статус задачи по её ID.
+    Статус может быть, например: "pending", "completed"
     """
     db = SessionLocal()
-    task = db.query(PhotoTask).get(task_id)
-    db.close()
-    if not task:
-        raise HTTPException(status_code=404, detail="Задача не найдена")
-    return {"id": task.id, "title": task.title, "status": task.status}
+    try:
+        task = db.query(PhotoTask).get(task_id)
+        if not task:
+            raise HTTPException(status_code=404, detail="Задача не найдена")
+        return {"id": task.id, "title": task.title, "status": task.status}
+    finally:
+        db.close()
 
-@app.get("/tasks/{task_id}/photos/{index}/download")
-def download_photo(task_id: int, index: int):
+@app.get("/tasks/{task_id}/photos/{spectrum_id}/download")
+def download_photo(task_id: str, spectrum_id: str):
     """
-    Скачать фото для задачи, если задача завершена.
+    Скачать фото по идентификатору спектра (spectrum_id), если задача завершена.
+    - Проверяет, что задача существует и завершена.
+    - Находит фото с этим спектром.
+    - Если файл существует — возвращает его с корректным именем и типом.
     """
     db = SessionLocal()
-    task = db.query(PhotoTask).get(task_id)
-    if not task:
+    try:
+        task = db.query(PhotoTask).get(task_id)
+        if not task:
+            raise HTTPException(status_code=404, detail="Задача не найдена")
+        if task.status != "completed":
+            raise HTTPException(status_code=400, detail="Задача ещё не завершена")
+        # Ищем фото с нужным spectrum_id
+        photo = db.query(Photo).filter(Photo.task_id == task_id, Photo.spectrum_id == spectrum_id).first()
+        if not photo or not os.path.exists(photo.path):
+            raise HTTPException(status_code=404, detail="Фото не найдено")
+        fname = os.path.basename(photo.path)
+        return FileResponse(photo.path, filename=fname, media_type="image/jpeg")
+    finally:
         db.close()
-        raise HTTPException(status_code=404, detail="Задача не найдена")
-    if task.status != "completed":
-        db.close()
-        raise HTTPException(status_code=400, detail="Задача ещё не завершена")
-    photo = db.query(Photo).filter(Photo.task_id == task_id, Photo.index == index).first()
-    db.close()
-    if not photo or not os.path.exists(photo.path):
-        raise HTTPException(status_code=404, detail="Фото не найдено")
-    # Для браузеров подставим корректное имя файла
-    fname = os.path.basename(photo.path)
-    return FileResponse(photo.path, filename=fname, media_type="image/jpeg")
+
+# -------------------- ВАЖНО --------------------
+# - Во всех ответах используется spectrum_id для идентификации фото.
+# - На клиенте для скачивания фото используйте download_url.
+# - В Photo должны быть поля: task_id, spectrum_id (id справочника спектров), path (путь к файлу).
+# - В PhotoTask.spectra хранится список объектов с id и rgb, чтобы знать параметры и порядок спектров для задачи.
+# - Все доступы к БД обёрнуты в try/finally для гарантированного закрытия сессии.

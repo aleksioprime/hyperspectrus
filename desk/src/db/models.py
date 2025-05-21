@@ -62,6 +62,12 @@ class Patient(Base):
     sessions = relationship("Session", back_populates="patient")
     organization = relationship("Organization", back_populates="patients")
 
+class Device(Base):
+    __tablename__ = 'devices'
+    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
+    name = Column(String(255), unique=True, nullable=False)
+    spectra = relationship("Spectrum", back_populates="device")
+
 class DeviceBinding(Base):
     __tablename__ = 'device_bindings'
 
@@ -72,13 +78,7 @@ class DeviceBinding(Base):
 
     user = relationship("User")
     device = relationship("Device")
-
-class Device(Base):
-    __tablename__ = 'devices'
-    id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
-    name = Column(String(255), unique=True, nullable=False)
-    spectra = relationship("Spectrum", back_populates="device")
-    sessions = relationship("Session", back_populates="device")
+    sessions = relationship("Session", back_populates="device_binding")
 
 class Spectrum(Base):
     __tablename__ = 'spectra'
@@ -96,17 +96,18 @@ class Session(Base):
     __tablename__ = 'sessions'
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     patient_id = Column(String(36), ForeignKey('patients.id'), nullable=False)
-    device_id = Column(String(36), ForeignKey('devices.id'), nullable=False)
+    device_binding_id = Column(String(36), ForeignKey('device_bindings.id'), nullable=False)
     device_task_id = Column(Integer, nullable=True)
     date = Column(DateTime, default=datetime.utcnow)
+    photos_downloaded = Column(Boolean, default=False)
     operator_id = Column(String(36), ForeignKey('users.id'), nullable=False)
     notes = Column(String)
 
     patient = relationship("Patient", back_populates="sessions")
-    device = relationship("Device", back_populates="sessions")
+    device_binding = relationship("DeviceBinding", back_populates="sessions")
     operator = relationship("User", back_populates="sessions")
-    raw_images = relationship("RawImage", back_populates="session")
-    reconstructed_images = relationship("ReconstructedImage", back_populates="session")
+    raw_images = relationship("RawImage", back_populates="session", cascade="all, delete-orphan")
+    reconstructed_images = relationship("ReconstructedImage", back_populates="session", cascade="all, delete-orphan")
     result = relationship("Result", back_populates="session", uselist=False, single_parent=True)
 
 class RawImage(Base):

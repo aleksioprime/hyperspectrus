@@ -1,7 +1,10 @@
 from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton, QMessageBox
+from PyQt6.QtCore import Qt
+from werkzeug.security import check_password_hash
+
 from db.db import SessionLocal
 from db.models import User
-from werkzeug.security import check_password_hash
+
 
 class LoginWidget(QWidget):
     def __init__(self, on_login_success):
@@ -10,8 +13,10 @@ class LoginWidget(QWidget):
 
         layout = QVBoxLayout(self)
         self.username = QLineEdit()
+        self.username.setText("user") # временно
         self.password = QLineEdit()
         self.password.setEchoMode(QLineEdit.EchoMode.Password)
+        self.password.setText("pass") # временно
         btn = QPushButton("Войти")
         layout.addWidget(QLabel("Логин:"))
         layout.addWidget(self.username)
@@ -27,3 +32,7 @@ class LoginWidget(QWidget):
             self.on_login_success(user)
         else:
             QMessageBox.warning(self, "Ошибка", "Неверный логин или пароль")
+
+    def keyPressEvent(self, event):
+        if event.key() in (Qt.Key.Key_Return, Qt.Key.Key_Enter):
+            self.try_login()

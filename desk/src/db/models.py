@@ -36,6 +36,21 @@ class User(Base):
     organization = relationship("Organization", back_populates="users")
     sessions = relationship("Session", back_populates="operator")
 
+    @property
+    def full_name(self) -> str:
+        """
+        Возвращает ФИО пользователя (first_name + last_name).
+        """
+        # Можно добавить обработку случая, если имя или фамилия пустые
+        if self.first_name and self.last_name:
+            return f"{self.first_name} {self.last_name}"
+        elif self.first_name:
+            return self.first_name
+        elif self.last_name:
+            return self.last_name
+        else:
+            return ""
+
 class Role(Base):
     __tablename__ = 'roles'
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
@@ -153,6 +168,7 @@ class Result(Base):
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     session_id = Column(String(36), ForeignKey('sessions.id'), unique=True)
     contour_path = Column(String, nullable=True)
+    thb_path = Column(String, nullable=True)
     s_coefficient = Column(Float, nullable=False)
     mean_lesion_thb = Column(Float, nullable=False)
     mean_skin_thb = Column(Float, nullable=False)

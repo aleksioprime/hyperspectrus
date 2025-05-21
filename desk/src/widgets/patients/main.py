@@ -331,7 +331,8 @@ class PatientsWidget(QWidget):
             .options(
                 joinedload(Session.patient),
                 joinedload(Session.device_binding).joinedload(DeviceBinding.device),
-                joinedload(Session.operator)
+                joinedload(Session.operator),
+                joinedload(Session.result),
             )
             .filter_by(patient_id=patient.id)
             .order_by(Session.date.desc())

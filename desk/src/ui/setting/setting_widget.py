@@ -6,7 +6,7 @@
 from PyQt6.QtWidgets import (
     QDialog, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QMessageBox, QInputDialog
 )
-from db.db import SessionLocal
+from db.db import get_db_session
 from db.models import Device, Spectrum, Chromophore, OverlapCoefficient
 
 from ui.setting.device_table import DeviceTableWidget
@@ -107,7 +107,7 @@ class SettingWidget(QDialog):
         """
         Загружает устройства из БД и обновляет таблицу устройств.
         """
-        with SessionLocal() as session:
+        with get_db_session() as session:
             self.devices = session.query(Device).all()
         self.device_table.fill(self.devices)
         self.on_device_selected()
@@ -127,7 +127,7 @@ class SettingWidget(QDialog):
         """
         text, ok = QInputDialog.getText(self, "Добавить устройство", "Название устройства:")
         if ok and text:
-            with SessionLocal() as session:
+            with get_db_session() as session:
                 d = Device(name=text)
                 session.add(d)
                 session.commit()
@@ -143,7 +143,7 @@ class SettingWidget(QDialog):
             return
         text, ok = QInputDialog.getText(self, "Изменить устройство", "Название устройства:", text=d.name)
         if ok and text:
-            with SessionLocal() as session:
+            with get_db_session() as session:
                 dev = session.get(Device, d.id)
                 dev.name = text
                 session.commit()
@@ -160,7 +160,7 @@ class SettingWidget(QDialog):
         confirm = QMessageBox.question(self, "Удалить устройство?",
             f"Удалить устройство {d.name} и все его спектры?", QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         if confirm == QMessageBox.StandardButton.Yes:
-            with SessionLocal() as session:
+            with get_db_session() as session:
                 dev = session.get(Device, d.id)
                 session.delete(dev)
                 session.commit()
@@ -181,7 +181,7 @@ class SettingWidget(QDialog):
             self.spectrum_table.setRowCount(0)
             self.spectra = []
             return
-        with SessionLocal() as session:
+        with get_db_session() as session:
             self.spectra = session.query(Spectrum).filter_by(device_id=d.id).order_by(Spectrum.wavelength).all()
         self.spectrum_table.fill(self.spectra)
         self.update_spectrum_buttons()
@@ -205,7 +205,7 @@ class SettingWidget(QDialog):
             return
         w, ok = QInputDialog.getInt(self, "Длина волны", "Введите длину волны (нм):", min=200, max=1100)
         if ok:
-            with SessionLocal() as session:
+            with get_db_session() as session:
                 spec = Spectrum(device_id=d.id, wavelength=w)
                 session.add(spec)
                 session.commit()
@@ -222,7 +222,7 @@ class SettingWidget(QDialog):
             return
         w, ok = QInputDialog.getInt(self, "Длина волны", "Изменить длину волны (нм):", value=s.wavelength, min=200, max=1100)
         if ok:
-            with SessionLocal() as session:
+            with get_db_session() as session:
                 spec = session.get(Spectrum, s.id)
                 spec.wavelength = w
                 session.commit()
@@ -240,7 +240,7 @@ class SettingWidget(QDialog):
         confirm = QMessageBox.question(self, "Удалить спектр?", "Удалить выбранный спектр?",
                                       QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         if confirm == QMessageBox.StandardButton.Yes:
-            with SessionLocal() as session:
+            with get_db_session() as session:
                 spec = session.get(Spectrum, s.id)
                 session.delete(spec)
                 session.commit()
@@ -252,7 +252,7 @@ class SettingWidget(QDialog):
         """
         Загружает хромофоры из БД.
         """
-        with SessionLocal() as session:
+        with get_db_session() as session:
             self.chroms = session.query(Chromophore).order_by(Chromophore.name).all()
         self.chrom_table.fill(self.chroms)
 
@@ -271,7 +271,7 @@ class SettingWidget(QDialog):
         """
         text, ok = QInputDialog.getText(self, "Добавить хромофор", "Название хромофора:")
         if ok and text:
-            with SessionLocal() as session:
+            with get_db_session() as session:
                 c = Chromophore(name=text, symbol=text)
                 session.add(c)
                 session.commit()
@@ -288,7 +288,7 @@ class SettingWidget(QDialog):
             return
         text, ok = QInputDialog.getText(self, "Изменить хромофор", "Название хромофора:", text=c.name)
         if ok and text:
-            with SessionLocal() as session:
+            with get_db_session() as session:
                 chrom = session.get(Chromophore, c.id)
                 chrom.name = text
                 chrom.symbol = text
@@ -307,7 +307,7 @@ class SettingWidget(QDialog):
         confirm = QMessageBox.question(self, "Удалить хромофор?", "Удалить выбранный хромофор?",
                                       QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
         if confirm == QMessageBox.StandardButton.Yes:
-            with SessionLocal() as session:
+            with get_db_session() as session:
                 chrom = session.get(Chromophore, c.id)
                 session.delete(chrom)
                 session.commit()
@@ -324,7 +324,7 @@ class SettingWidget(QDialog):
             self.matrix_table.setRowCount(0)
             self.matrix_table.setColumnCount(0)
             return
-        with SessionLocal() as session:
+        with get_db_session() as session:
             spectra = session.query(Spectrum).filter_by(device_id=d.id).order_by(Spectrum.wavelength).all()
             chromos = session.query(Chromophore).order_by(Chromophore.name).all()
             spectrum_ids = [s.id for s in spectra]
@@ -343,7 +343,7 @@ class SettingWidget(QDialog):
         d = self.get_selected_device()
         if not d or not hasattr(self.matrix_table, "matrix_data"):
             return
-        with SessionLocal() as session:
+        with get_db_session() as session:
             chromos = session.query(Chromophore).order_by(Chromophore.name).all()
             for i, (s, row) in enumerate(self.matrix_table.matrix_data):
                 for j, spin in enumerate(row):

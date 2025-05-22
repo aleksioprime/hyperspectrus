@@ -1,4 +1,5 @@
 import os
+from contextlib import contextmanager
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
@@ -13,3 +14,12 @@ SessionLocal = sessionmaker(bind=engine, autoflush=False)
 
 def init_db():
     Base.metadata.create_all(engine)
+
+
+@contextmanager
+def get_db_session():
+    session = SessionLocal()
+    try:
+        yield session
+    finally:
+        session.close()

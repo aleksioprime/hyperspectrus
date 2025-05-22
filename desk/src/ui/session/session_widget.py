@@ -9,7 +9,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt, QThread
 from PyQt6.QtGui import QPixmap
 
-from db.db import SessionLocal
+from db.db import get_db_session
 from db.models import Session, RawImage, DeviceBinding, ReconstructedImage
 from ui.session.process_worker import ProcessWorker
 from ui.session.download_worker import DownloadWorker
@@ -168,14 +168,13 @@ class SessionWidget(QWidget):
         self.update_analysis_block()
 
     def refresh_session_data(self):
-        session_db = SessionLocal()
-        self.session = session_db.query(Session).options(
-            joinedload(Session.patient),
-            joinedload(Session.device_binding).joinedload(DeviceBinding.device),
-            joinedload(Session.operator),
-            joinedload(Session.result),
-            ).get(self.session.id)
-        session_db.close()
+        with get_db_session() as session_db:
+            self.session = session_db.query(Session).options(
+                joinedload(Session.patient),
+                joinedload(Session.device_binding).joinedload(DeviceBinding.device),
+                joinedload(Session.operator),
+                joinedload(Session.result),
+                ).get(self.session.id)
         self.update_analysis_block()
 
     def update_analysis_block(self):
@@ -236,14 +235,13 @@ class SessionWidget(QWidget):
         Загружает и отображает сырые фото (RawImage), связанные с этим сеансом.
         В таблице: №, спектр (wavelength).
         """
-        session = SessionLocal()
-        photos = (
-            session.query(RawImage)
-            .filter_by(session_id=self.session.id)
-            .options(joinedload(RawImage.spectrum))
-            .all()
-        )
-        session.close()
+        with get_db_session() as session:
+            photos = (
+                session.query(RawImage)
+                .filter_by(session_id=self.session.id)
+                .options(joinedload(RawImage.spectrum))
+                .all()
+            )
         self.raw_table.setRowCount(0)
         self._raw_paths = []  # сохраняем пути для предпросмотра
         for i, photo in enumerate(photos):
@@ -264,14 +262,13 @@ class SessionWidget(QWidget):
         Загружает и отображает обработанные снимки (ReconstructedImage), связанные с этим сеансом.
         В таблице: №, хромофор (symbol).
         """
-        session = SessionLocal()
-        images = (
-            session.query(ReconstructedImage)
-            .filter_by(session_id=self.session.id)
-            .options(joinedload(ReconstructedImage.chromophore))
-            .all()
-        )
-        session.close()
+        with get_db_session() as session:
+            images = (
+                session.query(ReconstructedImage)
+                .filter_by(session_id=self.session.id)
+                .options(joinedload(ReconstructedImage.chromophore))
+                .all()
+            )
         self.proc_table.setRowCount(0)
         self._proc_paths = []
         for i, img in enumerate(images):

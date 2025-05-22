@@ -3,7 +3,7 @@ from PyQt6.QtCore import QDate, Qt, QTimer
 import requests
 from sqlalchemy.orm import joinedload
 
-from db.db import SessionLocal
+from db.db import get_db_session
 from db.models import DeviceBinding, Device
 
 
@@ -35,14 +35,13 @@ class SessionDialog(QDialog):
         device_combo_layout.addWidget(self.device_combo)
         device_combo_layout.addWidget(self.device_status_icon)
 
-        session = SessionLocal()
-        self.devices = (
-            session.query(DeviceBinding)
-            .options(joinedload(DeviceBinding.device))
-            .filter_by(user_id=str(user.id))
-            .all()
-        )
-        session.close()
+        with get_db_session() as session:
+            self.devices = (
+                session.query(DeviceBinding)
+                .options(joinedload(DeviceBinding.device))
+                .filter_by(user_id=str(user.id))
+                .all()
+            )
 
         for d in self.devices:
             self.device_combo.addItem(f"{d.device.name} ({d.ip_address})", d.id)
@@ -86,12 +85,11 @@ class SessionDialog(QDialog):
             self.spectra = []
             return
         device_binding = self.devices[idx]
-        session = SessionLocal()
-        device = session.query(Device).options(joinedload(Device.spectra)).get(device_binding.device_id)
-        self.spectra = list(device.spectra)
+        with get_db_session() as session:
+            device = session.query(Device).options(joinedload(Device.spectra)).get(device_binding.device_id)
+            self.spectra = list(device.spectra)
         for s in self.spectra:
             self.spectra_list.addItem(f"{s.wavelength} ({s.rgb_r}, {s.rgb_g}, {s.rgb_b})")
-        session.close()
 
         self.check_device_status()
 

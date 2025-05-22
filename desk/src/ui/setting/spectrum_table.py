@@ -7,7 +7,7 @@ from PyQt6.QtCore import Qt
 from db.db import SessionLocal
 from db.models import Spectrum
 
-class SpectrumWidget(QTableWidget):
+class SpectrumTableWidget(QTableWidget):
     """
     Таблица для отображения и редактирования спектров.
     Позволяет редактировать RGB-значения прямо в таблице (двойной щелчок или Enter).

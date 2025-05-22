@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import QDialog, QFormLayout, QLineEdit, QDateEdit, QTextEdit, QHBoxLayout, QPushButton
 from PyQt6.QtCore import QDate
 
+
 class PatientDialog(QDialog):
     """
     Диалоговое окно для создания или редактирования пациента

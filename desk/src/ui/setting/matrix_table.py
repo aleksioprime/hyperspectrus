@@ -4,7 +4,8 @@
 
 from PyQt6.QtWidgets import QTableWidget, QDoubleSpinBox
 
-class MatrixWidget(QTableWidget):
+
+class MatrixTableWidget(QTableWidget):
     """
     Матрица коэффициентов перекрытия спектр × хромофор.
     """

@@ -1,12 +1,12 @@
 """
-Виджет управления списком устройств.
+Виджет управления списком хромофоров.
 """
 
 from PyQt6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView
 
-class DeviceWidget(QTableWidget):
+class ChromophoreTableWidget(QTableWidget):
     """
-    Таблица для отображения и выбора устройств.
+    Таблица для отображения и выбора хромофоров.
     """
     def __init__(self, parent=None):
         super().__init__(0, 1, parent)
@@ -16,15 +16,15 @@ class DeviceWidget(QTableWidget):
         self.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
         self.verticalHeader().setVisible(False)
 
-    def fill(self, devices):
+    def fill(self, chromophores):
         """
-        Заполняет таблицу устройствами.
-        :param devices: список моделей Device
+        Заполняет таблицу хромофорами.
+        :param chromophores: список моделей Chromophore
         """
         self.setRowCount(0)
-        for d in devices:
+        for c in chromophores:
             row = self.rowCount()
             self.insertRow(row)
-            self.setItem(row, 0, QTableWidgetItem(d.name))
+            self.setItem(row, 0, QTableWidgetItem(c.name))
         if self.rowCount() > 0:
             self.selectRow(0)

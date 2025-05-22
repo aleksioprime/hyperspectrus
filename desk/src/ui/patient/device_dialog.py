@@ -1,11 +1,14 @@
+from sqlalchemy.orm import joinedload
+
 from PyQt6.QtWidgets import (
     QVBoxLayout, QHBoxLayout, QPushButton, QTableWidget, QTableWidgetItem,
     QDialog, QComboBox, QMessageBox, QHeaderView
 )
 from PyQt6.QtCore import Qt
+
+
 from db.db import SessionLocal
 from db.models import Device, DeviceBinding
-from sqlalchemy.orm import joinedload
 
 
 class DeviceBindingDialog(QDialog):

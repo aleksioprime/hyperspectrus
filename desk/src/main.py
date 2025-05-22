@@ -1,6 +1,9 @@
+import sys
 from PyQt6.QtWidgets import QApplication
-from widgets.main import MainWindow
+
+from ui.main_window import MainWindow
 from db.db import init_db
+
 
 def center_window_on_screen(window):
     screen = window.screen().availableGeometry()
@@ -10,7 +13,6 @@ def center_window_on_screen(window):
     window.move(x, y)
 
 def main():
-    import sys
     init_db()
     app = QApplication(sys.argv)
     win = MainWindow()

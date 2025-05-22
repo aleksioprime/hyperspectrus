@@ -5,16 +5,16 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt
 from sqlalchemy.orm import joinedload
 
-from widgets.patients.patient import PatientDialog
-from widgets.patients.session import SessionDialog
-from widgets.session import SessionWidget
-from widgets.settings.main import SettingsWidget
-from widgets.devices import DeviceBindingDialog
-from widgets.patients.network import create_device_task
-
+from ui.patient.patient_dialog import PatientDialog
+from ui.patient.session_dialog import SessionDialog
+from ui.session.session_widget import SessionWidget
+from ui.setting.setting_widget import SettingWidget
+from ui.patient.device_dialog import DeviceBindingDialog
+from services.device_api import create_device_task
 
 from db.db import SessionLocal
 from db.models import Patient, Session, DeviceBinding
+
 
 class PatientsWidget(QWidget):
     """
@@ -128,7 +128,7 @@ class PatientsWidget(QWidget):
         """
         Открывает окно настроек пользователя/системы.
         """
-        self.settings_widget = SettingsWidget(self)
+        self.settings_widget = SettingWidget(self)
         self.settings_widget.show()
 
     def open_device_bindings(self):

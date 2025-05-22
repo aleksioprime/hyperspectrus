@@ -9,12 +9,13 @@ from PyQt6.QtWidgets import (
 from db.db import SessionLocal
 from db.models import Device, Spectrum, Chromophore, OverlapCoefficient
 
-from widgets.settings.device import DeviceWidget
-from widgets.settings.spectrum import SpectrumWidget
-from widgets.settings.chromophore import ChromophoreWidget
-from widgets.settings.matrix import MatrixWidget
+from ui.setting.device_table import DeviceTableWidget
+from ui.setting.spectrum_table import SpectrumTableWidget
+from ui.setting.chromophore_table import ChromophoreTableWidget
+from ui.setting.matrix_table import MatrixTableWidget
 
-class SettingsWidget(QDialog):
+
+class SettingWidget(QDialog):
     """
     Главное окно настроек оборудования.
     Включает управление:
@@ -33,7 +34,7 @@ class SettingsWidget(QDialog):
         # ====== Левая панель ======
         left_box = QVBoxLayout()
         left_box.addWidget(QLabel("Устройства"))
-        self.device_table = DeviceWidget()
+        self.device_table = DeviceTableWidget()
         left_box.addWidget(self.device_table)
         dev_btns = QHBoxLayout()
         self.add_device_btn = QPushButton("Добавить")
@@ -45,7 +46,7 @@ class SettingsWidget(QDialog):
         left_box.addLayout(dev_btns)
 
         left_box.addWidget(QLabel("Спектры"))
-        self.spectrum_table = SpectrumWidget()
+        self.spectrum_table = SpectrumTableWidget()
         left_box.addWidget(self.spectrum_table)
         spec_btns = QHBoxLayout()
         self.add_spectrum_btn = QPushButton("Добавить")
@@ -57,7 +58,7 @@ class SettingsWidget(QDialog):
         left_box.addLayout(spec_btns)
 
         left_box.addWidget(QLabel("Хромофоры"))
-        self.chrom_table = ChromophoreWidget()
+        self.chrom_table = ChromophoreTableWidget()
         left_box.addWidget(self.chrom_table)
         chrom_btns = QHBoxLayout()
         self.add_chrom_btn = QPushButton("Добавить")
@@ -73,7 +74,7 @@ class SettingsWidget(QDialog):
         # ====== Матрица ======
         matrix_box = QVBoxLayout()
         matrix_box.addWidget(QLabel("Матрица коэффициентов перекрытия (Спектр × Хромофор)"))
-        self.matrix_table = MatrixWidget()
+        self.matrix_table = MatrixTableWidget()
         matrix_box.addWidget(self.matrix_table, stretch=1)
         self.save_matrix_btn = QPushButton("Сохранить коэффициенты")
         matrix_box.addWidget(self.save_matrix_btn)

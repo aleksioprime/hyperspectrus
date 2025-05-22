@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import QMainWindow, QWidget, QStackedWidget
-from widgets.login import LoginWidget
-from widgets.patients.main import PatientsWidget
+
+from ui.login_widget import LoginWidget
+from ui.patient.patient_widget import PatientsWidget
 
 
 class MainWindow(QMainWindow):

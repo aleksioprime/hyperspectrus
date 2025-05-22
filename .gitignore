@@ -1,6 +1,7 @@
 logs
 records
 archive
+photos
 downloaded_photos
 __pycache__
 .python-version

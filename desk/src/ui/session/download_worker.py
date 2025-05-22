@@ -42,7 +42,7 @@ class DownloadWorker(QObject):
 
             saved_count = 0
             total_photos = len(photos_data)
-            base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
             photos_root = os.path.join(base_dir, "photos")
             session_dir = os.path.join(photos_root, f"session_{self.session_id}")
             os.makedirs(session_dir, exist_ok=True)

@@ -12,7 +12,7 @@ from ui.setting.setting_widget import SettingWidget
 from ui.patient.device_dialog import DeviceBindingDialog
 from services.device_api import create_device_task
 
-from db.db import SessionLocal
+from db.db import get_db_session
 from db.models import Patient, Session, DeviceBinding
 
 
@@ -145,12 +145,11 @@ class PatientsWidget(QWidget):
         Перечитывает список пациентов из БД.
         С учетом организации пользователя, если задано.
         """
-        session = SessionLocal()
-        if self.user and self.user.organization_id:
-            self.patients = session.query(Patient).filter_by(organization_id=self.user.organization_id).all()
-        else:
-            self.patients = session.query(Patient).all()
-        session.close()
+        with get_db_session() as session:
+            if self.user and self.user.organization_id:
+                self.patients = session.query(Patient).filter_by(organization_id=self.user.organization_id).all()
+            else:
+                self.patients = session.query(Patient).all()
         self.show_patients(self.patients)
 
     def show_patients(self, patients):
@@ -187,9 +186,8 @@ class PatientsWidget(QWidget):
         if not id_item:
             return None
         patient_id = id_item.text()
-        session = SessionLocal()
-        patient = session.query(Patient).get(patient_id)
-        session.close()
+        with get_db_session() as session:
+            patient = session.query(Patient).get(patient_id)
         return patient
 
     def add_patient(self):
@@ -205,16 +203,15 @@ class PatientsWidget(QWidget):
             if not data["birth_date"]:
                 QMessageBox.warning(self, "Ошибка", "Дата рождения не заполнена!")
                 return
-            session = SessionLocal()
-            p = Patient(
-                full_name=data["full_name"],
-                birth_date=data["birth_date"],
-                notes=data["notes"],
-                organization_id=self.user.organization_id if self.user else None
-            )
-            session.add(p)
-            session.commit()
-            session.close()
+            with get_db_session() as session:
+                p = Patient(
+                    full_name=data["full_name"],
+                    birth_date=data["birth_date"],
+                    notes=data["notes"],
+                    organization_id=self.user.organization_id if self.user else None
+                )
+                session.add(p)
+                session.commit()
             self.reload()
 
     def edit_patient(self):
@@ -234,13 +231,12 @@ class PatientsWidget(QWidget):
             if not data["birth_date"]:
                 QMessageBox.warning(self, "Ошибка", "Дата рождения не заполнена!")
                 return
-            session = SessionLocal()
-            patient = session.query(Patient).get(p.id)
-            patient.full_name = data["full_name"]
-            patient.birth_date = data["birth_date"]
-            patient.notes = data["notes"]
-            session.commit()
-            session.close()
+            with get_db_session() as session:
+                patient = session.query(Patient).get(p.id)
+                patient.full_name = data["full_name"]
+                patient.birth_date = data["birth_date"]
+                patient.notes = data["notes"]
+                session.commit()
             self.reload()
 
     def delete_patient(self):
@@ -257,11 +253,10 @@ class PatientsWidget(QWidget):
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
         )
         if confirm == QMessageBox.StandardButton.Yes:
-            session = SessionLocal()
-            patient = session.query(Patient).get(p.id)
-            session.delete(patient)
-            session.commit()
-            session.close()
+            with get_db_session() as session:
+                patient = session.query(Patient).get(p.id)
+                session.delete(patient)
+                session.commit()
             self.reload()
             if self.table.rowCount() > 0:
                 self.table.selectRow(0)
@@ -299,9 +294,8 @@ class PatientsWidget(QWidget):
         """
         Перечитывает список сеансов из БД для указанного пациента.
         """
-        session = SessionLocal()
-        sessions = session.query(Session).filter_by(patient_id=patient.id).order_by(Session.date.desc()).all()
-        session.close()
+        with get_db_session() as session:
+            sessions = session.query(Session).filter_by(patient_id=patient.id).order_by(Session.date.desc()).all()
         self.sessions_table.setRowCount(0)
         for s in sessions:
             self.sessions_table.insertRow(self.sessions_table.rowCount())
@@ -325,20 +319,19 @@ class PatientsWidget(QWidget):
         if not selected:
             return None
         row = selected[0].row()
-        session = SessionLocal()
-        sessions = (
-            session.query(Session)
-            .options(
-                joinedload(Session.patient),
-                joinedload(Session.device_binding).joinedload(DeviceBinding.device),
-                joinedload(Session.operator),
-                joinedload(Session.result),
+        with get_db_session() as session:
+            sessions = (
+                session.query(Session)
+                .options(
+                    joinedload(Session.patient),
+                    joinedload(Session.device_binding).joinedload(DeviceBinding.device),
+                    joinedload(Session.operator),
+                    joinedload(Session.result),
+                )
+                .filter_by(patient_id=patient.id)
+                .order_by(Session.date.desc())
+                .all()
             )
-            .filter_by(patient_id=patient.id)
-            .order_by(Session.date.desc())
-            .all()
-        )
-        session.close()
         if row >= len(sessions):
             return None
         return sessions[row]
@@ -402,18 +395,17 @@ class PatientsWidget(QWidget):
                 QMessageBox.warning(self, "Ошибка", f"Не удалось отправить задание на устройство:\n{e}")
                 return
 
-            session = SessionLocal()
-            new_session = Session(
-                patient_id=patient.id,
-                date=data["date"],
-                notes=data["notes"] or "",
-                device_binding_id=data["device_binding"].id,
-                operator_id=self.user.id,
-                device_task_id=task_id,
-            )
-            session.add(new_session)
-            session.commit()
-            session.close()
+            with get_db_session() as session:
+                new_session = Session(
+                    patient_id=patient.id,
+                    date=data["date"],
+                    notes=data["notes"] or "",
+                    device_binding_id=data["device_binding"].id,
+                    operator_id=self.user.id,
+                    device_task_id=task_id,
+                )
+                session.add(new_session)
+                session.commit()
             self.reload_sessions(patient)
 
     def delete_session(self):
@@ -437,11 +429,10 @@ class PatientsWidget(QWidget):
             QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No
         )
         if confirm == QMessageBox.StandardButton.Yes:
-            session = SessionLocal()
-            session_in_db = session.query(Session).get(s.id)
-            session.delete(session_in_db)
-            session.commit()
-            session.close()
+            with get_db_session() as session:
+                session_in_db = session.query(Session).get(s.id)
+                session.delete(session_in_db)
+                session.commit()
             self.reload_sessions(patient)
             # После удаления выделяем первую строку, если она есть
             if self.sessions_table.rowCount() > 0:

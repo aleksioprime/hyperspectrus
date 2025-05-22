@@ -4,7 +4,8 @@
 
 from PyQt6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView, QMessageBox
 from PyQt6.QtCore import Qt
-from db.db import SessionLocal
+
+from db.db import get_db_session
 from db.models import Spectrum
 
 class SpectrumTableWidget(QTableWidget):
@@ -82,7 +83,7 @@ class SpectrumTableWidget(QTableWidget):
             self.blockSignals(False)
             return
         # Сохраняем в базу
-        with SessionLocal() as session:
+        with get_db_session() as session:
             spectrum = session.get(Spectrum, s.id)
             if col == 1:
                 spectrum.rgb_r = value

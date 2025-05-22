@@ -1,8 +1,7 @@
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit, QTableWidget,
-    QTableWidgetItem, QMessageBox, QHeaderView, QLabel, QAbstractItemView
+    QTableWidgetItem, QMessageBox, QHeaderView, QLabel
 )
-from PyQt6.QtCore import Qt
 from sqlalchemy.orm import joinedload
 
 from ui.patient.patient_dialog import PatientDialog

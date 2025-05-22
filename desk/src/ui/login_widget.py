@@ -2,7 +2,7 @@ from PyQt6.QtWidgets import QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton
 from PyQt6.QtCore import Qt
 from werkzeug.security import check_password_hash
 
-from db.db import SessionLocal
+from db.db import get_db_session
 from db.models import User
 
 
@@ -26,8 +26,8 @@ class LoginWidget(QWidget):
         btn.clicked.connect(self.try_login)
 
     def try_login(self):
-        session = SessionLocal()
-        user = session.query(User).filter_by(username=self.username.text()).first()
+        with get_db_session() as session:
+            user = session.query(User).filter_by(username=self.username.text()).first()
         if user and check_password_hash(user.hashed_password, self.password.text()):
             self.on_login_success(user)
         else:

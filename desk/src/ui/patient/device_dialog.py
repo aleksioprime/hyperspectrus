@@ -7,7 +7,7 @@ from PyQt6.QtWidgets import (
 from PyQt6.QtCore import Qt
 
 
-from db.db import SessionLocal
+from db.db import get_db_session
 from db.models import Device, DeviceBinding
 
 
@@ -50,15 +50,16 @@ class DeviceBindingDialog(QDialog):
 
     def reload(self):
         self.table.blockSignals(True)
-        session = SessionLocal()
-        self.devices = session.query(Device).all()
-        self.bindings = (
-            session.query(DeviceBinding)
-            .filter_by(user_id=str(self.user.id))
-            .options(joinedload(DeviceBinding.device))
-            .all()
-        )
-        session.close()
+
+        with get_db_session() as session:
+            self.devices = session.query(Device).all()
+            self.bindings = (
+                session.query(DeviceBinding)
+                .filter_by(user_id=str(self.user.id))
+                .options(joinedload(DeviceBinding.device))
+                .all()
+            )
+
         self.table.setRowCount(0)
 
         for b in self.bindings:
@@ -107,29 +108,28 @@ class DeviceBindingDialog(QDialog):
             if device_idx < 0 or not ip:
                 return
             device_id = self.devices[device_idx].id
-            session = SessionLocal()
-            existing = session.query(DeviceBinding).filter_by(
-                user_id=str(self.user.id), device_id=device_id
-            ).first()
-            if existing:
-                QMessageBox.warning(self, "Ошибка", "Это устройство уже связано с вами!")
-                session.close()
-                self.table.blockSignals(True)
-                self.table.removeRow(row)
-                self.table.blockSignals(False)
-                self._adding_row = False
-                self.add_btn.setEnabled(True)
-                self.del_btn.setEnabled(self.table.rowCount() > 0)
-                self.update_del_btn()
-                return
-            b = DeviceBinding(
-                user_id=str(self.user.id),
-                device_id=device_id,
-                ip_address=ip,
-            )
-            session.add(b)
-            session.commit()
-            session.close()
+            with get_db_session() as session:
+                existing = session.query(DeviceBinding).filter_by(
+                    user_id=str(self.user.id), device_id=device_id
+                ).first()
+                if existing:
+                    QMessageBox.warning(self, "Ошибка", "Это устройство уже связано с вами!")
+                    session.close()
+                    self.table.blockSignals(True)
+                    self.table.removeRow(row)
+                    self.table.blockSignals(False)
+                    self._adding_row = False
+                    self.add_btn.setEnabled(True)
+                    self.del_btn.setEnabled(self.table.rowCount() > 0)
+                    self.update_del_btn()
+                    return
+                b = DeviceBinding(
+                    user_id=str(self.user.id),
+                    device_id=device_id,
+                    ip_address=ip,
+                )
+                session.add(b)
+                session.commit()
             self.reload()
             return
 

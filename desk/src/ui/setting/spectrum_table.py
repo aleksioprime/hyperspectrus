@@ -43,7 +43,7 @@ class SpectrumTableWidget(QTableWidget):
             self.insertRow(row)
             # Длина волны
             wave_item = QTableWidgetItem(str(s.wavelength))
-            wave_item.setFlags(wave_item.flags() & ~Qt.ItemFlag.ItemIsEditable)
+            wave_item.setFlags(wave_item.flags() | Qt.ItemFlag.ItemIsEditable) # Make wavelength editable
             self.setItem(row, 0, wave_item)
             # R, G, B
             for col, val in enumerate((s.rgb_r or 0, s.rgb_g or 0, s.rgb_b or 0), start=1):
@@ -55,43 +55,79 @@ class SpectrumTableWidget(QTableWidget):
             self.selectRow(0)
 
     def on_cell_changed(self, row, col):
-        """
-        Слот: сохранение изменений RGB-значения спектра в базе при редактировании.
-        """
         if self._internal_fill:
-            return  # Не реагировать на события при заполнении таблицы
-        # Только для столбцов R, G, B
-        if col not in (1, 2, 3):
             return
+        
         if not self.spectra or row >= len(self.spectra):
             return
+        
         s = self.spectra[row]
-        try:
-            value = int(self.item(row, col).text())
-            if not (0 <= value <= 255):
-                raise ValueError
-        except ValueError:
-            QMessageBox.warning(self, "Ошибка", "Введите целое число от 0 до 255.")
-            # Возвращаем предыдущее значение
-            self.blockSignals(True)
-            if col == 1:
-                self.item(row, col).setText(str(s.rgb_r or 0))
-            elif col == 2:
-                self.item(row, col).setText(str(s.rgb_g or 0))
-            elif col == 3:
-                self.item(row, col).setText(str(s.rgb_b or 0))
-            self.blockSignals(False)
-            return
-        # Сохраняем в базу
-        with get_db_session() as session:
-            spectrum = session.get(Spectrum, s.id)
-            if col == 1:
-                spectrum.rgb_r = value
-                s.rgb_r = value
-            elif col == 2:
-                spectrum.rgb_g = value
-                s.rgb_g = value
-            elif col == 3:
-                spectrum.rgb_b = value
-                s.rgb_b = value
-            session.commit()
+        
+        if col == 0: # Wavelength
+            try:
+                value = int(self.item(row, col).text())
+                if not (200 <= value <= 1100): # Validation range
+                    QMessageBox.warning(self, "Ошибка", "Длина волны должна быть в диапазоне 200-1100 нм.")
+                    raise ValueError("Invalid range")
+            except ValueError as e:
+                self.blockSignals(True)
+                self.item(row, col).setText(str(s.wavelength))
+                self.blockSignals(False)
+                if "Invalid range" not in str(e): # Avoid double message if it's our specific error
+                     QMessageBox.warning(self, "Ошибка", "Введите целое число для длины волны.")
+                return
+
+            if s.wavelength == value: # No change
+                return
+
+            with get_db_session() as session:
+                spectrum = session.get(Spectrum, s.id)
+                if spectrum:
+                    spectrum.wavelength = value
+                    session.commit()
+                    s.wavelength = value # Update local cache
+                    
+                    # Notify parent to reload matrix
+                    parent_widget = self.parent() 
+                    if parent_widget and hasattr(parent_widget, 'reload_matrix'):
+                        parent_widget.reload_matrix() 
+                else:
+                    QMessageBox.warning(self, "Ошибка", "Спектр не найден в базе данных.") # Changed to warning
+                    self.blockSignals(True)
+                    self.item(row, col).setText(str(s.wavelength)) # Revert
+                    self.blockSignals(False)
+
+        elif col in (1, 2, 3): # R, G, B
+            try:
+                value = int(self.item(row, col).text())
+                if not (0 <= value <= 255):
+                    raise ValueError("Invalid RGB range")
+            except ValueError:
+                QMessageBox.warning(self, "Ошибка", "Введите целое число от 0 до 255.")
+                self.blockSignals(True)
+                if col == 1: self.item(row, col).setText(str(s.rgb_r or 0))
+                elif col == 2: self.item(row, col).setText(str(s.rgb_g or 0))
+                elif col == 3: self.item(row, col).setText(str(s.rgb_b or 0))
+                self.blockSignals(False)
+                return
+
+            current_val = None
+            if col == 1: current_val = s.rgb_r
+            elif col == 2: current_val = s.rgb_g
+            elif col == 3: current_val = s.rgb_b
+            if current_val == value: return
+
+            with get_db_session() as session:
+                spectrum = session.get(Spectrum, s.id)
+                if spectrum:
+                    if col == 1: spectrum.rgb_r = value; s.rgb_r = value
+                    elif col == 2: spectrum.rgb_g = value; s.rgb_g = value
+                    elif col == 3: spectrum.rgb_b = value; s.rgb_b = value
+                    session.commit()
+                else:
+                    QMessageBox.warning(self, "Ошибка", "Спектр не найден в базе данных при обновлении RGB.") # Changed to warning
+                    self.blockSignals(True)
+                    if col == 1: self.item(row, col).setText(str(s.rgb_r or 0))
+                    elif col == 2: self.item(row, col).setText(str(s.rgb_g or 0))
+                    elif col == 3: self.item(row, col).setText(str(s.rgb_b or 0))
+                    self.blockSignals(False)

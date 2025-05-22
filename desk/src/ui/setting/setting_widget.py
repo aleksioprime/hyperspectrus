@@ -38,10 +38,8 @@ class SettingWidget(QDialog):
         left_box.addWidget(self.device_table)
         dev_btns = QHBoxLayout()
         self.add_device_btn = QPushButton("Добавить")
-        self.edit_device_btn = QPushButton("Изменить")
         self.del_device_btn = QPushButton("Удалить")
         dev_btns.addWidget(self.add_device_btn)
-        dev_btns.addWidget(self.edit_device_btn)
         dev_btns.addWidget(self.del_device_btn)
         left_box.addLayout(dev_btns)
 
@@ -50,10 +48,8 @@ class SettingWidget(QDialog):
         left_box.addWidget(self.spectrum_table)
         spec_btns = QHBoxLayout()
         self.add_spectrum_btn = QPushButton("Добавить")
-        self.edit_spectrum_btn = QPushButton("Изменить")
         self.del_spectrum_btn = QPushButton("Удалить")
         spec_btns.addWidget(self.add_spectrum_btn)
-        spec_btns.addWidget(self.edit_spectrum_btn)
         spec_btns.addWidget(self.del_spectrum_btn)
         left_box.addLayout(spec_btns)
 
@@ -62,10 +58,8 @@ class SettingWidget(QDialog):
         left_box.addWidget(self.chrom_table)
         chrom_btns = QHBoxLayout()
         self.add_chrom_btn = QPushButton("Добавить")
-        self.edit_chrom_btn = QPushButton("Изменить")
         self.del_chrom_btn = QPushButton("Удалить")
         chrom_btns.addWidget(self.add_chrom_btn)
-        chrom_btns.addWidget(self.edit_chrom_btn)
         chrom_btns.addWidget(self.del_chrom_btn)
         left_box.addLayout(chrom_btns)
 
@@ -87,13 +81,10 @@ class SettingWidget(QDialog):
         self.chrom_table.selectionModel().selectionChanged.connect(self.reload_matrix)
 
         self.add_device_btn.clicked.connect(self.add_device)
-        self.edit_device_btn.clicked.connect(self.edit_device)
         self.del_device_btn.clicked.connect(self.delete_device)
         self.add_spectrum_btn.clicked.connect(self.add_spectrum)
-        self.edit_spectrum_btn.clicked.connect(self.edit_spectrum)
         self.del_spectrum_btn.clicked.connect(self.delete_spectrum)
         self.add_chrom_btn.clicked.connect(self.add_chrom)
-        self.edit_chrom_btn.clicked.connect(self.edit_chrom)
         self.del_chrom_btn.clicked.connect(self.delete_chrom)
         self.save_matrix_btn.clicked.connect(self.save_matrix)
 
@@ -130,22 +121,6 @@ class SettingWidget(QDialog):
             with get_db_session() as session:
                 d = Device(name=text)
                 session.add(d)
-                session.commit()
-            self.reload_devices()
-
-    def edit_device(self):
-        """
-        Диалог редактирования устройства.
-        """
-        d = self.get_selected_device()
-        if not d:
-            QMessageBox.warning(self, "Ошибка", "Выберите устройство для изменения.")
-            return
-        text, ok = QInputDialog.getText(self, "Изменить устройство", "Название устройства:", text=d.name)
-        if ok and text:
-            with get_db_session() as session:
-                dev = session.get(Device, d.id)
-                dev.name = text
                 session.commit()
             self.reload_devices()
 
@@ -212,23 +187,6 @@ class SettingWidget(QDialog):
             self.reload_spectra()
             self.reload_matrix()
 
-    def edit_spectrum(self):
-        """
-        Диалог изменения длины волны спектра.
-        """
-        s = self.get_selected_spectrum()
-        if not s:
-            QMessageBox.warning(self, "Ошибка", "Выберите спектр для изменения.")
-            return
-        w, ok = QInputDialog.getInt(self, "Длина волны", "Изменить длину волны (нм):", value=s.wavelength, min=200, max=1100)
-        if ok:
-            with get_db_session() as session:
-                spec = session.get(Spectrum, s.id)
-                spec.wavelength = w
-                session.commit()
-            self.reload_spectra()
-            self.reload_matrix()
-
     def delete_spectrum(self):
         """
         Диалог удаления спектра.
@@ -274,24 +232,6 @@ class SettingWidget(QDialog):
             with get_db_session() as session:
                 c = Chromophore(name=text, symbol=text)
                 session.add(c)
-                session.commit()
-            self.reload_chroms()
-            self.reload_matrix()
-
-    def edit_chrom(self):
-        """
-        Диалог изменения хромофора.
-        """
-        c = self.get_selected_chrom()
-        if not c:
-            QMessageBox.warning(self, "Ошибка", "Выберите хромофор для изменения.")
-            return
-        text, ok = QInputDialog.getText(self, "Изменить хромофор", "Название хромофора:", text=c.name)
-        if ok and text:
-            with get_db_session() as session:
-                chrom = session.get(Chromophore, c.id)
-                chrom.name = text
-                chrom.symbol = text
                 session.commit()
             self.reload_chroms()
             self.reload_matrix()

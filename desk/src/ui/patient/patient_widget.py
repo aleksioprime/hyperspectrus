@@ -1,3 +1,6 @@
+import os
+import shutil
+
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit, QTableWidget,
     QTableWidgetItem, QMessageBox, QHeaderView, QLabel
@@ -54,7 +57,7 @@ class PatientsWidget(QWidget):
         self.table.setAlternatingRowColors(True)
         self.table.verticalHeader().setVisible(False)
         self.table.setSortingEnabled(True)
-        left_box.addWidget(self.table, stretch=1)
+        left_box.addWidget(self.table)
 
         # Кнопки управления пациентами
         btn_row = QHBoxLayout()
@@ -69,7 +72,10 @@ class PatientsWidget(QWidget):
         left_box.addLayout(btn_row)
 
         # Левая часть — шире
-        main_layout.addLayout(left_box, stretch=4)
+        left_box_widget = QWidget()
+        left_box_widget.setLayout(left_box)
+        left_box_widget.setMinimumWidth(500)
+        main_layout.addWidget(left_box_widget)
 
         # ==== ПРАВАЯ КОЛОНКА: СЕАНСЫ ====
         right_box = QVBoxLayout()
@@ -88,10 +94,10 @@ class PatientsWidget(QWidget):
 
         # Кнопки управления сеансами
         sess_btn_row = QHBoxLayout()
-        self.add_session_btn = QPushButton("Создать сеанс")
+        self.add_session_btn = QPushButton("Создать")
         self.open_session_btn = QPushButton("Открыть")
-        self.delete_session_btn = QPushButton("Удалить сеанс")
-        self.device_ip_btn = QPushButton("Мои устройства")
+        self.delete_session_btn = QPushButton("Удалить")
+        self.device_ip_btn = QPushButton("Устройства")
         sess_btn_row.addWidget(self.add_session_btn)
         sess_btn_row.addWidget(self.open_session_btn)
         sess_btn_row.addWidget(self.delete_session_btn)
@@ -99,7 +105,10 @@ class PatientsWidget(QWidget):
         right_box.addLayout(sess_btn_row)
 
         # Правая часть — уже
-        main_layout.addLayout(right_box, stretch=2)
+        right_box_widget = QWidget()
+        right_box_widget.setLayout(right_box)
+        right_box_widget.setMinimumWidth(300)
+        main_layout.addWidget(right_box_widget)
 
         # ==== ПОДПИСКА НА СОБЫТИЯ ====
         self.add_btn.clicked.connect(self.add_patient)
@@ -289,12 +298,18 @@ class PatientsWidget(QWidget):
 
         self.update_session_buttons_state()
 
-    def reload_sessions(self, patient):
+    def reload_sessions(self, patient, selected_session_id=None):
         """
         Перечитывает список сеансов из БД для указанного пациента.
+        Если передан selected_session_id — выделяет строку с этим сеансом.
         """
         with get_db_session() as session:
-            sessions = session.query(Session).filter_by(patient_id=patient.id).order_by(Session.date.desc()).all()
+            sessions = (
+                session.query(Session)
+                .filter_by(patient_id=patient.id)
+                .order_by(Session.date.desc())
+                .all()
+            )
         self.sessions_table.setRowCount(0)
         for s in sessions:
             self.sessions_table.insertRow(self.sessions_table.rowCount())
@@ -302,8 +317,16 @@ class PatientsWidget(QWidget):
             dt_str = s.date.strftime('%d.%m.%Y %H:%M') if s.date else "—"
             self.sessions_table.setItem(row, 0, QTableWidgetItem(dt_str))
             self.sessions_table.setItem(row, 1, QTableWidgetItem(s.notes or ""))
+
+        # --- Выделяем строку по ID, если нужно ---
+        selected_row = 0
+        if selected_session_id is not None:
+            for i, s in enumerate(sessions):
+                if s.id == selected_session_id:
+                    selected_row = i
+                    break
         if self.sessions_table.rowCount() > 0:
-            self.sessions_table.selectRow(0)
+            self.sessions_table.selectRow(selected_row)
 
         self.update_session_buttons_state()
 
@@ -344,7 +367,6 @@ class PatientsWidget(QWidget):
         if not s:
             QMessageBox.warning(self, "Ошибка", "Выберите сеанс для открытия.")
             return
-
 
         # Создаём и показываем окно SessionWidget
         self.session_widget = SessionWidget(session=s)
@@ -405,11 +427,46 @@ class PatientsWidget(QWidget):
                 )
                 session.add(new_session)
                 session.commit()
-            self.reload_sessions(patient)
+                new_session_id = new_session.id
+
+            self.reload_sessions(patient, selected_session_id=new_session_id)
+
+            self.open_session()
+
+    def remove_session_dir_if_exists(self, session):
+        """
+        Удаляет папку session_xxx для этого сеанса вместе со всем содержимым.
+        Находит путь к папке по любому связанному файлу (raw, reconstructed, result).
+        """
+        all_files = []
+        for img in session.raw_images:
+            if img.file_path:
+                all_files.append(img.file_path)
+        for img in session.reconstructed_images:
+            if img.file_path:
+                all_files.append(img.file_path)
+        if session.result:
+            if session.result.contour_path:
+                all_files.append(session.result.contour_path)
+            if session.result.thb_path:
+                all_files.append(session.result.thb_path)
+
+        # Находим первую реально существующую папку session_xxx
+        for f in all_files:
+            if f and os.path.exists(f):
+                session_dir = os.path.dirname(f)
+                # Дополнительно убедимся, что это именно session_xxx
+                if os.path.basename(session_dir).startswith("session_") and os.path.isdir(session_dir):
+                    try:
+                        shutil.rmtree(session_dir)
+                    except Exception as e:
+                        print(f"Ошибка при удалении папки {session_dir}: {e}")
+                    break
 
     def delete_session(self):
         """
         Удаляет выбранный сеанс после подтверждения пользователя.
+        Также удаляет все связанные фото (raw/reconstructed) и результат.
         """
         patient = self.get_selected_patient()
         if not patient:
@@ -429,11 +486,21 @@ class PatientsWidget(QWidget):
         )
         if confirm == QMessageBox.StandardButton.Yes:
             with get_db_session() as session:
-                session_in_db = session.query(Session).get(s.id)
-                session.delete(session_in_db)
+                # Загрузим сеанс с подгруженными фотографиями и результатами
+                sess = session.query(Session)\
+                    .options(
+                        joinedload(Session.raw_images),
+                        joinedload(Session.reconstructed_images),
+                        joinedload(Session.result)
+                    ).get(s.id)
+
+                self.remove_session_dir_if_exists(sess)
+
+                # Удаляем сам сеанс (удалит все raw/reconstructed images по cascade)
+                session.delete(sess)
                 session.commit()
+
             self.reload_sessions(patient)
-            # После удаления выделяем первую строку, если она есть
             if self.sessions_table.rowCount() > 0:
                 self.sessions_table.selectRow(0)
 

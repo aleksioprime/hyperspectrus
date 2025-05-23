@@ -1,10 +1,11 @@
 from PyQt6.QtWidgets import QDialog, QFormLayout, QDateEdit, QComboBox, QListWidget, QTextEdit, QHBoxLayout, QPushButton, QLabel
-from PyQt6.QtCore import QDate, Qt, QTimer
-import requests
+from PyQt6.QtCore import QDate, Qt, QTimer, QThread
+
 from sqlalchemy.orm import joinedload
 
 from db.db import get_db_session
 from db.models import DeviceBinding, Device
+from ui.patient.device_worker import DeviceStatusWorker
 
 
 class SessionDialog(QDialog):
@@ -61,8 +62,10 @@ class SessionDialog(QDialog):
 
         # --- Кнопки ---
         btn_row = QHBoxLayout()
+        btn_row.addStretch()
         self.save_btn = QPushButton("Создать")
         self.cancel_btn = QPushButton("Отмена")
+        self.save_btn.setEnabled(False)
         btn_row.addWidget(self.save_btn)
         btn_row.addWidget(self.cancel_btn)
         layout.addRow(btn_row)
@@ -95,26 +98,58 @@ class SessionDialog(QDialog):
 
     def check_device_status(self):
         """
-        Проверяет доступность выбранного устройства.
+        Асинхронно проверяет выбранное устройство.
         """
+        if getattr(self, 'is_closing', False):
+            return
+
         idx = self.device_combo.currentIndex()
         if idx < 0 or not self.devices:
             self.device_status_icon.setText("❓")
             self.save_btn.setEnabled(False)
             return
+
         ip = self.devices[idx].ip_address
-        try:
-            # Пробуем отправить HEAD-запрос (можно заменить на ping, если нужно)
-            resp = requests.head(f"http://{ip}:8080/", timeout=1)
-            if resp.status_code < 500:
-                self.device_status_icon.setText("🟢")
-                self.save_btn.setEnabled(True)
-            else:
-                self.device_status_icon.setText("🔴")
-                self.save_btn.setEnabled(False)
-        except Exception:
+
+        # Завершаем предыдущий поток, если он еще жив
+        if hasattr(self, '_status_thread') and self._status_thread is not None:
+            if self._status_thread.isRunning():
+                self._status_thread.quit()
+                self._status_thread.wait()
+            # Обязательно удаляем ссылку, иначе она останется на удалённый объект!
+            self._status_thread = None
+
+        # Запускаем новый поток проверки
+        self._status_thread = QThread()
+        self._status_worker = DeviceStatusWorker(ip)
+        self._status_worker.moveToThread(self._status_thread)
+        self._status_thread.started.connect(self._status_worker.run)
+        self._status_worker.finished.connect(self.on_device_status_checked)
+        self._status_worker.error.connect(self.on_device_status_error)
+        self._status_worker.finished.connect(self._status_thread.quit)
+        self._status_thread.finished.connect(self.cleanup_status_thread)
+        self._status_thread.start()
+
+    def on_device_status_checked(self, ip, status):
+        """
+        Слот: обновить иконку и кнопку после проверки статуса.
+        """
+        if status == 'online':
+            self.device_status_icon.setText("🟢")
+            self.save_btn.setEnabled(True)
+        else:
             self.device_status_icon.setText("🔴")
             self.save_btn.setEnabled(False)
+
+    def on_device_status_error(self, ip, message):
+        # Можно вывести подробное сообщение, если нужно
+        pass
+
+    def cleanup_status_thread(self):
+        """
+        Слот вызывается после завершения потока — обнуляет ссылку на поток.
+        """
+        self._status_thread = None
 
     def get_data(self):
         """
@@ -135,5 +170,13 @@ class SessionDialog(QDialog):
         self.status_timer.start()
 
     def closeEvent(self, event):
+        self.is_closing = True
         self.status_timer.stop()
+        # Корректно завершаем поток статуса, если он ещё работает
+        if hasattr(self, '_status_thread') and self._status_thread is not None:
+            if self._status_thread.isRunning():
+                self._status_thread.quit()
+                self._status_thread.wait()
+            self._status_thread = None
+            self._status_worker = None
         super().closeEvent(event)

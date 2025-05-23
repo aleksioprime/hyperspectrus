@@ -11,28 +11,21 @@ from db.models import Device, Spectrum, Chromophore, OverlapCoefficient
 
 from ui.setting.device_table import DeviceTableWidget
 from ui.setting.spectrum_table import SpectrumTableWidget
+from ui.setting.spectrum_dialog import AddSpectrumDialog
 from ui.setting.chromophore_table import ChromophoreTableWidget
 from ui.setting.matrix_table import MatrixTableWidget
 
-
 class SettingWidget(QDialog):
-    """
-    Главное окно настроек оборудования.
-    Включает управление:
-    - устройствами,
-    - спектрами,
-    - хромофорами,
-    - матрицей коэффициентов перекрытия.
-    """
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Настройки оборудования")
-        self.setMinimumSize(1000, 600)
 
         layout = QHBoxLayout(self)
 
-        # ====== Левая панель ======
+        # === Левая панель ===
         left_box = QVBoxLayout()
+
+        # --- Устройства ---
         left_box.addWidget(QLabel("Устройства"))
         self.device_table = DeviceTableWidget()
         left_box.addWidget(self.device_table)
@@ -43,6 +36,7 @@ class SettingWidget(QDialog):
         dev_btns.addWidget(self.del_device_btn)
         left_box.addLayout(dev_btns)
 
+        # --- Спектры ---
         left_box.addWidget(QLabel("Спектры"))
         self.spectrum_table = SpectrumTableWidget()
         left_box.addWidget(self.spectrum_table)
@@ -53,6 +47,7 @@ class SettingWidget(QDialog):
         spec_btns.addWidget(self.del_spectrum_btn)
         left_box.addLayout(spec_btns)
 
+        # --- Хромофоры ---
         left_box.addWidget(QLabel("Хромофоры"))
         self.chrom_table = ChromophoreTableWidget()
         left_box.addWidget(self.chrom_table)
@@ -63,15 +58,24 @@ class SettingWidget(QDialog):
         chrom_btns.addWidget(self.del_chrom_btn)
         left_box.addLayout(chrom_btns)
 
-        layout.addLayout(left_box, stretch=2)
+        layout.addLayout(left_box, stretch=3)
 
-        # ====== Матрица ======
+        # === Правая панель (Матрица) ===
         matrix_box = QVBoxLayout()
         matrix_box.addWidget(QLabel("Матрица коэффициентов перекрытия (Спектр × Хромофор)"))
         self.matrix_table = MatrixTableWidget()
         matrix_box.addWidget(self.matrix_table, stretch=1)
+        matrix_btns = QHBoxLayout()
         self.save_matrix_btn = QPushButton("Сохранить коэффициенты")
-        matrix_box.addWidget(self.save_matrix_btn)
+        self.save_matrix_btn.setFixedWidth(200)
+        self.random_matrix_btn = QPushButton("Заполнить случайно")
+        self.random_matrix_btn.setFixedWidth(150)
+        self.back_btn = QPushButton("Назад")
+        matrix_btns.addWidget(self.random_matrix_btn)
+        matrix_btns.addWidget(self.save_matrix_btn)
+        matrix_btns.addStretch()
+        matrix_btns.addWidget(self.back_btn)
+        matrix_box.addLayout(matrix_btns)
         layout.addLayout(matrix_box, stretch=6)
 
         # ==== Связывание событий ====
@@ -87,35 +91,33 @@ class SettingWidget(QDialog):
         self.add_chrom_btn.clicked.connect(self.add_chrom)
         self.del_chrom_btn.clicked.connect(self.delete_chrom)
         self.save_matrix_btn.clicked.connect(self.save_matrix)
+        self.random_matrix_btn.clicked.connect(self.fill_matrix_random)
+        self.back_btn.clicked.connect(self.close)
 
         # ==== Инициализация таблиц ====
         self.reload_devices()
         self.reload_chroms()
         self.reload_matrix()
 
+    # ==== КНОПКА РАНДОМИЗАЦИИ ====
+    def fill_matrix_random(self):
+        """Заполняет матрицу коэффициентов случайными значениями."""
+        self.matrix_table.set_random_values()
+
     # ==== УСТРОЙСТВА ====
     def reload_devices(self):
-        """
-        Загружает устройства из БД и обновляет таблицу устройств.
-        """
         with get_db_session() as session:
             self.devices = session.query(Device).all()
         self.device_table.fill(self.devices)
         self.on_device_selected()
 
     def get_selected_device(self):
-        """
-        Возвращает выбранное устройство (или None).
-        """
         rows = self.device_table.selectionModel().selectedRows()
         if not rows:
             return None
         return self.devices[rows[0].row()]
 
     def add_device(self):
-        """
-        Диалог добавления нового устройства.
-        """
         text, ok = QInputDialog.getText(self, "Добавить устройство", "Название устройства:")
         if ok and text:
             with get_db_session() as session:
@@ -125,9 +127,6 @@ class SettingWidget(QDialog):
             self.reload_devices()
 
     def delete_device(self):
-        """
-        Диалог удаления устройства.
-        """
         d = self.get_selected_device()
         if not d:
             QMessageBox.warning(self, "Ошибка", "Выберите устройство для удаления.")
@@ -144,13 +143,9 @@ class SettingWidget(QDialog):
     # ==== СПЕКТРЫ ====
     def update_spectrum_buttons(self):
         selected = self.spectrum_table.selectionModel().hasSelection()
-        self.edit_spectrum_btn.setEnabled(selected)
         self.del_spectrum_btn.setEnabled(selected)
 
     def reload_spectra(self):
-        """
-        Загружает спектры для выбранного устройства.
-        """
         d = self.get_selected_device()
         if not d:
             self.spectrum_table.setRowCount(0)
@@ -162,35 +157,28 @@ class SettingWidget(QDialog):
         self.update_spectrum_buttons()
 
     def get_selected_spectrum(self):
-        """
-        Возвращает выбранный спектр (или None).
-        """
         rows = self.spectrum_table.selectionModel().selectedRows()
         if not rows or not hasattr(self, 'spectra'):
             return None
         return self.spectra[rows[0].row()]
 
     def add_spectrum(self):
-        """
-        Диалог добавления нового спектра для устройства.
-        """
         d = self.get_selected_device()
         if not d:
             QMessageBox.warning(self, "Ошибка", "Сначала выберите устройство.")
             return
-        w, ok = QInputDialog.getInt(self, "Длина волны", "Введите длину волны (нм):", min=200, max=1100)
-        if ok:
+
+        dlg = AddSpectrumDialog(self)
+        if dlg.exec() == QDialog.DialogCode.Accepted:
+            w, r, g, b = dlg.get_values()
             with get_db_session() as session:
-                spec = Spectrum(device_id=d.id, wavelength=w)
+                spec = Spectrum(device_id=d.id, wavelength=w, rgb_r=r, rgb_g=g, rgb_b=b)
                 session.add(spec)
                 session.commit()
             self.reload_spectra()
             self.reload_matrix()
 
     def delete_spectrum(self):
-        """
-        Диалог удаления спектра.
-        """
         s = self.get_selected_spectrum()
         if not s:
             QMessageBox.warning(self, "Ошибка", "Выберите спектр для удаления.")
@@ -207,26 +195,17 @@ class SettingWidget(QDialog):
 
     # ==== ХРОМОФОРЫ ====
     def reload_chroms(self):
-        """
-        Загружает хромофоры из БД.
-        """
         with get_db_session() as session:
             self.chroms = session.query(Chromophore).order_by(Chromophore.name).all()
         self.chrom_table.fill(self.chroms)
 
     def get_selected_chrom(self):
-        """
-        Возвращает выбранный хромофор (или None).
-        """
         rows = self.chrom_table.selectionModel().selectedRows()
         if not rows or not hasattr(self, 'chroms'):
             return None
         return self.chroms[rows[0].row()]
 
     def add_chrom(self):
-        """
-        Диалог добавления хромофора.
-        """
         text, ok = QInputDialog.getText(self, "Добавить хромофор", "Название хромофора:")
         if ok and text:
             with get_db_session() as session:
@@ -237,9 +216,6 @@ class SettingWidget(QDialog):
             self.reload_matrix()
 
     def delete_chrom(self):
-        """
-        Диалог удаления хромофора.
-        """
         c = self.get_selected_chrom()
         if not c:
             QMessageBox.warning(self, "Ошибка", "Выберите хромофор для удаления.")
@@ -256,9 +232,6 @@ class SettingWidget(QDialog):
 
     # ==== МАТРИЦА КОЭФФИЦИЕНТОВ ====
     def reload_matrix(self):
-        """
-        Загружает матрицу коэффициентов для выбранного устройства.
-        """
         d = self.get_selected_device()
         if not d:
             self.matrix_table.setRowCount(0)
@@ -277,31 +250,34 @@ class SettingWidget(QDialog):
         self.matrix_table.fill(spectra, chromos, coefs)
 
     def save_matrix(self):
-        """
-        Сохраняет значения коэффициентов из матрицы в БД.
-        """
         d = self.get_selected_device()
-        if not d or not hasattr(self.matrix_table, "matrix_data"):
+        if not d:
             return
         with get_db_session() as session:
             chromos = session.query(Chromophore).order_by(Chromophore.name).all()
-            for i, (s, row) in enumerate(self.matrix_table.matrix_data):
-                for j, spin in enumerate(row):
+            spectra = session.query(Spectrum).filter_by(device_id=d.id).order_by(Spectrum.wavelength).all()
+            for i, s in enumerate(spectra):
+                for j, chrom in enumerate(chromos):
+                    spin = self.matrix_table.cellWidget(i, j)
+                    if spin is None:
+                        continue
                     val = spin.value()
-                    chrom_id = chromos[j].id
-                    coef = session.query(OverlapCoefficient).filter_by(spectrum_id=s.id, chromophore_id=chrom_id).first()
+                    coef = session.query(OverlapCoefficient).filter_by(
+                        spectrum_id=s.id,
+                        chromophore_id=chrom.id
+                    ).first()
                     if coef:
                         coef.coefficient = val
                     else:
-                        coef = OverlapCoefficient(spectrum_id=s.id, chromophore_id=chrom_id, coefficient=val)
+                        coef = OverlapCoefficient(
+                            spectrum_id=s.id,
+                            chromophore_id=chrom.id,
+                            coefficient=val
+                        )
                         session.add(coef)
             session.commit()
         QMessageBox.information(self, "Готово", "Коэффициенты сохранены.")
 
-    # ==== ВСПОМОГАТЕЛЬНОЕ ====
     def on_device_selected(self):
-        """
-        Слот: выбранное устройство изменилось — обновить спектры и матрицу.
-        """
         self.reload_spectra()
         self.reload_matrix()

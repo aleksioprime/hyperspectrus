@@ -123,7 +123,7 @@ class Session(Base):
     operator = relationship("User", back_populates="sessions")
     raw_images = relationship("RawImage", back_populates="session", cascade="all, delete-orphan")
     reconstructed_images = relationship("ReconstructedImage", back_populates="session", cascade="all, delete-orphan")
-    result = relationship("Result", back_populates="session", uselist=False, single_parent=True)
+    result = relationship("Result", back_populates="session", uselist=False, single_parent=True, cascade="all, delete-orphan")
 
 class RawImage(Base):
     __tablename__ = 'raw_images'

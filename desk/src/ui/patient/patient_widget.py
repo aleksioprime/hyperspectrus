@@ -3,8 +3,9 @@ import shutil
 
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit, QTableWidget,
-    QTableWidgetItem, QMessageBox, QHeaderView, QLabel
+    QTableWidgetItem, QMessageBox, QHeaderView, QLabel, QDialog
 )
+from PyQt6.QtCore import pyqtSignal
 from sqlalchemy.orm import joinedload
 
 from ui.patient.patient_dialog import PatientDialog
@@ -12,6 +13,8 @@ from ui.patient.session_dialog import SessionDialog
 from ui.session.session_widget import SessionWidget
 from ui.setting.setting_widget import SettingWidget
 from ui.patient.device_dialog import DeviceBindingDialog
+from ui.user_profile_dialog import UserProfileDialog
+from ui.create_user_widget import CreateUserDialog # Added import
 from services.device_api import create_device_task
 
 from db.db import get_db_session
@@ -23,6 +26,7 @@ class PatientsWidget(QWidget):
     Виджет для управления пациентами и их сеансами.
     Левый столбец — пациенты, правый — сеансы выбранного пациента.
     """
+    logout_requested = pyqtSignal()
 
     def __init__(self, user=None):
         """
@@ -70,6 +74,16 @@ class PatientsWidget(QWidget):
         btn_row.addWidget(self.del_btn)
         btn_row.addWidget(self.settings_btn)
         left_box.addLayout(btn_row)
+
+        # User action buttons
+        user_actions_btn_row = QHBoxLayout()
+        self.create_user_btn = QPushButton("Создать пользователя")
+        self.view_profile_btn = QPushButton("Профиль")
+        self.logout_btn = QPushButton("Выйти")
+        user_actions_btn_row.addWidget(self.create_user_btn)
+        user_actions_btn_row.addWidget(self.view_profile_btn)
+        user_actions_btn_row.addWidget(self.logout_btn)
+        left_box.addLayout(user_actions_btn_row)
 
         # Левая часть — шире
         left_box_widget = QWidget()
@@ -124,6 +138,11 @@ class PatientsWidget(QWidget):
         self.delete_session_btn.clicked.connect(self.delete_session)
         self.device_ip_btn.clicked.connect(self.open_device_bindings)
 
+        # New user action buttons signals
+        self.create_user_btn.clicked.connect(self.create_new_user_clicked)
+        self.view_profile_btn.clicked.connect(self.view_profile_clicked)
+        self.logout_btn.clicked.connect(self.logout_clicked)
+
         # Загрузка данных
         self.reload()
         if self.table.rowCount() > 0:
@@ -131,6 +150,29 @@ class PatientsWidget(QWidget):
             self.on_patient_selected()
 
     # ===== МЕТОДЫ =====
+
+    # Placeholder methods for new user actions
+    def create_new_user_clicked(self):
+        # We'll pass a parameter to indicate this is not for initial superuser setup.
+        # The CreateUserDialog will need to be modified to handle this parameter.
+        create_user_dialog = CreateUserDialog(parent=self, is_creating_superuser=False) 
+        if create_user_dialog.exec() == QDialog.DialogCode.Accepted:
+            # Optionally, display a success message or refresh a user list if applicable.
+            # For now, just printing a confirmation is fine.
+            print("New user created (dialog accepted).") 
+        else:
+            print("New user creation cancelled.")
+
+    def view_profile_clicked(self):
+        if self.user:  # Ensure user object exists
+            dialog = UserProfileDialog(user=self.user, parent=self)
+            dialog.exec()
+        else:
+            # Optionally, show a QMessageBox.warning if self.user is None for some reason
+            QMessageBox.warning(self, "Ошибка", "Информация о пользователе недоступна.")
+
+    def logout_clicked(self):
+        self.logout_requested.emit()
 
     def open_settings(self):
         """

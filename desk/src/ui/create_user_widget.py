@@ -13,10 +13,14 @@ from db.models import User
 
 
 class CreateUserDialog(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, is_creating_superuser=True):
         super().__init__(parent)
+        self.is_creating_superuser = is_creating_superuser
 
-        self.setWindowTitle("Create Initial Superuser")
+        if self.is_creating_superuser:
+            self.setWindowTitle("Создание главного администратора")
+        else:
+            self.setWindowTitle("Создание нового пользователя")
 
         # Layouts
         layout = QVBoxLayout(self)
@@ -106,7 +110,7 @@ class CreateUserDialog(QDialog):
             first_name=first_name,
             last_name=last_name,
             email=email,
-            is_superuser=True,
+            is_superuser=self.is_creating_superuser,
             is_active=True,
         )
         db_session.add(new_user)
@@ -160,13 +164,29 @@ if __name__ == '__main__':
 
 
     app = QApplication(sys.argv)
-    dialog = CreateUserDialog()
-    if dialog.exec():
-        print("User creation accepted.")
+    # Test with default (superuser)
+    dialog_super = CreateUserDialog() 
+    print(f"Dialog for superuser, title: {dialog_super.windowTitle()}")
+    if dialog_super.exec():
+        print("Superuser creation accepted.")
+    else:
+        print("Superuser creation cancelled.")
+
+    # Test for regular user
+    dialog_regular = CreateUserDialog(is_creating_superuser=False)
+    print(f"Dialog for regular user, title: {dialog_regular.windowTitle()}")
+    if dialog_regular.exec():
+        print("Regular user creation accepted.")
+    else:
+        print("Regular user creation cancelled.")
     else:
         print("User creation cancelled.")
 
     # Restore original functions if necessary, though for a test script exit it might not matter
     get_db_session = original_get_db_session
     User = original_User
-    sys.exit(app.exec())
+    # sys.exit(app.exec()) # app.exec() was already called by dialog.exec()
+    # For testing, we don't need to call app.exec() again as dialog.exec() starts its own event loop.
+    # If we wanted to show multiple dialogs non-modally, we'd need one app.exec() at the end.
+    # But since these are modal and sequential for testing, it's fine.
+    sys.exit(0) # Exit after tests are done

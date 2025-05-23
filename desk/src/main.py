@@ -18,36 +18,29 @@ def main():
     init_db()
     app = QApplication(sys.argv)
 
-    # Use the new has_users() function
-    proceed_to_login = False
+    while True:
+        if not has_users():
+            create_user_dialog = CreateUserDialog()
+            if create_user_dialog.exec() != QDialog.DialogCode.Accepted:
+                sys.exit(0)
+        
+        login = LoginDialog()
+        if login.exec() == QDialog.DialogCode.Accepted:
+            user = login.user
+            win = MainWindow(user)
+            win.show()
+            center_window_on_screen(win)
+            
+            app_exit_code = app.exec()
 
-    if not has_users():
-        # No users exist, show create user dialog
-        create_user_dialog = CreateUserDialog()
-        if create_user_dialog.exec() == QDialog.DialogCode.Accepted:
-            proceed_to_login = True
+            if hasattr(win, 'is_logging_out') and win.is_logging_out:
+                del win
+                continue  # Re-enter the loop to show login dialog
+            else:
+                sys.exit(app_exit_code) # Normal window close
         else:
-            # User cancelled creation, exit
+            # Login dialog was cancelled
             sys.exit(0)
-    else:
-        # Users exist
-        proceed_to_login = True
-
-    if proceed_to_login:
-        login_dialog = LoginDialog()
-        if login_dialog.exec() == QDialog.DialogCode.Accepted:
-            user = login_dialog.user
-            main_window = MainWindow(user)
-            main_window.show()
-            center_window_on_screen(main_window)
-            sys.exit(app.exec())
-        else:
-            # User cancelled login, exit
-            sys.exit(0)
-    else:
-        # This case should ideally not be reached if logic is correct,
-        # but as a fallback, exit.
-        sys.exit(0)
 
 if __name__ == "__main__":
     main()

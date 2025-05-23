@@ -23,3 +23,9 @@ def get_db_session():
         yield session
     finally:
         session.close()
+
+def has_users():
+    """Checks if there are any users in the database."""
+    from .models import User  # Local import to avoid circular dependency if models import db
+    with get_db_session() as session:
+        return session.query(User).first() is not None

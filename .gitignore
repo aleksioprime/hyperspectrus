@@ -3,10 +3,11 @@ records
 archive
 photos
 downloaded_photos
+app.db
 __pycache__
 .python-version
 .pytest_cache
 .DS_Store
 .env
 .env.prod
-.idea
+.ide

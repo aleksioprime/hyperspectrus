@@ -1,11 +1,13 @@
 import pytest
-from PyQt6.QtWidgets import QDialog, QMessageBox # For DialogCode and QMessageBox
-from unittest.mock import patch
-from sqlalchemy.exc import IntegrityError # For specific db errors if needed
 
-from desk.src.ui.create_user_widget import CreateUserDialog
-from desk.src.db.models import User
+from PyQt6.QtWidgets import QDialog, QMessageBox
+from unittest.mock import patch
+from sqlalchemy.exc import IntegrityError
 from werkzeug.security import check_password_hash
+
+from src.ui.user.create_user_widget import CreateUserDialog
+from src.db.models import User
+
 
 # db_session fixture from conftest.py will be used
 
@@ -23,14 +25,14 @@ def test_create_superuser_successful(qtbot, db_session):
     qtbot.addWidget(dialog)
 
     _fill_dialog(dialog, "supertest", "pass123", "pass123", "Super", "User", "super@example.com")
-    
+
     # The dialog's create_user uses its own session, so we can't directly mock get_db_session easily
     # unless we monkeypatch it globally for this test.
     # For now, we'll let it run and check results.
     dialog.create_user()
 
     assert dialog.result() == QDialog.DialogCode.Accepted
-    
+
     user = db_session.query(User).filter_by(username="supertest").first()
     assert user is not None
     assert user.email == "super@example.com"
@@ -46,7 +48,7 @@ def test_create_regular_user_successful(qtbot, db_session):
     dialog.create_user()
 
     assert dialog.result() == QDialog.DialogCode.Accepted
-    
+
     user = db_session.query(User).filter_by(username="regtest").first()
     assert user is not None
     assert user.email == "reg@example.com"
@@ -67,7 +69,7 @@ def test_create_user_password_mismatch(qtbot, db_session):
     args, _ = mock_warning.call_args
     assert "Passwords do not match" in args[1] # Check message content
     assert dialog.result() != QDialog.DialogCode.Accepted
-    
+
     user = db_session.query(User).filter_by(username="mismatchuser").first()
     assert user is None
 
@@ -79,12 +81,12 @@ def test_create_user_empty_field_username(qtbot, db_session):
 
     with patch.object(QMessageBox, 'warning') as mock_warning:
         dialog.create_user()
-    
+
     mock_warning.assert_called_once()
     args, _ = mock_warning.call_args
     assert "All fields must be filled" in args[1]
     assert dialog.result() != QDialog.DialogCode.Accepted
-    
+
     user = db_session.query(User).filter_by(email="empty@example.com").first()
     assert user is None
 
@@ -96,12 +98,12 @@ def test_create_user_empty_field_email(qtbot, db_session):
 
     with patch.object(QMessageBox, 'warning') as mock_warning:
         dialog.create_user()
-    
+
     mock_warning.assert_called_once()
     args, _ = mock_warning.call_args
     assert "All fields must be filled" in args[1] # Or "Invalid email address" if it hits that first
     assert dialog.result() != QDialog.DialogCode.Accepted
-    
+
     user = db_session.query(User).filter_by(username="emptyemailuser").first()
     assert user is None
 
@@ -113,12 +115,12 @@ def test_create_user_invalid_email(qtbot, db_session):
 
     with patch.object(QMessageBox, 'warning') as mock_warning:
         dialog.create_user()
-    
+
     mock_warning.assert_called_once()
     args, _ = mock_warning.call_args
     assert "Invalid email address" in args[1]
     assert dialog.result() != QDialog.DialogCode.Accepted
-    
+
     user = db_session.query(User).filter_by(username="invalidemailuser").first()
     assert user is None
 
@@ -136,7 +138,7 @@ def test_create_user_duplicate_username(qtbot, db_session):
     # The dialog's create_user catches IntegrityError and shows QMessageBox.critical
     with patch.object(QMessageBox, 'critical') as mock_critical:
         dialog.create_user()
-    
+
     mock_critical.assert_called_once()
     args, _ = mock_critical.call_args
     assert "Could not create user" in args[1] # Check message content
@@ -154,7 +156,7 @@ def test_create_user_duplicate_email(qtbot, db_session):
 
     with patch.object(QMessageBox, 'critical') as mock_critical:
         dialog.create_user()
-        
+
     mock_critical.assert_called_once()
     args, _ = mock_critical.call_args
     assert "Could not create user" in args[1]

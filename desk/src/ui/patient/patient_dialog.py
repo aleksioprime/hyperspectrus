@@ -12,6 +12,7 @@ class PatientDialog(QDialog):
         self.patient = patient
 
         layout = QFormLayout(self)
+        layout.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
 
         # --- Поля ввода данных ---
         self.name_edit = QLineEdit()
@@ -19,6 +20,7 @@ class PatientDialog(QDialog):
         self.birth_edit.setDisplayFormat("dd.MM.yyyy")
         self.birth_edit.setCalendarPopup(True)
         self.notes_edit = QTextEdit()
+        self.notes_edit.setMaximumHeight(60)
 
         layout.addRow("ФИО пациента:", self.name_edit)
         layout.addRow("Дата рождения:", self.birth_edit)
@@ -26,6 +28,7 @@ class PatientDialog(QDialog):
 
         # --- Кнопки ---
         btn_layout = QHBoxLayout()
+        btn_layout.addStretch()
         self.save_btn = QPushButton("Сохранить")
         self.cancel_btn = QPushButton("Отмена")
         btn_layout.addWidget(self.save_btn)

@@ -3,7 +3,7 @@ import shutil
 
 from PyQt6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit, QTableWidget,
-    QTableWidgetItem, QMessageBox, QHeaderView, QLabel, QDialog
+    QTableWidgetItem, QMessageBox, QHeaderView, QLabel, QDialog, QApplication
 )
 from PyQt6.QtCore import pyqtSignal
 from sqlalchemy.orm import joinedload
@@ -13,8 +13,8 @@ from ui.patient.session_dialog import SessionDialog
 from ui.session.session_widget import SessionWidget
 from ui.setting.setting_widget import SettingWidget
 from ui.patient.device_dialog import DeviceBindingDialog
-from ui.user_profile_dialog import UserProfileDialog
-from ui.create_user_widget import CreateUserDialog # Added import
+from ui.user.user_profile_dialog import UserProfileDialog
+from ui.user.create_user_widget import CreateUserDialog
 from services.device_api import create_device_task
 
 from db.db import get_db_session
@@ -38,7 +38,7 @@ class PatientsWidget(QWidget):
         self.user = user
 
         # Главный горизонтальный layout
-        main_layout = QHBoxLayout(self)
+        main_layout = QVBoxLayout(self)
         main_layout.setContentsMargins(10, 10, 10, 10)
         main_layout.setSpacing(20)
 
@@ -75,21 +75,11 @@ class PatientsWidget(QWidget):
         btn_row.addWidget(self.settings_btn)
         left_box.addLayout(btn_row)
 
-        # User action buttons
-        user_actions_btn_row = QHBoxLayout()
-        self.create_user_btn = QPushButton("Создать пользователя")
-        self.view_profile_btn = QPushButton("Профиль")
-        self.logout_btn = QPushButton("Выйти")
-        user_actions_btn_row.addWidget(self.create_user_btn)
-        user_actions_btn_row.addWidget(self.view_profile_btn)
-        user_actions_btn_row.addWidget(self.logout_btn)
-        left_box.addLayout(user_actions_btn_row)
-
         # Левая часть — шире
         left_box_widget = QWidget()
         left_box_widget.setLayout(left_box)
         left_box_widget.setMinimumWidth(500)
-        main_layout.addWidget(left_box_widget)
+        # main_layout.addWidget(left_box_widget)
 
         # ==== ПРАВАЯ КОЛОНКА: СЕАНСЫ ====
         right_box = QVBoxLayout()
@@ -122,7 +112,26 @@ class PatientsWidget(QWidget):
         right_box_widget = QWidget()
         right_box_widget.setLayout(right_box)
         right_box_widget.setMinimumWidth(300)
-        main_layout.addWidget(right_box_widget)
+
+        content_layout = QHBoxLayout()
+        content_layout.addWidget(left_box_widget)
+        content_layout.addWidget(right_box_widget)
+
+         # User action buttons
+        button_layout = QHBoxLayout()
+        self.create_user_btn = QPushButton("Создать пользователя")
+        self.view_profile_btn = QPushButton("Профиль")
+        self.logout_btn = QPushButton("Выйти из аккаунта")
+        self.close_btn = QPushButton("Выход из программы")
+        button_layout.addWidget(self.create_user_btn)
+        button_layout.addWidget(self.view_profile_btn)
+        button_layout.addWidget(self.logout_btn)
+        button_layout.addStretch()
+        button_layout.addWidget(self.close_btn)
+
+        # main_layout.addWidget(right_box_widget)
+        main_layout.addLayout(content_layout)
+        main_layout.addLayout(button_layout)
 
         # ==== ПОДПИСКА НА СОБЫТИЯ ====
         self.add_btn.clicked.connect(self.add_patient)
@@ -142,6 +151,7 @@ class PatientsWidget(QWidget):
         self.create_user_btn.clicked.connect(self.create_new_user_clicked)
         self.view_profile_btn.clicked.connect(self.view_profile_clicked)
         self.logout_btn.clicked.connect(self.logout_clicked)
+        self.close_btn.clicked.connect(QApplication.quit)
 
         # Загрузка данных
         self.reload()
@@ -155,11 +165,11 @@ class PatientsWidget(QWidget):
     def create_new_user_clicked(self):
         # We'll pass a parameter to indicate this is not for initial superuser setup.
         # The CreateUserDialog will need to be modified to handle this parameter.
-        create_user_dialog = CreateUserDialog(parent=self, is_creating_superuser=False) 
+        create_user_dialog = CreateUserDialog(parent=self, is_creating_superuser=False)
         if create_user_dialog.exec() == QDialog.DialogCode.Accepted:
             # Optionally, display a success message or refresh a user list if applicable.
             # For now, just printing a confirmation is fine.
-            print("New user created (dialog accepted).") 
+            print("New user created (dialog accepted).")
         else:
             print("New user creation cancelled.")
 

@@ -1,9 +1,8 @@
 import pytest
 from PyQt6.QtWidgets import QDialog, QLineEdit, QPushButton
 
-from desk.src.ui.user_profile_dialog import UserProfileDialog
-from desk.src.db.models import User # For type hinting and creating mock user instances
-# db_session fixture is not directly needed as this dialog only displays data from a User object.
+from src.ui.user.user_profile_dialog import UserProfileDialog
+from src.db.models import User
 
 def test_user_profile_dialog_displays_user_info_no_name(qtbot):
     """Test display with a user having username, email, but no first/last name."""
@@ -13,22 +12,22 @@ def test_user_profile_dialog_displays_user_info_no_name(qtbot):
         is_superuser=True
         # first_name and last_name are None by default
     )
-    
+
     dialog = UserProfileDialog(user=mock_user)
     qtbot.addWidget(dialog)
 
     assert dialog.username_input.text() == "testuser_no_name"
     assert dialog.username_input.isReadOnly()
-    
+
     assert dialog.first_name_input.text() == "N/A" # Default for None
     assert dialog.first_name_input.isReadOnly()
-    
+
     assert dialog.last_name_input.text() == "N/A" # Default for None
     assert dialog.last_name_input.isReadOnly()
-    
+
     assert dialog.email_input.text() == "test_no_name@example.com"
     assert dialog.email_input.isReadOnly()
-    
+
     assert dialog.is_superuser_input.text() == "Да" # is_superuser=True
     assert dialog.is_superuser_input.isReadOnly()
 
@@ -41,22 +40,22 @@ def test_user_profile_dialog_displays_user_info_full(qtbot):
         email="full@example.com",
         is_superuser=False
     )
-    
+
     dialog = UserProfileDialog(user=mock_user_full)
     qtbot.addWidget(dialog)
 
     assert dialog.username_input.text() == "fulluser"
     assert dialog.username_input.isReadOnly()
-    
+
     assert dialog.first_name_input.text() == "Full"
     assert dialog.first_name_input.isReadOnly()
-    
+
     assert dialog.last_name_input.text() == "User"
     assert dialog.last_name_input.isReadOnly()
-    
+
     assert dialog.email_input.text() == "full@example.com"
     assert dialog.email_input.isReadOnly()
-    
+
     assert dialog.is_superuser_input.text() == "Нет" # is_superuser=False
     assert dialog.is_superuser_input.isReadOnly()
 
@@ -68,7 +67,7 @@ def test_user_profile_dialog_displays_user_info_with_org_field_absent(qtbot):
     """
     # Mocking an organization object with a 'name' attribute
     mock_org = type('MockOrg', (), {'name': 'TestCorp'})()
-    
+
     mock_user_with_org = User(
         username="orguser",
         first_name="Org",
@@ -77,7 +76,7 @@ def test_user_profile_dialog_displays_user_info_with_org_field_absent(qtbot):
         is_superuser=False,
         organization=mock_org # Assigning the mock organization
     )
-    
+
     dialog = UserProfileDialog(user=mock_user_with_org)
     qtbot.addWidget(dialog)
 
@@ -87,7 +86,7 @@ def test_user_profile_dialog_displays_user_info_with_org_field_absent(qtbot):
     assert dialog.last_name_input.text() == "User"
     assert dialog.email_input.text() == "org@example.com"
     assert dialog.is_superuser_input.text() == "Нет"
-    
+
     # Verify no QLineEdit was accidentally created for organization
     # (assuming all QLineEdits are direct children of the dialog or its main layout's form_layout)
     # This is a bit fragile, depends on layout structure.
@@ -106,7 +105,7 @@ def test_user_profile_dialog_ok_button(qtbot):
         username="okuser",
         email="ok@example.com"
     )
-    
+
     dialog = UserProfileDialog(user=mock_user)
     qtbot.addWidget(dialog)
 
@@ -117,6 +116,6 @@ def test_user_profile_dialog_ok_button(qtbot):
     # Simulate a click on the OK button
     # qtbot.mouseClick(dialog.ok_button, Qt.MouseButton.LeftButton)
     # Or, since it's connected to self.accept:
-    dialog.ok_button.click() 
+    dialog.ok_button.click()
 
     assert dialog.result() == QDialog.DialogCode.Accepted

@@ -172,6 +172,8 @@ class Result(Base):
     s_coefficient = Column(Float, nullable=False)
     mean_lesion_thb = Column(Float, nullable=False)
     mean_skin_thb = Column(Float, nullable=False)
+    segmentation_otsu_threshold = Column(Float, nullable=True)  # Фактическое пороговое значение, использованное для сегментации Отсу
+    segmentation_gaussian_sigma = Column(Float, nullable=True)  # Значение sigma, использованное для Гауссова размытия перед сегментацией
     notes = Column(String)
 
     session = relationship("Session", back_populates="result")

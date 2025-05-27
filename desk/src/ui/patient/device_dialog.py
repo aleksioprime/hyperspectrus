@@ -274,6 +274,9 @@ class DeviceBindingDialog(QDialog):
         for ip, thread in list(self.status_threads.items()):
             if thread.isRunning():
                 thread.quit()
-                thread.wait()
+                if not thread.wait(1500):  # Ожидание 1.5 секунды (немного больше таймаута worker'а)
+                    print(f"ПРЕДУПРЕЖДЕНИЕ: Поток для IP {ip} не завершился вовремя в DeviceBindingDialog.closeEvent().")
+                    # В крайнем случае, если terminate() будет признан необходимым после дальнейшего анализа,
+                    # он мог бы быть здесь, но пока воздержимся.
         self.status_threads.clear()
         super().closeEvent(event)

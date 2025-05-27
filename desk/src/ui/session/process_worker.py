@@ -1,14 +1,17 @@
-import os
-import numpy as np
-from PIL import Image
-from sqlalchemy.orm import joinedload
-from skimage.filters import threshold_otsu
-import uuid
+import os  # Для работы с файловой системой (пути, создание папок, удаление файлов)
+import numpy as np  # Основная библиотека для численных операций и работы с массивами
+from PIL import Image  # Python Imaging Library (Pillow) для работы с изображениями (открытие, сохранение)
+from sqlalchemy.orm import joinedload  # Для оптимизации запросов SQLAlchemy (жадная загрузка связанных объектов)
+from skimage.filters import threshold_otsu, gaussian  # Функции из scikit-image для обработки изображений (порог Отсу, фильтр Гаусса)
+import cv2  # OpenCV для продвинутых операций с изображениями (здесь используется для метода Отсу)
+import uuid  # Для генерации уникальных идентификаторов (UUID)
 
-from PyQt6.QtCore import pyqtSignal, QObject
+from PyQt6.QtCore import pyqtSignal, QObject  # Основные классы Qt для создания сигналов и объектов
 
-from db.db import SessionLocal
-from db.models import RawImage, Chromophore, OverlapCoefficient, Result, ReconstructedImage
+from db.db import SessionLocal  # Фабрика сессий SQLAlchemy для взаимодействия с БД
+from db.models import (  # Модели SQLAlchemy, представляющие таблицы в базе данных
+    RawImage, Chromophore, OverlapCoefficient, Result, ReconstructedImage
+)
 
 
 class ProcessWorker(QObject):
@@ -26,6 +29,9 @@ class ProcessWorker(QObject):
         Основной метод обработки: считает концентрации хромофоров, сегментирует снимки и сохраняет результаты.
         """
         db = None
+        # Инициализация переменных для параметров сегментации значениями по умолчанию
+        computed_otsu_threshold = None
+        gaussian_sigma_used = None
         try:
             # === ШАГ 1. Подготовка и загрузка данных ===
             self.progress.emit("Начало обработки...")
@@ -116,45 +122,96 @@ class ProcessWorker(QObject):
                         concentration_maps[:, y, x] = 0
             self.progress.emit("7/12: Карты концентраций рассчитаны.")
 
-            # === ШАГ 7. Суммирование карт Hb и HbO2 для расчета общей концентрации гемоглобина (THb) ===
+            # === ШАГ 7. Расчет общей концентрации гемоглобина (THb) ===
+            # THb рассчитывается как сумма абсолютных значений концентраций оксигемоглобина (HbO2) и дезоксигемоглобина (Hb).
             self.progress.emit("8/12: Расчет общей концентрации гемоглобина (THb)...")
+            
+            # Ищем индексы для HbO2 и Hb в списке хромофоров (нечувствительно к регистру)
             idx_hbo2 = next((i for i, c in enumerate(chromophores) if c.symbol.lower() in ["hbo2", "hb02"]), None)
             idx_hb = next((i for i, c in enumerate(chromophores) if c.symbol.lower() == "hb"), None)
 
+            # Логика расчета THb в зависимости от найденных хромофоров
             if idx_hbo2 is not None and idx_hb is not None:
+                # Оба хромофора (HbO2 и Hb) найдены. THb - это сумма их абсолютных концентраций.
                 thb_map = np.abs(concentration_maps[idx_hbo2]) + np.abs(concentration_maps[idx_hb])
-            elif idx_hbo2 is not None:  # Только HbO2 найден
+                self.progress.emit("Информация: THb = |HbO2| + |Hb|.")
+            elif idx_hbo2 is not None:  # Найден только HbO2
                 thb_map = np.abs(concentration_maps[idx_hbo2])
-                self.progress.emit("Предупреждение: Хромофор Hb не найден, THb = |HbO2|.")
-            elif idx_hb is not None:  # Только Hb найден
+                self.progress.emit("Предупреждение: Хромофор Hb не найден. THb рассчитывается как |HbO2|.")
+            elif idx_hb is not None:  # Найден только Hb
                 thb_map = np.abs(concentration_maps[idx_hb])
-                self.progress.emit("Предупреждение: Хромофор HbO2 не найден, THb = |Hb|.")
-            elif n_chroms > 0:  # Если оба не найдены, берем первый доступный хромофор
+                self.progress.emit("Предупреждение: Хромофор HbO2 не найден. THb рассчитывается как |Hb|.")
+            elif n_chroms > 0:  # Hb и HbO2 не найдены, но есть другие хромофоры
+                # Используем первый доступный хромофор для THb, если специфические не найдены.
                 thb_map = np.abs(concentration_maps[0])
-                self.progress.emit(f"Предупреждение: Hb и HbO2 не найдены. THb основан на первом хромофоре: {chromophores[0].symbol}.")
+                self.progress.emit(f"Предупреждение: Хромофоры Hb и HbO2 не найдены. THb основан на первом доступном хромофоре: {chromophores[0].symbol}.")
             else:
-                self.finished.emit(False, "Нет хромофоров для расчета THb.")
+                # Этот случай не должен возникать, так как проверка на n_chroms > 0 есть выше,
+                # но на всякий случай оставляем защиту.
+                self.finished.emit(False, "Критическая ошибка: Нет хромофоров для расчета THb.")
                 return
+            
             self.progress.emit("8/12: THb рассчитан.")
 
-            # === ШАГ 8. Сегментация THb-карты методом Отсу ===
-            self.progress.emit("9/12: Сегментация изображения (Otsu)...")
-            thb_norm = (thb_map - np.nanmin(thb_map)) / (np.nanmax(thb_map) - np.nanmin(thb_map) + 1e-8)
-            thb_img_uint8 = (thb_norm * 255).astype(np.uint8)
+            # === ШАГ 8. Сегментация THb-карты методом Отсу с предварительным размытием Гаусса ===
+            self.progress.emit("9/12: Сегментация изображения (Гаусс + Otsu)...")
+            
+            # a. Применение Гауссова размытия к THb-карте
+            gaussian_sigma_used = 1.0  # Заданное значение sigma для Гауссова фильтра
+            # preserve_range=True важно, чтобы значения не нормировались skimage автоматически до [0,1]
+            thb_blurred = gaussian(thb_map, sigma=gaussian_sigma_used, preserve_range=True) 
+            
+            # b. Нормализация размытого изображения к диапазону 0-255 и преобразование в uint8
+            min_val_blurred = np.nanmin(thb_blurred)
+            max_val_blurred = np.nanmax(thb_blurred)
+            range_val_blurred = max_val_blurred - min_val_blurred + 1e-8 # для избежания деления на ноль
+
+            thb_norm_uint8 = np.array(
+                (thb_blurred - min_val_blurred) / range_val_blurred * 255, 
+                dtype=np.uint8
+            )
+
+            # c. Применение порогового значения Отсу с помощью cv2.threshold
+            # cv2.threshold возвращает пороговое значение (otsu_thresh_val) и бинарное изображение (binary_img)
             try:
-                threshold_value = threshold_otsu(thb_img_uint8)
-            except Exception as otsu_e:
-                self.progress.emit(f"Ошибка Otsu: {otsu_e}. Используется порог 128.")
-                threshold_value = 128
-            mask_lesion = thb_img_uint8 >= threshold_value  # Маска очага поражения
-            mask_skin = thb_img_uint8 < threshold_value     # Маска здоровой кожи
-            self.progress.emit("9/12: Сегментация завершена.")
+                computed_otsu_threshold, binary_img = cv2.threshold( # Сохраняем порог в computed_otsu_threshold
+                    thb_norm_uint8, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU
+                )
+            except Exception as otsu_cv2_e:
+                # Обработка возможной ошибки в cv2.threshold (например, если изображение полностью однородное)
+                self.progress.emit(f"Ошибка Otsu (cv2): {otsu_cv2_e}. Попытка с skimage.filters.threshold_otsu...")
+                # В качестве запасного варианта используем skimage.filters.threshold_otsu, как было ранее, но на размытом изображении
+                try:
+                    computed_otsu_threshold = threshold_otsu(thb_norm_uint8) # Сохраняем порог
+                    binary_img = (thb_norm_uint8 >= computed_otsu_threshold).astype(np.uint8) * 255
+                except Exception as otsu_sk_e:
+                    self.progress.emit(f"Ошибка Otsu (skimage): {otsu_sk_e}. Используется порог 128.")
+                    computed_otsu_threshold = 128.0 # Значение по умолчанию, если и skimage не сработал (float)
+                    binary_img = (thb_norm_uint8 >= computed_otsu_threshold).astype(np.uint8) * 255
+
+
+            # d. Создание масок для очага поражения и здоровой кожи
+            # Очаг поражения - это пиксели со значением 255 в binary_img
+            mask_lesion = binary_img == 255
+            # Здоровая кожа - это остальные пиксели
+            mask_skin = binary_img != 255
+            
+            self.progress.emit(f"9/12: Сегментация завершена. Порог Otsu: {computed_otsu_threshold:.2f}")
 
             # === ШАГ 9. Расчет статистик по областям ===
+            # Расчет средних значений THb для областей интереса (поражение и здоровая кожа)
+            # и вычисление S-коэффициента.
             self.progress.emit("10/12: Расчет статистик...")
+            
+            # Среднее значение THb в области поражения (lesion). Расчет на основе оригинальной thb_map.
             mean_lesion_thb = float(np.nanmean(thb_map[mask_lesion])) if np.any(mask_lesion) else 0.0
+            # Среднее значение THb в области здоровой кожи (skin). Расчет на основе оригинальной thb_map.
             mean_skin_thb = float(np.nanmean(thb_map[mask_skin])) if np.any(mask_skin) else 0.0
+            
+            # Расчет S-коэффициента как отношение среднего THb в очаге к среднему THb здоровой кожи.
+            # Обработка деления на ноль: если mean_skin_thb близок к нулю, s_coefficient принимается равным 0.0.
             s_coefficient = mean_lesion_thb / mean_skin_thb if mean_skin_thb > 1e-6 else 0.0
+            
             self.progress.emit("10/12: Статистики рассчитаны.")
 
             # === ШАГ 10. Сохранение изображений (THb-карта и маска Otsu) ===
@@ -164,7 +221,15 @@ class ProcessWorker(QObject):
             os.makedirs(processed_dir, exist_ok=True)
 
             thb_img_path = os.path.join(processed_dir, "thb_map.png")
-            Image.fromarray((thb_norm * 255).astype(np.uint8)).save(thb_img_path)
+            # Для сохранения THb-карты используется thb_map, нормализованная для визуализации.
+            # Важно: thb_norm_uint8 (использованный для сегментации) НЕ используется здесь для сохранения thb_map.
+            # Необходимо нормализовать оригинальную thb_map для сохранения.
+            thb_map_min = np.nanmin(thb_map)
+            thb_map_max = np.nanmax(thb_map)
+            thb_map_range = thb_map_max - thb_map_min + 1e-8
+            thb_map_for_saving_normalized = (thb_map - thb_map_min) / thb_map_range
+            Image.fromarray((thb_map_for_saving_normalized * 255).astype(np.uint8)).save(thb_img_path)
+            
             mask_img_path = os.path.join(processed_dir, "mask_otsu.png")
             Image.fromarray((mask_lesion * 255).astype(np.uint8)).save(mask_img_path)
 
@@ -213,6 +278,8 @@ class ProcessWorker(QObject):
                 s_coefficient=s_coefficient,
                 mean_lesion_thb=mean_lesion_thb,
                 mean_skin_thb=mean_skin_thb,
+                segmentation_otsu_threshold=computed_otsu_threshold, # Новое поле
+                segmentation_gaussian_sigma=gaussian_sigma_used,   # Новое поле
                 notes="Автоматическая обработка (поточная)"
             )
             db.add(result_obj)

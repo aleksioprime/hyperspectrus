@@ -115,8 +115,14 @@ class SessionDialog(QDialog):
         if hasattr(self, '_status_thread') and self._status_thread is not None:
             if self._status_thread.isRunning():
                 self._status_thread.quit()
-                self._status_thread.wait()
-            # Обязательно удаляем ссылку, иначе она останется на удалённый объект!
+                if not self._status_thread.wait(1500): # Добавляем таймаут и проверку
+                    print(f"ПРЕДУПРЕЖДЕНИЕ: Предыдущий _status_thread не завершился вовремя в SessionDialog.check_device_status().")
+            # Явно удаляем предыдущий worker и обнуляем ссылку
+            if hasattr(self, '_status_worker') and self._status_worker:
+                self._status_worker.deleteLater() # <--- Улучшение
+                self._status_worker = None        # <--- Улучшение
+            # Можно также рассмотреть deleteLater для _status_thread, если он QObject
+            # self._status_thread.deleteLater() # QThread сам удалится, когда worker будет удален и поток завершится
             self._status_thread = None
 
         # Запускаем новый поток проверки
@@ -176,7 +182,11 @@ class SessionDialog(QDialog):
         if hasattr(self, '_status_thread') and self._status_thread is not None:
             if self._status_thread.isRunning():
                 self._status_thread.quit()
-                self._status_thread.wait()
-            self._status_thread = None
-            self._status_worker = None
+                if not self._status_thread.wait(1500): # Ожидание 1.5 секунды
+                    print("ПРЕДУПРЕЖДЕНИЕ: Поток _status_thread не завершился вовремя в SessionDialog.closeEvent().")
+            # Явное удаление worker'а здесь также может быть полезным, если он не был удален ранее
+            if hasattr(self, '_status_worker') and self._status_worker:
+                self._status_worker.deleteLater() # <--- Улучшение
+                self._status_worker = None        # <--- Улучшение (это было тут, но deleteLater важно)
+            self._status_thread = None # Обнуление ссылки на поток остается
         super().closeEvent(event)

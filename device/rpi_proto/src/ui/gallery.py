@@ -1,4 +1,6 @@
-from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout
+from PyQt5.QtWidgets import (
+    QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QSizePolicy
+)
 from PyQt5.QtGui import QPixmap, QIcon
 from PyQt5.QtCore import Qt, QSize
 from services.photo import get_photos_for_task
@@ -16,7 +18,6 @@ class GalleryWidget(QWidget):
     def __init__(self, task_id):
         super().__init__()
         self.setWindowTitle("Галерея")
-        self.setFixedSize(480, 320)
         self.setStyleSheet("font-size: 18px;")
         self.task_id = task_id
         self.photos = get_photos_for_task(task_id)
@@ -24,7 +25,7 @@ class GalleryWidget(QWidget):
 
         self.image_label = QLabel()
         self.image_label.setAlignment(Qt.AlignCenter)
-        self.image_label.setFixedSize(480, 240)
+        self.image_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
 
         self.counter_label = QLabel()
         self.counter_label.setAlignment(Qt.AlignCenter)

@@ -1,3 +1,4 @@
+"""Главное окно управления задачами и съёмкой на Raspberry Pi."""
 import os
 import shutil
 
@@ -10,7 +11,8 @@ from PyQt5.QtCore import QSize, QTimer
 
 from config.settings import icon_path
 from services.photo import save_photo_for_task, clear_photos_for_task, get_photos_for_task
-from services.arduino import ArduinoController, ArduinoWatcher
+# Управление светодиодами напрямую через GPIO без Arduino
+from services.leds import LedController
 from services.hotspot import enable_hotspot, disable_hotspot
 from ui.camera import CameraWidget
 from ui.gallery import GalleryWidget
@@ -18,15 +20,14 @@ from ui.confirm import ConfirmDialog
 from models.db import SessionLocal, PhotoTask
 
 class CameraApp(QWidget):
-    """
-    Главное окно: камера, задачи, Hotspot, съемка, галерея.
+    """Главное окно: камера, задачи, точка доступа и съёмка с подсветкой.
+
+    Подсветка управляется напрямую через GPIO без использования Arduino.
     """
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Hyperspectrus")
-        self.setFixedSize(480, 320)
 
-        self.arduino_available = False
         self.shooting_in_progress = False
         self.tasks_map = {}
         self.hotspot_active = False
@@ -89,8 +90,8 @@ class CameraApp(QWidget):
             self.hotspot_toggle_btn.setIcon(QIcon(icon_path("wifi_off.png")))
 
         # --- Камера + боковая панель ---
+        # Виджет камеры использует picamera2 для работы через CSI-порт
         self.camera_widget = CameraWidget()
-        self.camera_widget.setFixedSize(380, 320)
 
         # --- Основные действия ---
         self.photo_btn = QPushButton()
@@ -143,10 +144,8 @@ class CameraApp(QWidget):
 
         self.update_tasks()
 
-        # --- Мониторинг Arduino ---
-        self.arduino_watcher = ArduinoWatcher()
-        self.arduino_watcher.status_changed.connect(self.on_arduino_status_changed)
-        self.arduino_watcher.start()
+        # Контроллер светодиодов
+        self.led_controller = LedController()
 
     def show_ip_address(self):
         """Выводит IP-адрес wlan0 в статусную строку."""
@@ -234,14 +233,6 @@ class CameraApp(QWidget):
         self.update_tasks()
         self.update_buttons_state()
 
-    def on_arduino_status_changed(self, available: bool, port: str):
-        """Слот: обновляет статусную строку и активность кнопок."""
-        self.arduino_available = available
-        if available:
-            self.status_bar.setText(f"Arduino подключена ({port})")
-        else:
-            self.status_bar.setText("Arduino не подключена")
-        self.update_buttons_state()
 
     def get_selected_task(self):
         """
@@ -261,11 +252,6 @@ class CameraApp(QWidget):
         self.disable_all_buttons()
         self.status_bar.setText("Начинаю съёмку...")
         QApplication.processEvents()
-        if not self.arduino_available:
-            QMessageBox.warning(self, "Ошибка", "Arduino не подключён")
-            self.shooting_in_progress = False
-            self.update_buttons_state()
-            return
         task = self.get_selected_task()
         if not task:
             QMessageBox.warning(self, "Ошибка", "Выберите задачу!")
@@ -276,45 +262,25 @@ class CameraApp(QWidget):
         self.photo_index = 0
         self.current_task_id = task.id
         self.current_spectra = task.spectra
-        self.arduino = ArduinoController()
-        self.start_next_photo()
+        self.start_led_cycle()
 
-    def start_next_photo(self):
-        """Включает подсветку, делает снимок, повторяет по спектрам."""
-        if self.photo_index >= len(self.current_spectra):
-            self.arduino.send_and_wait("PHOTO_DONE", "OFF_DONE")
-            self.arduino.close()
-            self.status_bar.setText("Съёмка завершена")
-            db = SessionLocal()
-            task = db.query(PhotoTask).get(self.current_task_id)
-            task.status = "completed"
-            db.commit()
-            db.close()
-            self.shooting_in_progress = False
-            self.update_tasks()
-            self.update_buttons_state()
-            return
-        spec = self.current_spectra[self.photo_index]
-        r, g, b = spec["rgb"]
-        self.status_bar.setText(f"Подсветка: {r},{g},{b} (фото {self.photo_index + 1})")
-        if not self.arduino.send_and_wait(f"SET {r},{g},{b}", "OK"):
-            self.arduino.close()
-            self.abort_shooting("не удалось включить подсветку")
-            return
-        QTimer.singleShot(500, self.capture_photo)
-
-    def capture_photo(self):
-        """Сохраняет снимок и выключает подсветку для следующего."""
-        frame = self.camera_widget.get_frame()
-        if frame is not None:
-            spectrum_id = self.current_spectra[self.photo_index]["id"]
-            save_photo_for_task(self.current_task_id, frame, spectrum_id)
-        if not self.arduino.send_and_wait("PHOTO_DONE", "OFF_DONE"):
-            self.arduino.close()
-            self.abort_shooting("не удалось выключить подсветку")
-            return
-        self.photo_index += 1
-        QTimer.singleShot(200, self.start_next_photo)
+    def start_led_cycle(self):
+        """Запускает цикл подсветки и съёмки с использованием кнопки."""
+        for idx, spec in enumerate(self.current_spectra):
+            self.status_bar.setText(f"Снимок {idx + 1} из {len(self.current_spectra)}")
+            self.led_controller.cycle_led(idx)
+            frame = self.camera_widget.get_frame()
+            if frame is not None:
+                save_photo_for_task(self.current_task_id, frame, spec["id"])
+        self.status_bar.setText("Съёмка завершена")
+        db = SessionLocal()
+        task = db.query(PhotoTask).get(self.current_task_id)
+        task.status = "completed"
+        db.commit()
+        db.close()
+        self.shooting_in_progress = False
+        self.update_tasks()
+        self.update_buttons_state()
 
     def delete_photos(self):
         """Удаляет фотографии для выбранной задачи и сбрасывает её статус."""
@@ -348,7 +314,7 @@ class CameraApp(QWidget):
         self.gallery.showFullScreen()
 
     def update_buttons_state(self):
-        """Включает/отключает кнопки по состоянию Arduino, фото, статуса задачи и процесса съёмки."""
+        """Обновляет состояние кнопок в зависимости от наличия фото и процесса съёмки."""
         if self.shooting_in_progress:
             for btn in [self.photo_btn, self.gallery_btn, self.delete_btn, self.clear_tasks_btn]:
                 btn.setEnabled(False)
@@ -358,7 +324,7 @@ class CameraApp(QWidget):
         task = self.get_selected_task()
         has_photos = bool(task and get_photos_for_task(task.id))
         # Кнопки действий
-        self.photo_btn.setEnabled(self.arduino_available and bool(task) and task.status != "completed")
+        self.photo_btn.setEnabled(bool(task) and task.status != "completed")
         self.gallery_btn.setEnabled(has_photos)
         self.delete_btn.setEnabled(has_photos)
         self.hotspot_toggle_btn.setEnabled(True)
@@ -408,7 +374,7 @@ class CameraApp(QWidget):
         self.update_tasks()
 
     def closeEvent(self, event):
-        self.arduino_watcher.stop()
+        """Закрытие приложения и освобождение ресурсов."""
         self.camera_widget.close()
         event.accept()
 

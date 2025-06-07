@@ -6,6 +6,11 @@ from ui.login_widget import LoginDialog
 from ui.user.create_user_widget import CreateUserDialog
 from db.db import init_db, has_users
 
+import logging.config
+from core.logging import LOGGING
+
+logging.config.dictConfig(LOGGING)
+
 
 def center_window_on_screen(window):
     """

@@ -47,6 +47,24 @@ export const routes = [
     },
   },
   {
+    path: "/devices",
+    name: "device",
+    component: () => import("@/views/devices/DeviceView.vue"),
+    meta: {
+      title: 'Устройства',
+      middlewares: [isLoggedIn],
+    },
+  },
+  {
+    path: "/chromophores",
+    name: "chromophore",
+    component: () => import("@/views/chromophores/ChromophoreView.vue"),
+    meta: {
+      title: 'Хромофоры',
+      middlewares: [isLoggedIn],
+    },
+  },
+  {
     path: "/config",
     name: "config",
     component: () => import("@/views/ConfigView.vue"),

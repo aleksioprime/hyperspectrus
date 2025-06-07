@@ -1,37 +1,42 @@
+import logging
 from PyQt6.QtWidgets import QDialog, QFormLayout, QDateEdit, QComboBox, QListWidget, QTextEdit, QHBoxLayout, QPushButton, QLabel
-from PyQt6.QtCore import QDate, Qt, QTimer, QThread
+from PyQt6.QtCore import QDate, Qt, QTimer
 
 from sqlalchemy.orm import joinedload
-
 from db.db import get_db_session
 from db.models import DeviceBinding, Device
 from ui.patient.device_worker import DeviceStatusWorker
 
+logger = logging.getLogger(__name__)
 
 class SessionDialog(QDialog):
-    """
-    Диалог для создания нового сеанса: выбор устройства, даты и спектров.
-    """
     def __init__(self, user, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Создать сеанс")
         self.user = user
         layout = QFormLayout(self)
+        logger.debug("SessionDialog __init__ started")
 
+        # --- Worker для статуса устройства ---
+        self._status_worker = DeviceStatusWorker()
+        self._status_worker.finished.connect(self.on_device_status_checked)
+        self._status_worker.error.connect(self.on_device_status_error)
+
+        # --- Таймер статуса ---
         self.status_timer = QTimer(self)
-        self.status_timer.setInterval(3000)  # Проверять каждые 3 секунды
+        self.status_timer.setInterval(3000)
         self.status_timer.timeout.connect(self.check_device_status)
         self.status_timer.start()
+        logger.debug("Status timer started")
 
-        # --- Поля выбора даты, устройства, спектров, заметок ---
+        # --- Поля выбора ---
         self.date_edit = QDateEdit()
         self.date_edit.setCalendarPopup(True)
         self.date_edit.setDisplayFormat("dd.MM.yyyy")
         self.date_edit.setDate(QDate.currentDate())
 
         self.device_combo = QComboBox()
-
-        self.device_status_icon = QLabel("⏳")  # Пока статус неизвестен
+        self.device_status_icon = QLabel("⏳")
         device_combo_layout = QHBoxLayout()
         device_combo_layout.addWidget(self.device_combo)
         device_combo_layout.addWidget(self.device_status_icon)
@@ -77,11 +82,9 @@ class SessionDialog(QDialog):
         self.device_combo.currentIndexChanged.connect(self.on_device_changed)
 
         self.update_spectra_list()
+        logger.debug("SessionDialog __init__ finished")
 
     def update_spectra_list(self):
-        """
-        Обновить список спектров при смене устройства.
-        """
         idx = self.device_combo.currentIndex()
         self.spectra_list.clear()
         if idx < 0 or not self.devices:
@@ -93,53 +96,26 @@ class SessionDialog(QDialog):
             self.spectra = list(device.spectra)
         for s in self.spectra:
             self.spectra_list.addItem(f"{s.wavelength} ({s.rgb_r}, {s.rgb_g}, {s.rgb_b})")
-
         self.check_device_status()
 
     def check_device_status(self):
-        """
-        Асинхронно проверяет выбранное устройство.
-        """
-        if getattr(self, 'is_closing', False):
-            return
-
+        logger.debug("check_device_status called")
         idx = self.device_combo.currentIndex()
         if idx < 0 or not self.devices:
-            self.device_status_icon.setText("❓")
+            logger.debug("No device selected or no devices available.")
+            self.device_status_icon.setText("⏳")
             self.save_btn.setEnabled(False)
             return
 
         ip = self.devices[idx].ip_address
-
-        # Завершаем предыдущий поток, если он еще жив
-        if hasattr(self, '_status_thread') and self._status_thread is not None:
-            if self._status_thread.isRunning():
-                self._status_thread.quit()
-                if not self._status_thread.wait(1500): # Добавляем таймаут и проверку
-                    print(f"ПРЕДУПРЕЖДЕНИЕ: Предыдущий _status_thread не завершился вовремя в SessionDialog.check_device_status().")
-            # Явно удаляем предыдущий worker и обнуляем ссылку
-            if hasattr(self, '_status_worker') and self._status_worker:
-                self._status_worker.deleteLater() # <--- Улучшение
-                self._status_worker = None        # <--- Улучшение
-            # Можно также рассмотреть deleteLater для _status_thread, если он QObject
-            # self._status_thread.deleteLater() # QThread сам удалится, когда worker будет удален и поток завершится
-            self._status_thread = None
-
-        # Запускаем новый поток проверки
-        self._status_thread = QThread()
-        self._status_worker = DeviceStatusWorker(ip)
-        self._status_worker.moveToThread(self._status_thread)
-        self._status_thread.started.connect(self._status_worker.run)
-        self._status_worker.finished.connect(self.on_device_status_checked)
-        self._status_worker.error.connect(self.on_device_status_error)
-        self._status_worker.finished.connect(self._status_thread.quit)
-        self._status_thread.finished.connect(self.cleanup_status_thread)
-        self._status_thread.start()
+        # Прерываем старый запрос, если есть
+        self._status_worker.abort()
+        logger.debug(f"Запуск проверки устройства: {ip}")
+        self.save_btn.setEnabled(False)
+        self._status_worker.check(ip)
 
     def on_device_status_checked(self, ip, status):
-        """
-        Слот: обновить иконку и кнопку после проверки статуса.
-        """
+        logger.debug(f"on_device_status_checked: IP={ip}, status={status}")
         if status == 'online':
             self.device_status_icon.setText("🟢")
             self.save_btn.setEnabled(True)
@@ -148,19 +124,9 @@ class SessionDialog(QDialog):
             self.save_btn.setEnabled(False)
 
     def on_device_status_error(self, ip, message):
-        # Можно вывести подробное сообщение, если нужно
-        pass
-
-    def cleanup_status_thread(self):
-        """
-        Слот вызывается после завершения потока — обнуляет ссылку на поток.
-        """
-        self._status_thread = None
+        logger.error(f"on_device_status_error: IP={ip}, error={message}")
 
     def get_data(self):
-        """
-        Получить введённые данные сеанса
-        """
         bdate = self.date_edit.date()
         idx = self.device_combo.currentIndex()
         device_binding = self.devices[idx] if idx >= 0 and self.devices else None
@@ -176,17 +142,8 @@ class SessionDialog(QDialog):
         self.status_timer.start()
 
     def closeEvent(self, event):
-        self.is_closing = True
+        logger.debug("closeEvent called")
         self.status_timer.stop()
-        # Корректно завершаем поток статуса, если он ещё работает
-        if hasattr(self, '_status_thread') and self._status_thread is not None:
-            if self._status_thread.isRunning():
-                self._status_thread.quit()
-                if not self._status_thread.wait(1500): # Ожидание 1.5 секунды
-                    print("ПРЕДУПРЕЖДЕНИЕ: Поток _status_thread не завершился вовремя в SessionDialog.closeEvent().")
-            # Явное удаление worker'а здесь также может быть полезным, если он не был удален ранее
-            if hasattr(self, '_status_worker') and self._status_worker:
-                self._status_worker.deleteLater() # <--- Улучшение
-                self._status_worker = None        # <--- Улучшение (это было тут, но deleteLater важно)
-            self._status_thread = None # Обнуление ссылки на поток остается
+        self._status_worker.abort()
+        logger.debug("closeEvent finished")
         super().closeEvent(event)

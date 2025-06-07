@@ -65,14 +65,19 @@ chmod +x ~/hyperspectrus/kiosk.sh
 rm -rf ~/main.zip ~/hyperspectrus-main
 ```
 
+Добавьте права на скрипт включения режима KIOSK:
+```
+chmod +x ~/hyperspectrus/kiosk.sh
+```
+
 Включение режима KIOSK:
 ```
-./hyperspectrus/kiosk.sh enable
+~/hyperspectrus/kiosk.sh enable
 ```
 
 Отключение режима KIOSK:
 ```
-./hyperspectrus/kiosk.sh disable
+~/hyperspectrus/kiosk.sh disable
 ```
 
 ## Ручная настройка автозапуска:
@@ -111,4 +116,15 @@ nano ~/.config/lxsession/LXDE-pi/autostart
 ```
 @lxpanel --profile LXDE-pi
 @pcmanfm --desktop --profile LXDE-pi
+```
+
+Тестовый запрос через CURL:
+
+```
+curl -X POST http://localhost:8080/tasks \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Тестовая серия",
+    "spectra": [[255,0,0],[0,255,0],[0,0,255],[255,255,0],[255,255,255]]
+  }'
 ```

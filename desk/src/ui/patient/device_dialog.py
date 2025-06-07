@@ -1,41 +1,51 @@
 from sqlalchemy.orm import joinedload
-
 from PyQt6.QtWidgets import (
     QVBoxLayout, QHBoxLayout, QPushButton, QTableWidget, QTableWidgetItem,
     QDialog, QComboBox, QMessageBox, QHeaderView
 )
-from PyQt6.QtCore import Qt, QThread, QTimer
+from PyQt6.QtCore import Qt, QTimer
 
 from db.db import get_db_session
 from db.models import Device, DeviceBinding
 from ui.patient.device_worker import DeviceStatusWorker
 
 class DeviceBindingDialog(QDialog):
-    STATUS_CHECK_INTERVAL = 3000  # 3 секунды
+    """
+    Диалог для управления списком устройств пользователя:
+    позволяет добавлять, удалять устройства и отслеживать их статус через сеть.
+    Статус проверяется асинхронно без потоков (QThread), только с QTimer и DeviceStatusWorker.
+    """
+    STATUS_CHECK_INTERVAL = 3000  # Интервал проверки статуса устройств в мс
 
     def __init__(self, user, parent=None):
+        """
+        Инициализация диалога, загрузка устройств и связей пользователя.
+        """
         super().__init__(parent)
         self.setWindowTitle("Мои устройства и IP")
         self.setMinimumWidth(500)
         self.user = user
         layout = QVBoxLayout(self)
 
+        # Основная таблица: Устройство | IP-адрес | Статус
         self.table = QTableWidget(0, 3)
         self.table.setHorizontalHeaderLabels(["Устройство", "IP-адрес", "Статус"])
         self.table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
-        self.table.setEditTriggers(QTableWidget.EditTrigger.DoubleClicked | QTableWidget.EditTrigger.SelectedClicked)
+        self.table.setEditTriggers(
+            QTableWidget.EditTrigger.DoubleClicked | QTableWidget.EditTrigger.SelectedClicked
+        )
         self.table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
         self.table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.ResizeToContents)
         self.table.verticalHeader().setVisible(False)
         layout.addWidget(self.table)
 
+        # Кнопки управления
         self.add_btn = QPushButton("Добавить")
         self.del_btn = QPushButton("Удалить")
         self.save_btn = QPushButton("Сохранить")
         self.cancel_btn = QPushButton("Отмена")
         self.save_btn.setVisible(False)
         self.cancel_btn.setVisible(False)
-
         self.back_btn = QPushButton("Назад")
         self.back_btn.clicked.connect(self.close)
 
@@ -48,23 +58,29 @@ class DeviceBindingDialog(QDialog):
         btn_row.addWidget(self.back_btn)
         layout.addLayout(btn_row)
 
+        # Сигналы
         self.add_btn.clicked.connect(self.add_row)
         self.del_btn.clicked.connect(self.delete_binding)
         self.save_btn.clicked.connect(self.save_row)
         self.cancel_btn.clicked.connect(self.cancel_add_row)
         self.table.selectionModel().selectionChanged.connect(self.on_selection_change)
         self.table.cellChanged.connect(self.on_cell_changed)
-        self.table.focusOutEvent = self._table_focus_out_event
 
+        # Хранение устройств, связей и рабочих объектов
         self.devices = []
         self.bindings = []
         self._adding_row = False
-        self.status_threads = dict()
-        self.status_timers = dict()
+        self.status_timers = dict()     # row => QTimer
+        self.status_workers = dict()    # row => DeviceStatusWorker
+
         self.reload()
 
     def reload(self):
+        """
+        Загрузка устройств и связей пользователя, пересоздание таблицы и таймеров статуса.
+        """
         self._stop_all_timers()
+        self._abort_all_workers()
         self.table.blockSignals(True)
         with get_db_session() as session:
             self.devices = session.query(Device).all()
@@ -103,7 +119,9 @@ class DeviceBindingDialog(QDialog):
         self.update_del_btn()
 
     def _setup_status_timer(self, ip, row):
-        """Настроить периодическую проверку статуса"""
+        """
+        Настроить таймер для периодической проверки статуса устройства по IP.
+        """
         def check():
             self.check_device_status_async(ip, row)
         timer = QTimer(self)
@@ -111,45 +129,58 @@ class DeviceBindingDialog(QDialog):
         timer.timeout.connect(check)
         timer.start()
         self.status_timers[row] = timer
-        check()  # Первый раз сразу
+        check()  # Первая проверка сразу
 
     def _stop_all_timers(self):
+        """Остановить и удалить все таймеры статуса."""
         for t in self.status_timers.values():
             t.stop()
             t.deleteLater()
         self.status_timers.clear()
 
+    def _abort_all_workers(self):
+        """Прервать все активные DeviceStatusWorker'ы."""
+        for w in self.status_workers.values():
+            w.abort()
+            w.deleteLater()
+        self.status_workers.clear()
+
     def check_device_status_async(self, ip, row):
+        """
+        Асинхронно проверить статус устройства по IP для строки row.
+        Запускается при старте таймера и при редактировании IP.
+        """
         if not ip:
             self.table.setItem(row, 2, QTableWidgetItem("—"))
             return
-        # Уже есть поток — не запускать ещё раз
-        if ip in self.status_threads:
-            return
 
-        thread = QThread()
-        worker = DeviceStatusWorker(ip)
-        worker.moveToThread(thread)
+        # Если уже есть worker — отменяем предыдущий
+        if row in self.status_workers:
+            self.status_workers[row].abort()
+            self.status_workers[row].deleteLater()
+
+        worker = DeviceStatusWorker()
+        self.status_workers[row] = worker
 
         def update_status(ip_checked, status):
+            # Установить статус 🟢/🔴 в нужной строке
             item = self.table.item(row, 2)
             if item:
                 item.setText("🟢" if status == 'online' else "🔴")
-            thread.quit()
-            thread.wait()
             worker.deleteLater()
-            thread.deleteLater()
-            self.status_threads.pop(ip, None)
+            self.status_workers.pop(row, None)
 
         worker.finished.connect(update_status)
         worker.error.connect(lambda ip, msg: update_status(ip, 'offline'))
-        thread.started.connect(worker.run)
-        thread.start()
-        self.status_threads[ip] = thread
+        worker.check(ip)  # Асинхронно (без потоков!)
 
     def add_row(self):
+        """
+        Начать добавление новой строки (связки устройство-IP).
+        """
         if self._adding_row:
             return
+        # self.table.setFocus()
         row = self.table.rowCount()
         self.table.insertRow(row)
         combo = QComboBox()
@@ -172,6 +203,9 @@ class DeviceBindingDialog(QDialog):
         self.table.editItem(self.table.item(row, 1))
 
     def cancel_add_row(self):
+        """
+        Отмена добавления новой строки.
+        """
         if self._adding_row:
             self.table.blockSignals(True)
             self.table.removeRow(self.table.rowCount() - 1)
@@ -185,6 +219,9 @@ class DeviceBindingDialog(QDialog):
             self.update_del_btn()
 
     def save_row(self):
+        """
+        Сохранение новой строки: добавление новой связи в базу.
+        """
         if not self._adding_row:
             return
         row = self.table.rowCount() - 1
@@ -214,6 +251,9 @@ class DeviceBindingDialog(QDialog):
         self.reload()
 
     def on_cell_changed(self, row, col):
+        """
+        Обработка изменения ячейки: при изменении IP инициируем новую проверку статуса.
+        """
         if not self._adding_row and row < len(self.bindings) and col == 1:
             ip_item = self.table.item(row, 1)
             new_ip = ip_item.text().strip() if ip_item else ""
@@ -231,9 +271,11 @@ class DeviceBindingDialog(QDialog):
             self.check_device_status_async(new_ip, row)
 
     def on_selection_change(self, selected, deselected):
+        """Обновить состояние кнопки удаления при смене выбора."""
         self.update_del_btn()
 
     def update_del_btn(self):
+        """Включить/отключить кнопку удаления в зависимости от выделения строк."""
         rows = self.table.selectionModel().selectedRows()
         enabled = (
             not self._adding_row
@@ -243,6 +285,9 @@ class DeviceBindingDialog(QDialog):
         self.del_btn.setEnabled(enabled)
 
     def delete_binding(self):
+        """
+        Удаление связи: подтверждение и удаление из базы.
+        """
         rows = self.table.selectionModel().selectedRows()
         if not rows:
             return
@@ -262,21 +307,10 @@ class DeviceBindingDialog(QDialog):
                 session.commit()
             self.reload()
 
-    def _table_focus_out_event(self, event):
-        # Если добавление новой строки и потеряли фокус — отменяем
-        if self._adding_row:
-            self.cancel_add_row()
-        # Не забываем вызвать оригинальный focusOutEvent для корректной работы
-        QTableWidget.focusOutEvent(self.table, event)
-
     def closeEvent(self, event):
+        """
+        При закрытии окна: остановить все таймеры и отменить все проверки.
+        """
         self._stop_all_timers()
-        for ip, thread in list(self.status_threads.items()):
-            if thread.isRunning():
-                thread.quit()
-                if not thread.wait(1500):  # Ожидание 1.5 секунды (немного больше таймаута worker'а)
-                    print(f"ПРЕДУПРЕЖДЕНИЕ: Поток для IP {ip} не завершился вовремя в DeviceBindingDialog.closeEvent().")
-                    # В крайнем случае, если terminate() будет признан необходимым после дальнейшего анализа,
-                    # он мог бы быть здесь, но пока воздержимся.
-        self.status_threads.clear()
+        self._abort_all_workers()
         super().closeEvent(event)

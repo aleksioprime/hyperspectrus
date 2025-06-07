@@ -1,28 +1,25 @@
 [project]
-name = "hyperspectrus-desk"
+name = "hyperspectrus"
 version = "0.1.0"
 description = ""
 authors = [
     {name = "Aleksei Semochkin",email = "aleksioprime@gmail.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.12"
 dependencies = [
     "pyqt6 (>=6.9.0,<7.0.0)",
     "requests (>=2.32.3,<3.0.0)",
     "sqlalchemy (>=2.0.41,<3.0.0)",
     "werkzeug (>=3.1.3,<4.0.0)",
-    "numpy (<2.0)",
+    "numpy (>=2.2.6,<3.0.0)",
     "pillow (>=11.2.1,<12.0.0)",
-    "matplotlib (<3.10)",
-    "scikit-image (<0.22)"
+    "matplotlib (>=3.10.3,<4.0.0)",
+    "scikit-image (>=0.25.2,<0.26.0)",
+    "opencv-python (>=4.11.0.86,<5.0.0.0)"
 ]
 
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.poetry.group.dev.dependencies]
-pytest = "^7.0"
-pytest-qt = "^4.2"

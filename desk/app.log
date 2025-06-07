@@ -1,0 +1,1453 @@
+2025-06-05 13:14:49,900 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 13:14:49,900 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 13:14:49,948 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:14:49,948 [DEBUG] ui.patient.session_dialog: Creating QThread for IP: 192.168.2.107
+2025-06-05 13:14:49,948 [DEBUG] ui.patient.device_worker: DeviceStatusWorker created for IP: 192.168.2.107
+2025-06-05 13:14:49,948 [DEBUG] ui.patient.session_dialog: Starting QThread
+2025-06-05 13:14:49,949 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 13:14:49,949 [DEBUG] ui.patient.device_worker: DeviceStatusWorker.run started for IP: 192.168.2.107
+2025-06-05 13:14:49,951 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 13:14:49,953 [ERROR] ui.patient.device_worker: Device 192.168.2.107 error: HTTPConnectionPool(host='192.168.2.107', port=8080): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x14bc6f560>: Failed to establish a new connection: [Errno 65] No route to host'))
+2025-06-05 13:14:50,023 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 13:14:50,023 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=HTTPConnectionPool(host='192.168.2.107', port=8080): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x14bc6f560>: Failed to establish a new connection: [Errno 65] No route to host'))
+2025-06-05 13:14:50,032 [DEBUG] ui.patient.session_dialog: cleanup_status_thread called
+2025-06-05 13:14:52,968 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:14:52,969 [DEBUG] ui.patient.session_dialog: Creating QThread for IP: 192.168.2.107
+2025-06-05 13:14:52,969 [DEBUG] ui.patient.device_worker: DeviceStatusWorker created for IP: 192.168.2.107
+2025-06-05 13:14:52,969 [DEBUG] ui.patient.session_dialog: Starting QThread
+2025-06-05 13:14:52,970 [DEBUG] ui.patient.device_worker: DeviceStatusWorker.run started for IP: 192.168.2.107
+2025-06-05 13:14:52,973 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 13:14:52,975 [ERROR] ui.patient.device_worker: Device 192.168.2.107 error: HTTPConnectionPool(host='192.168.2.107', port=8080): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x14bc6fdd0>: Failed to establish a new connection: [Errno 64] Host is down'))
+2025-06-05 13:14:52,976 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 13:14:52,976 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=HTTPConnectionPool(host='192.168.2.107', port=8080): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x14bc6fdd0>: Failed to establish a new connection: [Errno 64] Host is down'))
+2025-06-05 13:14:52,976 [DEBUG] ui.patient.session_dialog: cleanup_status_thread called
+2025-06-05 13:15:11,432 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 13:15:11,432 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 13:15:11,437 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:15:11,437 [DEBUG] ui.patient.session_dialog: Creating QThread for IP: 192.168.2.107
+2025-06-05 13:15:11,438 [DEBUG] ui.patient.device_worker: DeviceStatusWorker created for IP: 192.168.2.107
+2025-06-05 13:15:11,438 [DEBUG] ui.patient.session_dialog: Starting QThread
+2025-06-05 13:15:11,438 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 13:15:11,438 [DEBUG] ui.patient.device_worker: DeviceStatusWorker.run started for IP: 192.168.2.107
+2025-06-05 13:15:11,440 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 13:15:12,443 [ERROR] ui.patient.device_worker: Device 192.168.2.107 error: HTTPConnectionPool(host='192.168.2.107', port=8080): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x14bc98830>, 'Connection to 192.168.2.107 timed out. (connect timeout=1)'))
+2025-06-05 13:15:12,444 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 13:15:12,444 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=HTTPConnectionPool(host='192.168.2.107', port=8080): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x14bc98830>, 'Connection to 192.168.2.107 timed out. (connect timeout=1)'))
+2025-06-05 13:15:12,445 [DEBUG] ui.patient.session_dialog: cleanup_status_thread called
+2025-06-05 13:15:13,549 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 13:15:13,550 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 13:15:13,554 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:15:13,555 [DEBUG] ui.patient.session_dialog: Creating QThread for IP: 192.168.2.107
+2025-06-05 13:15:13,555 [DEBUG] ui.patient.device_worker: DeviceStatusWorker created for IP: 192.168.2.107
+2025-06-05 13:15:13,555 [DEBUG] ui.patient.session_dialog: Starting QThread
+2025-06-05 13:15:13,555 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 13:15:13,555 [DEBUG] ui.patient.device_worker: DeviceStatusWorker.run started for IP: 192.168.2.107
+2025-06-05 13:15:13,557 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 13:17:25,033 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 13:17:25,035 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 13:17:25,090 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:17:25,091 [DEBUG] ui.patient.session_dialog: Creating QThread for IP: 192.168.2.107
+2025-06-05 13:17:25,091 [DEBUG] ui.patient.device_worker: DeviceStatusWorker created for IP: 192.168.2.107
+2025-06-05 13:17:25,091 [DEBUG] ui.patient.session_dialog: Starting QThread
+2025-06-05 13:17:25,091 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 13:17:25,091 [DEBUG] ui.patient.device_worker: DeviceStatusWorker.run started for IP: 192.168.2.107
+2025-06-05 13:17:25,094 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 13:17:26,097 [ERROR] ui.patient.device_worker: Device 192.168.2.107 error: HTTPConnectionPool(host='192.168.2.107', port=8080): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x11ed6f500>, 'Connection to 192.168.2.107 timed out. (connect timeout=1)'))
+2025-06-05 13:17:26,098 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 13:17:26,099 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=HTTPConnectionPool(host='192.168.2.107', port=8080): Max retries exceeded with url: / (Caused by ConnectTimeoutError(<urllib3.connection.HTTPConnection object at 0x11ed6f500>, 'Connection to 192.168.2.107 timed out. (connect timeout=1)'))
+2025-06-05 13:17:26,100 [DEBUG] ui.patient.session_dialog: cleanup_status_thread called
+2025-06-05 13:17:27,268 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 13:17:27,269 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 13:17:27,273 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:17:27,273 [DEBUG] ui.patient.session_dialog: Creating QThread for IP: 192.168.2.107
+2025-06-05 13:17:27,274 [DEBUG] ui.patient.device_worker: DeviceStatusWorker created for IP: 192.168.2.107
+2025-06-05 13:17:27,274 [DEBUG] ui.patient.session_dialog: Starting QThread
+2025-06-05 13:17:27,274 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 13:17:27,274 [DEBUG] ui.patient.device_worker: DeviceStatusWorker.run started for IP: 192.168.2.107
+2025-06-05 13:17:27,275 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 13:17:27,276 [ERROR] ui.patient.device_worker: Device 192.168.2.107 error: HTTPConnectionPool(host='192.168.2.107', port=8080): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x11ed980e0>: Failed to establish a new connection: [Errno 65] No route to host'))
+2025-06-05 13:17:27,302 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 13:17:27,302 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=HTTPConnectionPool(host='192.168.2.107', port=8080): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x11ed980e0>: Failed to establish a new connection: [Errno 65] No route to host'))
+2025-06-05 13:17:27,314 [DEBUG] ui.patient.session_dialog: cleanup_status_thread called
+2025-06-05 13:17:29,082 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 13:17:29,083 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 13:17:29,090 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:17:29,091 [DEBUG] ui.patient.session_dialog: Creating QThread for IP: 192.168.2.107
+2025-06-05 13:17:29,091 [DEBUG] ui.patient.device_worker: DeviceStatusWorker created for IP: 192.168.2.107
+2025-06-05 13:17:29,091 [DEBUG] ui.patient.session_dialog: Starting QThread
+2025-06-05 13:17:29,091 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 13:17:29,091 [DEBUG] ui.patient.device_worker: DeviceStatusWorker.run started for IP: 192.168.2.107
+2025-06-05 13:17:29,093 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 13:17:29,094 [ERROR] ui.patient.device_worker: Device 192.168.2.107 error: HTTPConnectionPool(host='192.168.2.107', port=8080): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x11ed98560>: Failed to establish a new connection: [Errno 64] Host is down'))
+2025-06-05 13:17:29,123 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 13:17:29,123 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=HTTPConnectionPool(host='192.168.2.107', port=8080): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x11ed98560>: Failed to establish a new connection: [Errno 64] Host is down'))
+2025-06-05 13:17:29,137 [DEBUG] ui.patient.session_dialog: cleanup_status_thread called
+2025-06-05 13:17:31,880 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 13:17:31,881 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 13:17:31,887 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:17:31,887 [DEBUG] ui.patient.session_dialog: Creating QThread for IP: 192.168.2.107
+2025-06-05 13:17:31,887 [DEBUG] ui.patient.device_worker: DeviceStatusWorker created for IP: 192.168.2.107
+2025-06-05 13:17:31,887 [DEBUG] ui.patient.session_dialog: Starting QThread
+2025-06-05 13:17:31,887 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 13:17:31,888 [DEBUG] ui.patient.device_worker: DeviceStatusWorker.run started for IP: 192.168.2.107
+2025-06-05 13:17:31,889 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 13:17:31,890 [ERROR] ui.patient.device_worker: Device 192.168.2.107 error: HTTPConnectionPool(host='192.168.2.107', port=8080): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x11ed99100>: Failed to establish a new connection: [Errno 64] Host is down'))
+2025-06-05 13:17:31,918 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 13:17:31,918 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=HTTPConnectionPool(host='192.168.2.107', port=8080): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x11ed99100>: Failed to establish a new connection: [Errno 64] Host is down'))
+2025-06-05 13:17:31,932 [DEBUG] ui.patient.session_dialog: cleanup_status_thread called
+2025-06-05 13:17:34,047 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 13:17:34,048 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 13:17:34,055 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:17:34,055 [DEBUG] ui.patient.session_dialog: Creating QThread for IP: 192.168.2.107
+2025-06-05 13:17:34,055 [DEBUG] ui.patient.device_worker: DeviceStatusWorker created for IP: 192.168.2.107
+2025-06-05 13:17:34,056 [DEBUG] ui.patient.session_dialog: Starting QThread
+2025-06-05 13:17:34,056 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 13:17:34,056 [DEBUG] ui.patient.device_worker: DeviceStatusWorker.run started for IP: 192.168.2.107
+2025-06-05 13:17:34,057 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 13:17:34,058 [ERROR] ui.patient.device_worker: Device 192.168.2.107 error: HTTPConnectionPool(host='192.168.2.107', port=8080): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x11ed99a00>: Failed to establish a new connection: [Errno 64] Host is down'))
+2025-06-05 13:17:34,086 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 13:17:34,086 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=HTTPConnectionPool(host='192.168.2.107', port=8080): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x11ed99a00>: Failed to establish a new connection: [Errno 64] Host is down'))
+2025-06-05 13:17:34,100 [DEBUG] ui.patient.session_dialog: cleanup_status_thread called
+2025-06-05 13:17:36,148 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 13:17:36,148 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 13:17:36,153 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:17:36,154 [DEBUG] ui.patient.session_dialog: Creating QThread for IP: 192.168.2.107
+2025-06-05 13:17:36,154 [DEBUG] ui.patient.device_worker: DeviceStatusWorker created for IP: 192.168.2.107
+2025-06-05 13:17:36,154 [DEBUG] ui.patient.session_dialog: Starting QThread
+2025-06-05 13:17:36,154 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 13:17:36,154 [DEBUG] ui.patient.device_worker: DeviceStatusWorker.run started for IP: 192.168.2.107
+2025-06-05 13:17:36,156 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 13:17:36,157 [ERROR] ui.patient.device_worker: Device 192.168.2.107 error: HTTPConnectionPool(host='192.168.2.107', port=8080): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x11ed99b50>: Failed to establish a new connection: [Errno 64] Host is down'))
+2025-06-05 13:17:36,184 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 13:17:36,184 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=HTTPConnectionPool(host='192.168.2.107', port=8080): Max retries exceeded with url: / (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x11ed99b50>: Failed to establish a new connection: [Errno 64] Host is down'))
+2025-06-05 13:17:36,198 [DEBUG] ui.patient.session_dialog: cleanup_status_thread called
+2025-06-05 13:17:49,349 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 13:17:49,350 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 13:17:49,356 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:17:49,356 [DEBUG] ui.patient.session_dialog: Creating QThread for IP: 192.168.2.107
+2025-06-05 13:17:49,356 [DEBUG] ui.patient.device_worker: DeviceStatusWorker created for IP: 192.168.2.107
+2025-06-05 13:17:49,356 [DEBUG] ui.patient.session_dialog: Starting QThread
+2025-06-05 13:17:49,356 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 13:17:49,356 [DEBUG] ui.patient.device_worker: DeviceStatusWorker.run started for IP: 192.168.2.107
+2025-06-05 13:17:49,358 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 13:28:43,790 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 13:28:43,791 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 13:28:43,849 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:28:43,849 [DEBUG] ui.patient.session_dialog: Creating QThread for IP: 192.168.2.107
+2025-06-05 13:28:43,850 [DEBUG] ui.patient.device_worker: DeviceStatusWorker created for IP: 192.168.2.107
+2025-06-05 13:28:43,850 [DEBUG] ui.patient.session_dialog: Starting QThread
+2025-06-05 13:28:43,850 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 13:28:43,850 [DEBUG] ui.patient.device_worker: DeviceStatusWorker.run started for IP: 192.168.2.107
+2025-06-05 13:28:43,853 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 13:29:04,390 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 13:29:04,391 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 13:29:04,441 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:29:04,442 [DEBUG] ui.patient.session_dialog: Creating QThread for IP: 192.168.2.107
+2025-06-05 13:29:04,442 [DEBUG] ui.patient.device_worker: DeviceStatusWorker created for IP: 192.168.2.107
+2025-06-05 13:29:04,442 [DEBUG] ui.patient.session_dialog: Starting QThread
+2025-06-05 13:29:04,442 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 13:29:04,442 [DEBUG] ui.patient.device_worker: DeviceStatusWorker.run started for IP: 192.168.2.107
+2025-06-05 13:29:04,445 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 13:45:18,587 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 13:45:18,588 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 13:45:18,646 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:45:18,647 [DEBUG] ui.patient.session_dialog: Creating QThread for IP: 192.168.2.107
+2025-06-05 13:45:18,648 [DEBUG] ui.patient.device_worker: DeviceStatusWorker created for IP: 192.168.2.107
+2025-06-05 13:45:18,648 [DEBUG] ui.patient.session_dialog: Starting QThread
+2025-06-05 13:45:18,648 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 13:45:18,650 [DEBUG] ui.patient.device_worker: DeviceStatusWorker.run: starting HEAD request to http://192.168.2.107:8080/
+2025-06-05 13:45:21,488 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:45:21,489 [DEBUG] ui.patient.session_dialog: Previous thread still running. Skipping new check.
+2025-06-05 13:50:46,036 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 13:50:46,038 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 13:50:46,092 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:50:46,092 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 13:50:46,092 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 13:50:46,098 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 13:51:39,203 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 13:51:39,207 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 13:51:39,261 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:51:39,261 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 13:51:39,261 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 13:51:39,268 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 13:51:42,058 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:51:42,058 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 13:52:45,951 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 13:52:45,955 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 13:52:46,008 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:52:46,008 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 13:52:46,008 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 13:52:46,015 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 13:52:48,982 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:52:48,983 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 13:52:48,985 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.OperationCanceledError, error_str=Operation canceled)
+2025-06-05 13:52:48,985 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 13:52:48,985 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Operation canceled
+2025-06-05 13:54:47,635 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 13:54:47,637 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 13:54:47,691 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:54:47,691 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 13:54:47,691 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 13:54:47,697 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 13:54:50,488 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:54:50,489 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 13:54:50,491 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.OperationCanceledError, error_str=Operation canceled)
+2025-06-05 13:54:50,491 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 13:54:50,492 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Operation canceled
+2025-06-05 13:55:55,218 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 13:55:55,222 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 13:55:55,273 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:55:55,273 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 13:55:55,273 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 13:55:55,273 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 13:55:55,279 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 13:55:58,073 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:55:58,073 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 13:55:58,074 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.OperationCanceledError, error_str=Operation canceled)
+2025-06-05 13:55:58,075 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 13:55:58,075 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Operation canceled
+2025-06-05 13:58:16,700 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 13:58:16,703 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 13:58:16,759 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:58:16,759 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 13:58:16,759 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 13:58:16,759 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 13:58:16,766 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 13:58:19,554 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:58:19,555 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 13:58:19,556 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 13:58:19,557 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 13:58:19,557 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 13:58:22,478 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:58:22,480 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 13:58:22,480 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 13:58:22,480 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 13:58:22,480 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 13:58:25,478 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:58:25,479 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 13:58:25,479 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 13:58:25,479 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 13:58:25,479 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 13:58:28,479 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:58:28,479 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 13:58:28,479 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 13:58:28,479 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 13:58:28,479 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 13:58:31,479 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:58:31,480 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 13:58:31,483 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 13:58:31,483 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 13:58:31,484 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 13:58:34,480 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:58:34,481 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 13:58:34,481 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 13:58:34,482 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 13:58:34,482 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 13:59:49,376 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 13:59:49,378 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 13:59:49,385 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:59:49,385 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 13:59:49,385 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 13:59:49,385 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 13:59:49,386 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 13:59:51,131 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 13:59:51,132 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 13:59:51,136 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:59:51,136 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 13:59:51,137 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 13:59:51,137 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 13:59:51,137 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 13:59:52,363 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 13:59:52,364 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 13:59:52,368 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 13:59:52,368 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 13:59:52,368 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 13:59:52,368 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 13:59:52,369 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 14:05:06,315 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 14:05:06,320 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 14:05:06,373 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:05:06,373 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:05:06,373 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:05:06,373 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:05:06,381 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 14:05:09,471 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:05:09,472 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:05:09,473 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:05:09,473 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:05:09,474 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:05:12,475 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:05:12,476 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:05:12,476 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:05:12,476 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:05:12,476 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:05:15,475 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:05:15,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:05:15,476 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:05:15,476 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:05:15,476 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:05:18,475 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:05:18,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:05:18,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:05:18,475 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:05:18,476 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:05:21,475 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:05:21,476 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:05:21,476 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:05:21,477 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:05:21,477 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:05:24,475 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:05:24,476 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:05:24,476 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:05:24,477 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:05:24,477 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:05:27,475 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:05:27,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:05:27,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:05:27,476 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:05:27,476 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:05:30,475 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:05:30,476 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:05:30,476 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:05:30,476 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:05:30,476 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:05:33,474 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:05:33,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:05:33,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:05:33,475 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:05:33,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:05:36,475 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:05:36,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:05:36,476 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:05:36,476 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:05:36,476 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:05:39,475 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:05:39,476 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:05:39,476 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:05:39,476 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:05:39,476 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:05:42,474 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:05:42,474 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:05:42,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:05:42,475 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:05:42,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:05:45,474 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:05:45,474 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:05:45,474 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:05:45,475 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:05:45,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:05:48,474 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:05:48,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:05:48,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:05:48,476 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:05:48,476 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:05:51,475 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:05:51,476 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:05:51,477 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:05:51,477 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:05:51,477 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:05:54,474 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:05:54,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:05:54,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:05:54,475 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:05:54,476 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:05:57,475 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:05:57,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:05:57,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:05:57,476 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:05:57,476 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:06:00,474 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:06:00,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:06:00,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:06:00,475 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:06:00,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:06:03,474 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:06:03,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:06:03,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:06:03,475 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:06:03,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:06:06,474 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:06:06,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:06:06,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:06:06,475 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:06:06,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:06:09,474 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:06:09,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:06:09,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:06:09,475 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:06:09,476 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:06:12,475 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:06:12,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:06:12,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:06:12,476 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:06:12,476 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:06:15,473 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:06:15,474 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:06:15,474 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:06:15,474 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:06:15,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:06:18,475 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:06:18,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:06:18,476 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:06:18,476 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:06:18,476 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:06:21,474 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:06:21,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:06:21,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:06:21,475 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:06:21,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:06:32,139 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 14:06:32,140 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 14:06:32,146 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:06:32,146 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:06:32,146 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:06:32,146 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:06:32,147 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 14:06:34,991 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:06:34,992 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:06:34,992 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:06:34,993 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:06:34,993 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:06:37,974 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:06:37,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:06:37,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:06:37,975 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:06:37,975 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:06:40,974 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:06:40,975 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:06:40,976 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:06:40,976 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:06:40,976 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:06:43,974 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:06:43,975 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:06:43,975 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:06:43,975 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:06:43,975 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:06:46,974 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:06:46,975 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:06:46,975 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:06:46,976 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:06:46,976 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:06:49,974 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:06:49,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:06:49,975 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:06:49,975 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:06:49,975 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:06:52,974 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:06:52,975 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:06:52,975 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:06:52,975 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:06:52,975 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:06:55,973 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:06:55,973 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:06:55,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:06:55,974 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:06:55,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:06:58,973 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:06:58,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:06:58,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:06:58,974 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:06:58,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:07:01,973 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:07:01,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:07:01,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:07:01,975 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:07:01,975 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:07:04,973 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:07:04,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:07:04,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:07:04,974 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:07:04,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:07:07,973 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:07:07,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:07:07,975 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:07:07,975 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:07:07,976 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:07:10,973 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:07:10,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:07:10,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:07:10,975 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:07:10,975 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:07:13,973 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:07:13,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:07:13,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:07:13,974 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:07:13,975 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:07:16,974 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:07:16,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:07:16,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:07:16,974 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:07:16,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:07:19,973 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:07:19,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:07:19,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:07:19,974 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:07:19,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:07:22,974 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:07:22,975 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:07:22,976 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:07:22,976 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:07:22,976 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:07:25,974 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:07:25,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:07:25,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:07:25,974 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:07:25,975 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:07:28,972 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:07:28,973 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:07:28,973 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:07:28,973 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:07:28,973 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:07:31,973 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:07:31,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:07:31,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:07:31,974 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:07:31,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:07:32,475 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.TimeoutError, error_str=Socket operation timed out)
+2025-06-05 14:07:32,475 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:07:32,476 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Socket operation timed out
+2025-06-05 14:07:34,973 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:07:34,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:07:34,974 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:07:34,975 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:07:37,973 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:07:37,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:07:37,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:07:37,977 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:07:37,977 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:09:48,014 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 14:09:48,017 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 14:09:48,056 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:09:48,057 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:09:48,057 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:09:48,057 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:09:48,064 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 14:09:48,140 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:09:48,141 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:09:48,141 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Unknown error
+2025-06-05 14:09:50,972 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:09:50,973 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:09:50,973 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:09:50,973 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:09:50,978 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:09:50,979 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:09:50,979 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Unknown error
+2025-06-05 14:09:53,972 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:09:53,973 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:09:53,973 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:09:53,973 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:09:53,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:09:53,974 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:09:53,974 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Unknown error
+2025-06-05 14:16:32,177 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:16:35,027 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:16:35,028 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:16:35,029 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:16:37,968 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:16:37,969 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:16:37,969 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:16:37,972 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:16:40,968 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:16:40,972 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:16:43,968 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:16:43,971 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:16:46,968 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:16:46,969 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:16:49,968 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:16:49,971 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:16:52,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:16:52,969 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:16:55,968 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:16:55,970 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:16:58,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:17:01,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:17:01,968 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:17:01,968 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:17:04,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:17:04,968 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:17:04,968 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:17:04,971 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:17:07,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:17:07,970 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:17:10,966 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:17:10,968 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:17:13,968 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:17:13,970 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:17:16,966 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:17:16,969 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:17:19,968 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:17:19,970 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:17:22,968 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:17:22,973 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:17:25,968 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:17:28,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:17:28,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:17:28,968 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:17:31,966 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:17:31,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:17:31,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:17:31,969 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:17:34,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:17:34,968 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:17:42,038 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:17:42,066 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:17:44,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:17:44,968 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:17:47,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:17:47,970 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:17:50,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:17:53,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:17:53,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:17:53,968 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:17:56,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:17:56,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:17:56,968 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:17:56,970 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:17:59,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:17:59,968 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:18:02,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:18:02,969 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:18:05,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:18:05,969 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:18:08,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:18:08,969 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:18:11,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:18:11,968 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:18:14,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:18:14,968 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:18:17,966 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:18:20,966 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:18:20,966 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:18:20,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:18:23,966 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:18:23,966 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:18:23,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:18:23,968 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:18:26,968 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:18:26,970 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:18:29,966 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:18:29,969 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:18:32,966 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:18:32,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:18:35,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:18:35,969 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:18:38,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:18:38,969 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:18:41,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:18:41,969 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:18:44,966 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:18:47,966 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:18:47,966 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:18:47,966 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:18:50,966 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:18:50,966 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:18:50,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:18:50,969 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:18:53,966 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:18:53,968 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:18:56,966 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:18:56,970 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:19:07,957 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:19:08,032 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:19:10,966 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:19:13,966 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:19:13,966 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:19:13,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:19:16,965 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:19:16,966 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:19:16,966 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:19:16,968 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:19:19,966 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:19:19,968 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:19:22,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:19:22,969 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:19:25,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:19:25,969 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:19:28,966 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:19:28,969 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:19:31,966 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:19:31,968 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:19:35,649 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:19:35,676 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:19:56,010 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:19:58,965 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:19:58,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:19:58,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:20:01,965 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:20:01,966 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:20:01,966 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:20:01,969 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:22:05,740 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:22:08,892 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:22:08,892 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:22:08,893 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:22:11,973 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:22:11,973 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:22:11,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:22:11,975 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:22:14,973 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:22:14,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:22:17,972 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:22:17,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:24:05,845 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:24:08,972 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:24:08,973 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:24:08,973 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:24:10,179 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 14:24:10,179 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 14:24:21,589 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:24:21,590 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:24:24,936 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 14:24:24,936 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 14:24:24,965 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:24:24,965 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:24:24,965 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:24:24,965 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:24:24,965 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 14:24:25,004 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 14:24:25,005 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:24:25,005 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Unknown error
+2025-06-05 14:46:36,320 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:46:36,392 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.ConnectionRefusedError, error_str=Connection refused)
+2025-06-05 14:46:39,459 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:46:39,473 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.ConnectionRefusedError, error_str=Connection refused)
+2025-06-05 14:46:46,384 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 14:46:46,384 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 14:46:46,400 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:46:46,400 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:46:46,400 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:46:46,401 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:46:46,401 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 14:46:46,509 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.ConnectionRefusedError, error_str=Connection refused)
+2025-06-05 14:46:46,510 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:46:46,510 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Connection refused
+2025-06-05 14:46:49,460 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:46:49,460 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:46:49,461 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:46:49,461 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:46:49,581 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.ConnectionRefusedError, error_str=Connection refused)
+2025-06-05 14:46:49,582 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:46:49,582 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Connection refused
+2025-06-05 14:46:52,459 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:46:52,460 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:46:52,460 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:46:52,460 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:46:52,477 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.ConnectionRefusedError, error_str=Connection refused)
+2025-06-05 14:46:52,477 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:46:52,478 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Connection refused
+2025-06-05 14:46:55,459 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:46:55,460 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:46:55,460 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:46:55,460 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:46:55,482 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.ConnectionRefusedError, error_str=Connection refused)
+2025-06-05 14:46:55,482 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:46:55,482 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Connection refused
+2025-06-05 14:46:58,459 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:46:58,460 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:46:58,460 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:46:58,460 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:46:58,592 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.ConnectionRefusedError, error_str=Connection refused)
+2025-06-05 14:46:58,592 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:46:58,592 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Connection refused
+2025-06-05 14:47:01,459 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:47:01,460 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:47:01,460 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:47:01,460 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:47:01,563 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.ConnectionRefusedError, error_str=Connection refused)
+2025-06-05 14:47:01,564 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:47:01,564 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Connection refused
+2025-06-05 14:47:04,460 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:47:04,460 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:47:04,460 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:47:04,460 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:47:04,532 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.ConnectionRefusedError, error_str=Connection refused)
+2025-06-05 14:47:04,533 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:47:04,533 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Connection refused
+2025-06-05 14:54:42,920 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 14:54:42,923 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 14:54:42,938 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:54:42,938 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:54:42,938 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:54:42,938 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:54:42,939 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 14:54:43,005 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=404, error=NetworkError.ContentNotFoundError, error_str=Error transferring http://192.168.2.107:8080/ - server replied: Not Found)
+2025-06-05 14:54:43,005 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:54:43,005 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Error transferring http://192.168.2.107:8080/ - server replied: Not Found
+2025-06-05 14:54:45,954 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:54:45,955 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:54:45,955 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:54:45,955 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:54:46,058 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=404, error=NetworkError.ContentNotFoundError, error_str=Error transferring http://192.168.2.107:8080/ - server replied: Not Found)
+2025-06-05 14:54:46,058 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:54:46,058 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Error transferring http://192.168.2.107:8080/ - server replied: Not Found
+2025-06-05 14:54:57,083 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 14:54:57,084 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 14:54:57,090 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:54:57,090 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:54:57,090 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:54:57,090 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:54:57,090 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 14:54:57,120 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=404, error=NetworkError.ContentNotFoundError, error_str=Error transferring http://192.168.2.107:8080/ - server replied: Not Found)
+2025-06-05 14:54:57,120 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:54:57,120 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Error transferring http://192.168.2.107:8080/ - server replied: Not Found
+2025-06-05 14:54:59,955 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:54:59,956 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:54:59,956 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:54:59,956 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:54:59,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=404, error=NetworkError.ContentNotFoundError, error_str=Error transferring http://192.168.2.107:8080/ - server replied: Not Found)
+2025-06-05 14:54:59,975 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:54:59,975 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Error transferring http://192.168.2.107:8080/ - server replied: Not Found
+2025-06-05 14:55:02,956 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:55:02,958 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:55:02,958 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:55:02,959 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:55:02,977 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=404, error=NetworkError.ContentNotFoundError, error_str=Error transferring http://192.168.2.107:8080/ - server replied: Not Found)
+2025-06-05 14:55:02,977 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:55:02,977 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Error transferring http://192.168.2.107:8080/ - server replied: Not Found
+2025-06-05 14:55:05,955 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:55:05,955 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:55:05,955 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:55:05,956 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:55:05,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=404, error=NetworkError.ContentNotFoundError, error_str=Error transferring http://192.168.2.107:8080/ - server replied: Not Found)
+2025-06-05 14:55:05,968 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:55:05,968 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Error transferring http://192.168.2.107:8080/ - server replied: Not Found
+2025-06-05 14:55:08,955 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:55:08,955 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:55:08,955 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:55:08,955 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:55:08,966 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=404, error=NetworkError.ContentNotFoundError, error_str=Error transferring http://192.168.2.107:8080/ - server replied: Not Found)
+2025-06-05 14:55:08,966 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:55:08,966 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Error transferring http://192.168.2.107:8080/ - server replied: Not Found
+2025-06-05 14:55:11,954 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:55:11,955 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:55:11,955 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:55:11,955 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:55:11,969 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=404, error=NetworkError.ContentNotFoundError, error_str=Error transferring http://192.168.2.107:8080/ - server replied: Not Found)
+2025-06-05 14:55:11,969 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:55:11,969 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Error transferring http://192.168.2.107:8080/ - server replied: Not Found
+2025-06-05 14:55:14,954 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:55:14,955 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:55:14,955 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:55:14,956 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:55:14,968 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=404, error=NetworkError.ContentNotFoundError, error_str=Error transferring http://192.168.2.107:8080/ - server replied: Not Found)
+2025-06-05 14:55:14,969 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:55:14,969 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Error transferring http://192.168.2.107:8080/ - server replied: Not Found
+2025-06-05 14:55:17,955 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:55:17,955 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:55:17,956 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:55:17,956 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:55:17,977 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=404, error=NetworkError.ContentNotFoundError, error_str=Error transferring http://192.168.2.107:8080/ - server replied: Not Found)
+2025-06-05 14:55:17,977 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:55:17,977 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Error transferring http://192.168.2.107:8080/ - server replied: Not Found
+2025-06-05 14:55:20,955 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:55:20,956 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:55:20,956 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:55:20,956 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:55:20,975 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=404, error=NetworkError.ContentNotFoundError, error_str=Error transferring http://192.168.2.107:8080/ - server replied: Not Found)
+2025-06-05 14:55:20,975 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:55:20,975 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Error transferring http://192.168.2.107:8080/ - server replied: Not Found
+2025-06-05 14:55:23,955 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:55:23,956 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:55:23,956 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:55:23,956 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:55:23,968 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=404, error=NetworkError.ContentNotFoundError, error_str=Error transferring http://192.168.2.107:8080/ - server replied: Not Found)
+2025-06-05 14:55:23,969 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:55:23,969 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Error transferring http://192.168.2.107:8080/ - server replied: Not Found
+2025-06-05 14:55:26,954 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:55:26,955 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:55:26,955 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:55:26,955 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:55:26,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=404, error=NetworkError.ContentNotFoundError, error_str=Error transferring http://192.168.2.107:8080/ - server replied: Not Found)
+2025-06-05 14:55:26,967 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:55:26,967 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Error transferring http://192.168.2.107:8080/ - server replied: Not Found
+2025-06-05 14:55:29,955 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:55:29,955 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:55:29,955 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:55:29,956 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:55:29,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=404, error=NetworkError.ContentNotFoundError, error_str=Error transferring http://192.168.2.107:8080/ - server replied: Not Found)
+2025-06-05 14:55:29,967 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:55:29,967 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Error transferring http://192.168.2.107:8080/ - server replied: Not Found
+2025-06-05 14:55:32,955 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:55:32,956 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:55:32,956 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:55:32,957 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:55:32,981 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=404, error=NetworkError.ContentNotFoundError, error_str=Error transferring http://192.168.2.107:8080/ - server replied: Not Found)
+2025-06-05 14:55:32,981 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:55:32,982 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Error transferring http://192.168.2.107:8080/ - server replied: Not Found
+2025-06-05 14:55:35,012 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:55:35,037 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=404, error=NetworkError.ContentNotFoundError, error_str=Error transferring http://192.168.2.107:8080/ - server replied: Not Found)
+2025-06-05 14:55:37,953 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:55:37,983 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=404, error=NetworkError.ContentNotFoundError, error_str=Error transferring http://192.168.2.107:8080/ - server replied: Not Found)
+2025-06-05 14:55:49,084 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 14:55:49,085 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 14:55:49,092 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:55:49,092 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:55:49,092 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:55:49,092 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:55:49,092 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 14:55:49,122 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=404, error=NetworkError.ContentNotFoundError, error_str=Error transferring http://192.168.2.107:8080/ - server replied: Not Found)
+2025-06-05 14:55:49,122 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:55:49,122 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Error transferring http://192.168.2.107:8080/ - server replied: Not Found
+2025-06-05 14:55:51,954 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:55:51,955 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:55:51,955 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:55:51,955 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:55:51,974 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=404, error=NetworkError.ContentNotFoundError, error_str=Error transferring http://192.168.2.107:8080/ - server replied: Not Found)
+2025-06-05 14:55:51,974 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:55:51,975 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Error transferring http://192.168.2.107:8080/ - server replied: Not Found
+2025-06-05 14:55:54,954 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:55:54,955 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:55:54,955 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:55:54,955 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:55:54,975 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=404, error=NetworkError.ContentNotFoundError, error_str=Error transferring http://192.168.2.107:8080/ - server replied: Not Found)
+2025-06-05 14:55:54,975 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:55:54,976 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Error transferring http://192.168.2.107:8080/ - server replied: Not Found
+2025-06-05 14:55:57,955 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:55:57,955 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:55:57,955 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:55:57,956 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:55:57,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=404, error=NetworkError.ContentNotFoundError, error_str=Error transferring http://192.168.2.107:8080/ - server replied: Not Found)
+2025-06-05 14:55:57,967 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:55:57,968 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Error transferring http://192.168.2.107:8080/ - server replied: Not Found
+2025-06-05 14:56:00,954 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:56:00,955 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:56:00,955 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:56:00,955 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:56:00,967 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=404, error=NetworkError.ContentNotFoundError, error_str=Error transferring http://192.168.2.107:8080/ - server replied: Not Found)
+2025-06-05 14:56:00,968 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:56:00,968 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Error transferring http://192.168.2.107:8080/ - server replied: Not Found
+2025-06-05 14:56:03,954 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 14:56:03,955 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 14:56:03,955 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 14:56:03,955 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 14:56:03,969 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=404, error=NetworkError.ContentNotFoundError, error_str=Error transferring http://192.168.2.107:8080/ - server replied: Not Found)
+2025-06-05 14:56:03,969 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 14:56:03,969 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Error transferring http://192.168.2.107:8080/ - server replied: Not Found
+2025-06-05 15:06:09,465 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 15:06:09,471 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 15:06:09,485 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:06:09,486 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:06:09,486 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:06:09,486 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:06:09,490 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 15:06:09,523 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=405, error=NetworkError.ContentOperationNotPermittedError, error_str=Error transferring http://192.168.2.107:8080/ - server replied: Method Not Allowed)
+2025-06-05 15:06:09,524 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 15:06:09,524 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Error transferring http://192.168.2.107:8080/ - server replied: Method Not Allowed
+2025-06-05 15:06:12,447 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:06:12,448 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:06:12,448 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:06:12,448 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:06:12,471 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=405, error=NetworkError.ContentOperationNotPermittedError, error_str=Error transferring http://192.168.2.107:8080/ - server replied: Method Not Allowed)
+2025-06-05 15:06:12,471 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 15:06:12,471 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Error transferring http://192.168.2.107:8080/ - server replied: Method Not Allowed
+2025-06-05 15:06:15,446 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:06:15,447 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:06:15,447 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:06:15,447 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:06:15,468 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=405, error=NetworkError.ContentOperationNotPermittedError, error_str=Error transferring http://192.168.2.107:8080/ - server replied: Method Not Allowed)
+2025-06-05 15:06:15,468 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 15:06:15,468 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Error transferring http://192.168.2.107:8080/ - server replied: Method Not Allowed
+2025-06-05 15:06:18,447 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:06:18,447 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:06:18,447 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:06:18,447 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:06:18,501 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=405, error=NetworkError.ContentOperationNotPermittedError, error_str=Error transferring http://192.168.2.107:8080/ - server replied: Method Not Allowed)
+2025-06-05 15:06:18,502 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 15:06:18,502 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Error transferring http://192.168.2.107:8080/ - server replied: Method Not Allowed
+2025-06-05 15:06:21,446 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:06:21,447 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:06:21,447 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:06:21,448 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:06:21,474 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=405, error=NetworkError.ContentOperationNotPermittedError, error_str=Error transferring http://192.168.2.107:8080/ - server replied: Method Not Allowed)
+2025-06-05 15:06:21,475 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 15:06:21,475 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Error transferring http://192.168.2.107:8080/ - server replied: Method Not Allowed
+2025-06-05 15:06:25,298 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 15:06:25,298 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 15:06:25,305 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:06:25,305 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:06:25,305 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:06:25,305 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:06:25,306 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 15:06:25,336 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=405, error=NetworkError.ContentOperationNotPermittedError, error_str=Error transferring http://192.168.2.107:8080/ - server replied: Method Not Allowed)
+2025-06-05 15:06:25,336 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 15:06:25,337 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Error transferring http://192.168.2.107:8080/ - server replied: Method Not Allowed
+2025-06-05 15:06:28,446 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:06:28,447 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:06:28,447 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:06:28,447 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:06:28,538 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=405, error=NetworkError.ContentOperationNotPermittedError, error_str=Error transferring http://192.168.2.107:8080/ - server replied: Method Not Allowed)
+2025-06-05 15:06:28,538 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 15:06:28,538 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Error transferring http://192.168.2.107:8080/ - server replied: Method Not Allowed
+2025-06-05 15:06:31,446 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:06:31,447 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:06:31,447 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:06:31,447 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:06:31,509 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=405, error=NetworkError.ContentOperationNotPermittedError, error_str=Error transferring http://192.168.2.107:8080/ - server replied: Method Not Allowed)
+2025-06-05 15:06:31,510 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 15:06:31,510 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Error transferring http://192.168.2.107:8080/ - server replied: Method Not Allowed
+2025-06-05 15:14:44,933 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 15:14:44,936 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 15:14:44,986 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:14:44,987 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:14:44,987 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:14:44,987 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:14:44,993 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 15:14:45,109 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:14:45,109 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 15:14:45,109 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Unknown error
+2025-06-05 15:14:47,941 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:14:47,942 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:14:47,942 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:14:47,942 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:14:47,964 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:14:47,964 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 15:14:47,964 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Unknown error
+2025-06-05 15:14:50,942 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:14:50,942 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:14:50,943 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:14:50,943 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:14:50,962 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:14:50,962 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 15:14:50,962 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Unknown error
+2025-06-05 15:14:53,942 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:14:53,943 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:14:53,943 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:14:53,944 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:14:53,958 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:14:53,958 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 15:14:53,959 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Unknown error
+2025-06-05 15:14:56,942 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:14:56,943 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:14:56,943 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:14:56,943 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:14:56,961 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:14:56,961 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 15:14:56,961 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Unknown error
+2025-06-05 15:14:59,942 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:14:59,942 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:14:59,943 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:14:59,943 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:14:59,957 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:14:59,957 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 15:14:59,957 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Unknown error
+2025-06-05 15:15:02,941 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:15:02,942 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:15:02,942 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:15:02,942 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:15:02,969 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:15:02,970 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 15:15:02,970 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Unknown error
+2025-06-05 15:15:05,941 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:15:05,942 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:15:05,942 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:15:05,942 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:15:05,960 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:15:05,960 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 15:15:05,960 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Unknown error
+2025-06-05 15:15:08,941 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:15:08,942 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:15:08,942 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:15:08,942 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:15:08,956 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:15:08,956 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 15:15:08,957 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Unknown error
+2025-06-05 15:15:11,941 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:15:11,942 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:15:11,942 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:15:11,942 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:15:11,957 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:15:11,957 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 15:15:11,957 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Unknown error
+2025-06-05 15:15:14,942 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:15:14,942 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:15:14,942 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:15:14,943 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:15:14,962 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:15:14,962 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 15:15:14,962 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Unknown error
+2025-06-05 15:15:17,942 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:15:17,943 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:15:17,943 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:15:17,943 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:15:17,969 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:15:17,969 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 15:15:17,969 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Unknown error
+2025-06-05 15:15:20,941 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:15:20,941 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:15:20,941 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:15:20,942 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:15:20,968 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:15:20,969 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 15:15:20,969 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Unknown error
+2025-06-05 15:15:23,225 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:15:23,254 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:15:26,376 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:15:26,398 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:15:29,442 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:15:29,466 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:15:32,441 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:15:32,468 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:15:35,440 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:15:35,467 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:19:45,071 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 15:19:45,072 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 15:19:45,079 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:19:45,080 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:19:45,080 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:19:45,080 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:19:45,080 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 15:19:45,109 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:19:45,109 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 15:19:45,109 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Unknown error
+2025-06-05 15:19:47,938 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:19:47,939 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:19:47,939 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:19:47,939 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:19:47,955 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:19:47,955 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 15:19:47,955 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Unknown error
+2025-06-05 15:19:50,938 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:19:50,938 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:19:50,939 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:19:50,939 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:19:50,975 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:19:50,975 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 15:19:50,976 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Unknown error
+2025-06-05 15:19:53,938 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:19:53,939 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:19:53,939 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:19:53,939 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:19:53,952 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:19:53,953 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 15:19:53,953 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Unknown error
+2025-06-05 15:19:56,939 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:19:56,939 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:19:56,940 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:19:56,940 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:19:56,953 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:19:56,953 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 15:19:56,953 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Unknown error
+2025-06-05 15:19:59,940 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:19:59,940 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:19:59,941 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:19:59,941 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:19:59,953 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:19:59,954 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 15:19:59,954 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Unknown error
+2025-06-05 15:23:10,478 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 15:23:10,482 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 15:23:10,530 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:23:10,530 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:23:10,530 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:23:10,530 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:23:10,534 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 15:23:10,651 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:23:10,651 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=online
+2025-06-05 15:23:13,437 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:23:13,437 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:23:13,437 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:23:13,437 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:23:13,451 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:23:13,451 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=online
+2025-06-05 15:23:18,629 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 15:23:18,629 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 15:23:18,636 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:23:18,636 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:23:18,636 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:23:18,636 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:23:18,637 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 15:23:18,669 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:23:18,669 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=online
+2025-06-05 15:23:21,480 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:23:21,481 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:23:21,481 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:23:21,482 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:23:21,498 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:23:21,498 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=online
+2025-06-05 15:23:24,437 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:23:24,437 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:23:24,437 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:23:24,438 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:23:24,453 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:23:24,453 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=online
+2025-06-05 15:23:27,437 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:23:27,437 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:23:27,437 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:23:27,437 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:23:27,452 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:23:27,453 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=online
+2025-06-05 15:23:30,436 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:23:30,437 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:23:30,438 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:23:30,438 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:23:30,452 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:23:30,452 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=online
+2025-06-05 15:23:33,436 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:23:33,437 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:23:33,437 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:23:33,437 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:23:36,436 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:23:36,437 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 15:23:36,437 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 15:23:36,437 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:23:36,438 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:23:39,436 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:23:39,437 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 15:23:39,437 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 15:23:39,437 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:23:39,437 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:23:42,436 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:23:42,437 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 15:23:42,437 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 15:23:42,437 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:23:42,438 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:23:45,436 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:23:45,436 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 15:23:45,436 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 15:23:45,436 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:23:45,436 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:23:48,437 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:23:48,437 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 15:23:48,438 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 15:23:48,438 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:23:48,438 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:23:50,102 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Connection timed out)
+2025-06-05 15:23:50,103 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 15:23:50,103 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Connection timed out
+2025-06-05 15:23:51,437 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:23:51,437 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:23:51,437 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:23:51,438 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:23:54,436 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:23:54,437 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 15:23:54,437 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 15:23:54,437 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:23:54,437 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:23:57,436 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:23:57,437 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 15:23:57,437 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 15:23:57,437 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:23:57,437 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:24:00,436 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:24:00,437 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 15:24:00,437 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 15:24:00,437 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:24:00,437 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:24:00,520 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.ConnectionRefusedError, error_str=Connection refused)
+2025-06-05 15:24:00,521 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 15:24:00,521 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Connection refused
+2025-06-05 15:24:03,436 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:24:03,438 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:24:03,438 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:24:03,438 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:24:03,458 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.ConnectionRefusedError, error_str=Connection refused)
+2025-06-05 15:24:03,459 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 15:24:03,459 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Connection refused
+2025-06-05 15:24:06,436 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:24:06,437 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:24:06,437 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:24:06,437 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:24:06,459 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.ConnectionRefusedError, error_str=Connection refused)
+2025-06-05 15:24:06,459 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 15:24:06,460 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Connection refused
+2025-06-05 15:24:09,436 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:24:09,438 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:24:09,438 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:24:09,438 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:24:09,499 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:24:09,500 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=online
+2025-06-05 15:24:12,436 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:24:12,437 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:24:12,437 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:24:12,437 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:24:12,453 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:24:12,454 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=online
+2025-06-05 15:24:15,436 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:24:15,436 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:24:15,436 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:24:15,436 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:24:15,450 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:24:15,450 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=online
+2025-06-05 15:24:16,215 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:24:16,329 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "POST /tasks HTTP/1.1" 200 539
+2025-06-05 15:24:20,383 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:24:20,431 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "GET /tasks/5584c36c-8082-42b4-a7dd-d22755cc7f7b/status HTTP/1.1" 200 149
+2025-06-05 15:24:53,595 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:24:53,635 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "GET /tasks/5584c36c-8082-42b4-a7dd-d22755cc7f7b/status HTTP/1.1" 200 151
+2025-06-05 15:24:55,579 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:24:55,631 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "GET /tasks/5584c36c-8082-42b4-a7dd-d22755cc7f7b/photos HTTP/1.1" 200 1015
+2025-06-05 15:24:55,637 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:24:55,677 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "GET /tasks/5584c36c-8082-42b4-a7dd-d22755cc7f7b/photos/05762c87-f1b3-470d-bf07-112ef65597d2/download HTTP/1.1" 200 83678
+2025-06-05 15:24:55,740 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:24:55,797 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "GET /tasks/5584c36c-8082-42b4-a7dd-d22755cc7f7b/photos/8ab5ce9b-1b1e-471b-97a5-c466b4ec37d0/download HTTP/1.1" 200 83490
+2025-06-05 15:24:55,842 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:24:55,880 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "GET /tasks/5584c36c-8082-42b4-a7dd-d22755cc7f7b/photos/ac6dd8f3-4515-460c-96b3-c5e9c73918c1/download HTTP/1.1" 200 83503
+2025-06-05 15:24:55,970 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:24:56,027 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "GET /tasks/5584c36c-8082-42b4-a7dd-d22755cc7f7b/photos/b89de787-1b38-4f63-8d24-3fd28d072bac/download HTTP/1.1" 200 83394
+2025-06-05 15:24:56,086 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:24:56,153 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "GET /tasks/5584c36c-8082-42b4-a7dd-d22755cc7f7b/photos/d816b2e2-737a-496f-80bb-c056a8b5f349/download HTTP/1.1" 200 83670
+2025-06-05 15:24:56,238 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:24:56,298 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "GET /tasks/5584c36c-8082-42b4-a7dd-d22755cc7f7b/photos/fc2ab65c-ad4b-488c-b960-ccddb5bc5c62/download HTTP/1.1" 200 83505
+2025-06-05 15:25:53,366 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:25:53,413 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "GET /tasks/5584c36c-8082-42b4-a7dd-d22755cc7f7b/status HTTP/1.1" 200 151
+2025-06-05 15:26:01,429 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:26:01,475 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "GET /tasks/5584c36c-8082-42b4-a7dd-d22755cc7f7b/status HTTP/1.1" 404 45
+2025-06-05 15:26:40,748 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 15:26:40,748 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 15:26:40,754 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:26:40,754 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:26:40,755 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:26:40,755 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:26:40,755 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 15:26:40,803 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:26:40,803 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=online
+2025-06-05 15:26:45,461 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 15:26:45,462 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 15:26:45,468 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:26:45,468 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:26:45,468 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:26:45,468 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:26:45,468 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 15:26:45,517 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:26:45,517 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=online
+2025-06-05 15:33:27,370 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 15:33:27,374 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 15:33:27,428 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:33:27,428 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:33:27,428 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:33:27,428 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:33:27,437 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 15:33:27,570 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:33:27,570 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=online
+2025-06-05 15:33:30,406 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:33:30,407 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:33:30,407 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:33:30,407 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:33:30,465 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:33:30,466 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=online
+2025-06-05 15:33:33,406 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:33:33,406 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:33:33,406 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:33:33,406 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:33:33,537 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:33:33,538 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=online
+2025-06-05 15:33:33,900 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:33:34,028 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "POST /tasks HTTP/1.1" 200 539
+2025-06-05 15:36:17,857 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:36:18,021 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "GET /tasks/99e3fcc6-1dcb-42ea-a636-b2b5765bc90d/status HTTP/1.1" 200 151
+2025-06-05 15:36:18,994 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:36:19,035 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "GET /tasks/99e3fcc6-1dcb-42ea-a636-b2b5765bc90d/photos HTTP/1.1" 200 1015
+2025-06-05 15:36:39,814 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:36:39,853 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "GET /tasks/99e3fcc6-1dcb-42ea-a636-b2b5765bc90d/photos HTTP/1.1" 200 1015
+2025-06-05 15:36:58,932 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 15:36:58,934 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 15:36:58,939 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:36:58,939 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:36:58,940 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:36:58,940 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:36:58,940 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 15:36:58,976 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:36:58,976 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=online
+2025-06-05 15:37:03,298 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:37:03,335 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "GET /tasks/99e3fcc6-1dcb-42ea-a636-b2b5765bc90d/status HTTP/1.1" 200 151
+2025-06-05 15:37:06,313 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:37:06,350 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "GET /tasks/99e3fcc6-1dcb-42ea-a636-b2b5765bc90d/photos HTTP/1.1" 200 1015
+2025-06-05 15:37:51,295 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:38:08,245 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:38:28,985 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:38:53,065 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 15:38:53,066 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 15:38:53,095 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:38:53,095 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:38:53,095 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:38:53,096 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:38:53,099 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 15:38:53,186 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=None, error=NetworkError.UnknownNetworkError, error_str=Unknown error)
+2025-06-05 15:38:53,186 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=offline
+2025-06-05 15:38:53,186 [ERROR] ui.patient.session_dialog: on_device_status_error: IP=192.168.2.107, error=Unknown error
+2025-06-05 15:38:55,917 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:38:55,917 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:38:55,918 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:38:55,918 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:38:58,901 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:38:58,902 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: aborting request to 192.168.2.107
+2025-06-05 15:38:58,902 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: on_finished called, but no reply!
+2025-06-05 15:38:58,902 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:38:58,902 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:40:41,366 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:40:41,441 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "GET /tasks/99e3fcc6-1dcb-42ea-a636-b2b5765bc90d/status HTTP/1.1" 200 151
+2025-06-05 15:40:42,879 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:40:42,928 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "GET /tasks/99e3fcc6-1dcb-42ea-a636-b2b5765bc90d/photos HTTP/1.1" 200 1015
+2025-06-05 15:40:42,933 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:40:42,988 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "GET /tasks/99e3fcc6-1dcb-42ea-a636-b2b5765bc90d/photos/05762c87-f1b3-470d-bf07-112ef65597d2/download HTTP/1.1" 200 84213
+2025-06-05 15:40:43,047 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:40:43,092 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "GET /tasks/99e3fcc6-1dcb-42ea-a636-b2b5765bc90d/photos/8ab5ce9b-1b1e-471b-97a5-c466b4ec37d0/download HTTP/1.1" 200 85006
+2025-06-05 15:40:43,140 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:40:43,205 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "GET /tasks/99e3fcc6-1dcb-42ea-a636-b2b5765bc90d/photos/ac6dd8f3-4515-460c-96b3-c5e9c73918c1/download HTTP/1.1" 200 86263
+2025-06-05 15:40:43,257 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:40:43,293 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "GET /tasks/99e3fcc6-1dcb-42ea-a636-b2b5765bc90d/photos/b89de787-1b38-4f63-8d24-3fd28d072bac/download HTTP/1.1" 200 84176
+2025-06-05 15:40:43,344 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:40:43,377 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "GET /tasks/99e3fcc6-1dcb-42ea-a636-b2b5765bc90d/photos/d816b2e2-737a-496f-80bb-c056a8b5f349/download HTTP/1.1" 200 86011
+2025-06-05 15:40:43,425 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:40:43,465 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "GET /tasks/99e3fcc6-1dcb-42ea-a636-b2b5765bc90d/photos/fc2ab65c-ad4b-488c-b960-ccddb5bc5c62/download HTTP/1.1" 200 86323
+2025-06-05 15:46:13,862 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:46:14,049 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:46:16,894 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:46:16,959 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:49:04,722 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:49:04,799 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:49:07,872 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:49:07,956 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:49:10,892 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:49:10,929 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:49:17,209 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ started
+2025-06-05 15:49:17,210 [DEBUG] ui.patient.session_dialog: Status timer started
+2025-06-05 15:49:17,226 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:49:17,226 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:49:17,226 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:49:17,226 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:49:17,226 [DEBUG] ui.patient.session_dialog: SessionDialog __init__ finished
+2025-06-05 15:49:17,286 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:49:17,286 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=online
+2025-06-05 15:49:20,361 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:49:20,362 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:49:20,363 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:49:20,363 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:49:20,443 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:49:20,444 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=online
+2025-06-05 15:49:23,392 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:49:23,393 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:49:23,393 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:49:23,393 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:49:23,515 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:49:23,515 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=online
+2025-06-05 15:49:26,392 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:49:26,393 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:49:26,393 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:49:26,394 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:49:26,484 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:49:26,485 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=online
+2025-06-05 15:49:29,392 [DEBUG] ui.patient.session_dialog: check_device_status called
+2025-06-05 15:49:29,392 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: abort() called but reply is already None
+2025-06-05 15:49:29,392 [DEBUG] ui.patient.session_dialog: Запуск проверки устройства: 192.168.2.107
+2025-06-05 15:49:29,392 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: start check 192.168.2.107
+2025-06-05 15:49:29,454 [DEBUG] ui.patient.device_worker: DeviceStatusWorker: reply finished (ip=192.168.2.107, code=200, error=NetworkError.NoError, error_str=Unknown error)
+2025-06-05 15:49:29,454 [DEBUG] ui.patient.session_dialog: on_device_status_checked: IP=192.168.2.107, status=online
+2025-06-05 15:49:32,138 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:49:32,262 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "POST /tasks HTTP/1.1" 200 539
+2025-06-05 15:50:22,713 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:50:22,756 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "GET /tasks/b0e736de-93e6-4b44-b1b4-493b9744882f/status HTTP/1.1" 200 151
+2025-06-05 15:50:28,158 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:50:28,219 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "GET /tasks/b0e736de-93e6-4b44-b1b4-493b9744882f/photos HTTP/1.1" 200 1015
+2025-06-05 15:50:28,228 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:50:28,278 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "GET /tasks/b0e736de-93e6-4b44-b1b4-493b9744882f/photos/05762c87-f1b3-470d-bf07-112ef65597d2/download HTTP/1.1" 200 83749
+2025-06-05 15:50:28,312 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:50:28,359 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "GET /tasks/b0e736de-93e6-4b44-b1b4-493b9744882f/photos/8ab5ce9b-1b1e-471b-97a5-c466b4ec37d0/download HTTP/1.1" 200 84053
+2025-06-05 15:50:28,395 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:50:28,440 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "GET /tasks/b0e736de-93e6-4b44-b1b4-493b9744882f/photos/ac6dd8f3-4515-460c-96b3-c5e9c73918c1/download HTTP/1.1" 200 87951
+2025-06-05 15:50:28,474 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:50:28,525 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "GET /tasks/b0e736de-93e6-4b44-b1b4-493b9744882f/photos/b89de787-1b38-4f63-8d24-3fd28d072bac/download HTTP/1.1" 200 85055
+2025-06-05 15:50:28,567 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:50:28,609 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "GET /tasks/b0e736de-93e6-4b44-b1b4-493b9744882f/photos/d816b2e2-737a-496f-80bb-c056a8b5f349/download HTTP/1.1" 200 87290
+2025-06-05 15:50:28,649 [DEBUG] urllib3.connectionpool: Starting new HTTP connection (1): 192.168.2.107:8080
+2025-06-05 15:50:28,687 [DEBUG] urllib3.connectionpool: http://192.168.2.107:8080 "GET /tasks/b0e736de-93e6-4b44-b1b4-493b9744882f/photos/fc2ab65c-ad4b-488c-b960-ccddb5bc5c62/download HTTP/1.1" 200 86221

@@ -103,6 +103,8 @@ const { mobile } = useDisplay() // определение, мобильное л
 const menuItems = [
   { title: 'Главная', icon: 'mdi-home', to: 'home' },
   { title: 'Пациенты', icon: 'mdi-account-multiple', to: 'patient' },
+  { title: 'Устройства', icon: 'mdi-camera', to: 'device' },
+  { title: 'Хромофоры', icon: 'mdi-molecule', to: 'chromophore' },
   { title: 'Настройки', icon: 'mdi-cog', to: 'config' },
 ]
 

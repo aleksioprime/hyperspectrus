@@ -26,7 +26,7 @@ router = APIRouter()
 )
 async def upload_raw_image(
         service: Annotated[RawImageService, Depends(get_raw_image_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={ RoleName.USER }))],
         session_id: UUID = Form(...),
         spectrum_ids: List[UUID] = Form(...),
         files: List[UploadFile] = File(...),

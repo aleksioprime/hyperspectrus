@@ -51,7 +51,8 @@ export class ApiService {
       (error) => {
         const { config, response } = error;
         // Если в ответе ошибка авторизации, то перенаправляется на страницу логирования
-        if (response && (response.status === 401 || response.status === 403) && !config._retry) {
+        // || response.status === 403 убрал из скобок
+        if (response && (response.status === 401) && !config._retry) {
           logger.error("Ошибка авторизации запроса");
           config._retry = true;
           this._redirectToLogin();

@@ -25,6 +25,9 @@ class ShootWorker(QObject):
     def run(self):
         logger.info(f"Запуск воркера съёмки: task_id={self.task_id}, test_mode={self.test_mode}, by_button={self.by_button}")
         try:
+            start_time = time.time()
+
+            frames = []
             for idx, spec in enumerate(self.spectra):
                 status = f"Снимок {idx + 1} из {len(self.spectra)} (λ = {spec} нм)"
                 logger.info(f"[{self.task_id}] {status}, спектр: {spec}")
@@ -39,26 +42,34 @@ class ShootWorker(QObject):
                     self._button_event.wait()
                     self._button_event.clear()
                     logger.info(f"Кнопка нажата для кадра {idx+1}")
-                else:
-                    time.sleep(0.5)
+                # else:
+                    # time.sleep(0.5)
 
                 # Снимаем кадр
-                frame = self.camera_widget.get_frame(highres=True)
+                frame = self.camera_widget.get_frame(spec)
+                frames.append(frame)
                 logger.info(f"Кадр получен")
-                time.sleep(0.5)
+                # time.sleep(0.5)
 
                 # Выключить LED по длине волны
                 self.led_controller.off(spec)
                 logger.info(f"Светодиод для спектра {spec} выключен")
 
-                # Сохраняем снимок, где spec — длина волны (spectrum_id)
-                if frame is not None:
-                    self.save_func(self.task_id, frame, spec)
-                    logger.info(f"[{self.task_id}] Снимок {idx + 1} сохранён")
-                else:
-                    logger.warning(f"[{self.task_id}] Не удалось получить кадр для спектра: {spec}")
+            # Сохраняем снимок, где spec — длина волны (spectrum_id)
+            for frame, spec in zip(frames, self.spectra):
+                self.save_func(self.task_id, frame, spec)
+                logger.info(f"[{self.task_id}] Снимок спектра {spec} сохранён")
+            else:
+                logger.warning(f"[{self.task_id}] Не удалось получить кадр для спектра: {spec}")
 
             logger.info(f"Съёмка завершена для task_id={self.task_id}")
+            elapsed = time.time() - start_time  # конец таймера
+            logger.info(f"Время съёмки всей серии: {elapsed:.2f} сек")
+
+            self.camera_widget.picam2.set_controls({
+                "AeEnable": True
+            })
+
             self.finished.emit()
         except Exception as e:
             logger.exception(f"Ошибка в процессе съёмки task_id={self.task_id}: {e}")

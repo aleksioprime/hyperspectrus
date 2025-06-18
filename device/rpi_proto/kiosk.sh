@@ -17,7 +17,7 @@ enable_kiosk() {
 [Desktop Entry]
 Type=Application
 Name=CameraApp
-Exec=$PYTHON $APP_PATH
+Exec=sudo -E $PYTHON $APP_PATH
 X-GNOME-Autostart-enabled=true
 EOF
 

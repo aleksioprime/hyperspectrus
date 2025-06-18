@@ -6,15 +6,15 @@ from gpiozero import LED, Button
 class LedController:
     def __init__(self):
         self.leds = {
-            470: LED("GPIO14"),
-            660: LED("GPIO15"),
-            700: LED("GPIO18"),
-            810: LED("GPIO23"),
-            850: LED("GPIO24"),
-            900: LED("GPIO25"),
-            940: LED("GPIO8"),
+            520: LED("GPIO8"),
+            660: LED("GPIO25"),
+            700: LED("GPIO24"),
+            810: LED("GPIO12"),
+            850: LED("GPIO18"),
+            900: LED("GPIO15"),
+            940: LED("GPIO14"),
         }
-        self.button = Button("GPIO20", pull_up=True)
+        self.button = Button("GPIO7", pull_up=True)
         self.off_all()
 
     def on(self, wavelength):

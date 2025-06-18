@@ -8,12 +8,19 @@ sudo apt update
 sudo apt upgrade -y
 ```
 
+Установите дополнительные пакеты:
+```sh
+sudo apt install libatlas-base-dev -y
+```
+
 Перейдите в консольную панель настроек Raspberry Pi:
 ```sh
 sudo raspi-config
 ```
 
 Для включения сервера удалённого рабочего стола из главного меню перейдите в `Interfacing Options` → `VNC` и выберите `Enable`.
+
+Для включения доступа к GPIO-пинам из главного меню перейдите в `Interfacing Options` → `Remote GPIO` и выберите `Yes`. Также лучше выключить SPI, чтобы освободить все пины, для этого выберит `SPI` и нажмите `No`.
 
 После всех настроек в главном меню выберите `Finish` и, если будет вопрос `Would you like to reboot now?`, нажмите на `Yes`
 
@@ -29,6 +36,8 @@ hdmi_group=2
 hdmi_mode=87
 hdmi_cvt=800 480 60 6 0 0 0
 ```
+Примечание: в настройке `hdmi_cvt` задайте разрешение вашего дисплея. Расшифровка настройки: `hdmi_cvt=<Ширина экрана в пикселях> <Высота экрана в пикселях> <Частота обновления экрана> <Соотношение сторон> <Междустрочные поля> <Чересстрочная развертка> <Reduced blanking>`
+
 
 Сохраните изменения в файле и перезагрузите устройство:
 ```
@@ -45,8 +54,7 @@ unzip main.zip
 
 Перенесите в рабочую папку:
 ```
-mkdir ~/hyperspectrus
-mv hyperspectrus-main/device/rpi_proto/* ~/hyperspectrus/
+mkdir ~/hyperspectrus && mv hyperspectrus-main/device/rpi_proto/* ~/hyperspectrus/
 ```
 
 Удалите скачанные файлы:

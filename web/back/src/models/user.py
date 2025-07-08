@@ -32,6 +32,7 @@ class User(Base):
     first_name = Column(String(50))
     last_name = Column(String(50))
     email = Column(String(255), unique=True, nullable=False)
+    photo = Column(String(255), nullable=True)
 
     is_active = Column(Boolean, default=True, nullable=False)
     is_superuser = Column(Boolean, default=False, nullable=False)
@@ -79,6 +80,7 @@ class Role(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
     name = Column(String(255), unique=True, index=True, nullable=False)
+    display_name = Column(String(255), nullable=True)
     description = Column(String, nullable=True)
 
     users = relationship("User", secondary=UserRoles.__table__, back_populates="roles")

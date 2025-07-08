@@ -27,7 +27,7 @@ router = APIRouter()
 async def get_patients(
         params: Annotated[PatientQueryParams, Depends(get_patient_params)],
         service: Annotated[PatientService, Depends(get_patient_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE, RoleName.ADMIN}))],
 ) -> PaginatedResponse[PatientSchema]:
     """
     Возвращает список всех пациентов организации
@@ -45,7 +45,7 @@ async def get_patients(
 async def get_patient(
         patient_id: UUID,
         service: Annotated[PatientService, Depends(get_patient_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> PatientDetailSchema:
     """
     Получает детальную информацию о пациенте
@@ -62,7 +62,7 @@ async def get_patient(
 async def create_patient(
         body: PatientCreateSchema,
         service: Annotated[PatientService, Depends(get_patient_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> PatientSchema:
     """
     Создаёт нового пациента
@@ -81,7 +81,7 @@ async def update_patient(
         patient_id: UUID,
         body: PatientUpdateSchema,
         service: Annotated[PatientService, Depends(get_patient_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> PatientSchema:
     """
     Обновляет пациента по его ID
@@ -98,7 +98,7 @@ async def update_patient(
 async def delete_patient(
         patient_id: UUID,
         service: Annotated[PatientService, Depends(get_patient_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> None:
     """
     Удаляет пациента по его ID

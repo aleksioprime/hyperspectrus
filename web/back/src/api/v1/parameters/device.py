@@ -26,7 +26,7 @@ router = APIRouter()
 )
 async def get_devices(
         service: Annotated[DeviceService, Depends(get_device_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> list[DeviceSchema]:
     """
     Возвращает список всех устройств
@@ -44,7 +44,7 @@ async def get_devices(
 async def get_device(
         device_id: UUID,
         service: Annotated[DeviceService, Depends(get_device_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> DeviceDetailSchema:
     """
     Получает детальную информацию об устройстве
@@ -61,7 +61,7 @@ async def get_device(
 async def create_device(
         body: DeviceCreateSchema,
         service: Annotated[DeviceService, Depends(get_device_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> DeviceSchema:
     """
     Создаёт новое устройство
@@ -80,7 +80,7 @@ async def update_device(
         device_id: UUID,
         body: DeviceUpdateSchema,
         service: Annotated[DeviceService, Depends(get_device_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> DeviceSchema:
     """
     Обновляет устройство по его ID
@@ -97,7 +97,7 @@ async def update_device(
 async def delete_device(
         device_id: UUID,
         service: Annotated[DeviceService, Depends(get_device_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> None:
     """
     Удаляет устройство по его ID

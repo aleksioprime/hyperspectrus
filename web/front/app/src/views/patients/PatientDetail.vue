@@ -151,7 +151,6 @@ const patient = ref(null);
 
 // Breadcrumbs
 const breadcrumbs = computed(() => [
-  { title: "Главная", to: { name: "home" }, disabled: false },
   { title: "Пациенты", to: { name: "patient" }, disabled: false },
   { title: patient.value?.full_name || "Загрузка...", disabled: true },
 ]);

@@ -158,7 +158,6 @@ const session = ref(null);
 
 
 const breadcrumbs = computed(() => [
-  { title: "Главная", to: { name: "home" }, disabled: false },
   { title: "Пациенты", to: { name: "patient" }, disabled: false },
   { title: session.value?.patient?.full_name || "Загрузка...", to: { name: 'patient-detail', params: { id: session.value?.patient?.id } }, disabled: false },
   { title: `Сеанс от ${formatDateTime(session.value?.date)}`, disabled: true },

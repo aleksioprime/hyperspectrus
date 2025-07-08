@@ -28,7 +28,7 @@ router = APIRouter()
 async def get_result(
         result_id: UUID,
         service: Annotated[ResultService, Depends(get_result_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> ResultSchema:
     """
     Получает детальную информацию о результате анализа
@@ -45,7 +45,7 @@ async def get_result(
 async def create_result(
         body: ResultCreateSchema,
         service: Annotated[ResultService, Depends(get_result_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> ResultSchema:
     """
     Создаёт новый результат анализа
@@ -64,7 +64,7 @@ async def update_result(
         result_id: UUID,
         body: ResultUpdateSchema,
         service: Annotated[ResultService, Depends(get_result_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> ResultSchema:
     """
     Обновляет результат анализа по его ID
@@ -81,7 +81,7 @@ async def update_result(
 async def delete_result(
         result_id: UUID,
         service: Annotated[ResultService, Depends(get_result_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> None:
     """
     Удаляет результат анализа по его ID

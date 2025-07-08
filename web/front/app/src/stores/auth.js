@@ -6,7 +6,6 @@ import { jwtDecode } from "jwt-decode"; // Декодирование JWT
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     user: null, // Текущий пользователь
-    accessToken: jwtService.getAccessToken(),
   }),
 
   getters: {
@@ -15,10 +14,12 @@ export const useAuthStore = defineStore("auth", {
      * Возвращает true, если access-токен действителен.
      */
     isAuthenticated(state) {
-      if (!state.accessToken) return false;
+      const token = jwtService.getAccessToken();
+
+      if (!token) return false;
 
       try {
-        const decodedToken = jwtDecode(state.accessToken);
+        const decodedToken = jwtDecode(token);
         const now = Math.floor(Date.now() / 1000);
         return decodedToken.exp > now;
       } catch (e) {
@@ -26,11 +27,16 @@ export const useAuthStore = defineStore("auth", {
       }
     },
 
-    /**
-     * Проверка, является ли пользователь админом
-     */
     isAdmin(state) {
       return state.user?.roles?.some(role => role.name === 'admin');
+    },
+
+    isEmployee(state) {
+      return state.user?.roles?.some(role => role.name === 'employee');
+    },
+
+    isSuperuser(state) {
+      return state.user?.is_superuser;
     },
   },
 
@@ -66,16 +72,22 @@ export const useAuthStore = defineStore("auth", {
      * При неудаче выполняется выход из системы.
      */
     async refresh() {
+      const token = jwtService.getRefreshToken()
+
+      if (!token) return;
+
       const result = await resources.auth.refresh({
-        refresh_token: jwtService.getRefreshToken(),
+        refresh_token: token,
       });
+
       if (result.__state === "success") {
-        this.accessToken = result.data.access_token;
         jwtService.saveAccessToken(result.data.access_token);
         resources.auth.setAuthHeader(result.data.access_token);
-      } else {
-        await this.logout();
+        return true;
       }
+
+      await this.logout();
+      return false;
     },
 
     /**
@@ -91,8 +103,11 @@ export const useAuthStore = defineStore("auth", {
         resources.auth.setAuthHeader(result.data.access_token);
         return result.__state;
       }
-
-      return result.data?.message || "Ошибка авторизации";
+      return (
+        result.data?.response?.data?.detail ||
+        result.data?.message ||
+        "Ошибка авторизации"
+      )
     },
 
     /**

@@ -4,17 +4,19 @@
 
 from typing import Annotated
 from uuid import UUID
+import logging
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, UploadFile, File
 from starlette import status
 
-from src.core.schemas import UserJWT
+from src.core.schemas import UserJWT, PaginatedResponse
 from src.core.security import JWTBearer
 from src.constants.role import RoleName
 from src.modules.users.dependencies.user import get_user_service, get_user_params
-from src.modules.users.schemas.user import UserCreateSchema, UserUpdateSchema, UserSchema, UserQueryParams
-from src.modules.users.schemas.role import RoleAssignment
+from src.modules.users.schemas.user import UserCreateSchema, UserUpdateSchema, UpdatePasswordUserSchema, UserSchema, UserQueryParams
 from src.modules.users.services.user import UserService
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -22,22 +24,23 @@ router = APIRouter()
 @router.get(
     path='/',
     summary='Получить всех пользователей',
-    response_model=list[UserSchema],
+    response_model=PaginatedResponse[UserSchema],
     status_code=status.HTTP_200_OK,
 )
 async def get_all_users(
         params: Annotated[UserQueryParams, Depends(get_user_params)],
         service: Annotated[UserService, Depends(get_user_service)],
         user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.ADMIN}))],
-) -> list[UserSchema]:
+) -> PaginatedResponse[UserSchema]:
     """
     Возвращает список всех пользователей
     """
+    logger.info(f"Параметры в API: {params}")
     users = await service.get_user_all(params)
     return users
 
 @router.get(
-    path='/me',
+    path='/me/',
     summary='Получить информацию о себе',
     response_model=UserSchema,
     status_code=status.HTTP_200_OK,
@@ -71,7 +74,7 @@ async def register(
     return user
 
 @router.patch(
-    path='/{user_id}',
+    path='/{user_id}/',
     summary='Обновление пользователя',
     response_model=UserSchema,
     status_code=status.HTTP_200_OK,
@@ -89,7 +92,7 @@ async def update_user(
     return user
 
 @router.delete(
-    path='/{user_id}',
+    path='/{user_id}/',
     summary='Удаление пользователя',
     status_code=status.HTTP_204_NO_CONTENT,
 )
@@ -103,36 +106,53 @@ async def delete_user(
     """
     await service.delete(user_id, user.user_id)
 
-
-@router.post(
-    path='/{user_id}/role/add',
-    summary='Назначить роль пользователю',
-    status_code=status.HTTP_200_OK,
+@router.patch(
+    path='/{user_id}/reset-password/',
+    summary='Обновление пароля пользователя',
+    status_code=status.HTTP_204_NO_CONTENT,
 )
-async def add_role_to_user(
-        user_id: UUID,
-        role_assignment: RoleAssignment,
-        service: Annotated[UserService, Depends(get_user_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.ADMIN}))],
+async def update_password_user(
+    user_id: UUID,
+    body: UpdatePasswordUserSchema,
+    service: Annotated[UserService, Depends(get_user_service)],
+    user: Annotated[UserJWT, Depends(JWTBearer())],
 ):
     """
-    Назначает роль пользователю
+    Обновляет пароль пользователя
     """
-    await service.role_add(user_id, role_assignment.role_id)
+    return await service.update_password(user_id, body=body)
 
 
-@router.post(
-    path='/{user_id}/role/remove',
-    summary='Отозвать роль у пользователя',
+@router.patch(
+    path='/{user_id}/photo/',
+    summary='Загрузить изображение пользователя',
     status_code=status.HTTP_200_OK,
 )
-async def remove_role_from_user(
-        user_id: UUID,
-        role_assignment: RoleAssignment,
-        service: Annotated[UserService, Depends(get_user_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.ADMIN}))],
+async def upload_user_avatar(
+    user_id: UUID,
+    service: Annotated[UserService, Depends(get_user_service)],
+    user: Annotated[UserJWT, Depends(JWTBearer())],
+    photo: UploadFile = File(...),
 ):
     """
-    Отзывает роль у пользователя
+    Обновляет фотографию пользователя
     """
-    await service.role_remove(user_id, role_assignment.role_id)
+    photo_url = await service.upload_photo(user_id, photo)
+    return {"photo": photo_url}
+
+
+@router.delete(
+    path='/{user_id}/photo/',
+    summary='Удалить фотографию пользователя',
+    status_code=status.HTTP_200_OK,
+)
+async def delete_user_avatar(
+    user_id: UUID,
+    service: Annotated[UserService, Depends(get_user_service)],
+    user: Annotated[UserJWT, Depends(JWTBearer())],
+):
+    """
+    Удаляет фотографию пользователя
+    """
+    await service.delete_photo(user_id)
+    return {"photo": None}

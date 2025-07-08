@@ -26,7 +26,7 @@ router = APIRouter()
 )
 async def get_chromophores(
         service: Annotated[ChromophoreService, Depends(get_chromophore_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> list[ChromophoreSchema]:
     """
     Возвращает список всех хромофоров
@@ -43,7 +43,7 @@ async def get_chromophores(
 async def create_chromophore(
         body: ChromophoreCreateSchema,
         service: Annotated[ChromophoreService, Depends(get_chromophore_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> ChromophoreSchema:
     """
     Создаёт новый хромофор
@@ -62,7 +62,7 @@ async def update_chromophore(
         chromophore_id: UUID,
         body: ChromophoreUpdateSchema,
         service: Annotated[ChromophoreService, Depends(get_chromophore_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> ChromophoreSchema:
     """
     Обновляет хромофор по его ID
@@ -79,7 +79,7 @@ async def update_chromophore(
 async def delete_chromophore(
         chromophore_id: UUID,
         service: Annotated[ChromophoreService, Depends(get_chromophore_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> None:
     """
     Удаляет хромофор по его ID

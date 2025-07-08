@@ -10,3 +10,4 @@ __pycache__
 .env
 .env.prod
 .ide
+web/back/media

@@ -49,8 +49,8 @@ app.add_middleware(
     allow_headers=["*"],  # Разрешить все заголовки
 )
 
-app.mount("/media", StaticFiles(directory=os.path.abspath("media")), name="media")
-
+os.makedirs(settings.media.photo_path, exist_ok=True)
+app.mount(settings.media.photo_url, StaticFiles(directory=settings.media.photo_path), name="media")
 
 # Подключение роутера для версии v1
 app.include_router(router, prefix="/api/v1")

@@ -26,7 +26,7 @@ router = APIRouter()
 )
 async def upload_raw_image(
         service: Annotated[RawImageService, Depends(get_raw_image_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={ RoleName.USER }))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={ RoleName.EMPLOYEE }))],
         session_id: UUID = Form(...),
         spectrum_ids: List[UUID] = Form(...),
         files: List[UploadFile] = File(...),
@@ -60,7 +60,7 @@ async def update_raw_image(
         raw_image_id: UUID,
         body: RawImageUpdateSchema,
         service: Annotated[RawImageService, Depends(get_raw_image_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> RawImageSchema:
     """
     Обновляет информацию об исходном изображении по его ID
@@ -77,7 +77,7 @@ async def update_raw_image(
 async def delete_raw_image(
         raw_image_id: UUID,
         service: Annotated[RawImageService, Depends(get_raw_image_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> None:
     """
     Удаляет исходное изображения по его ID
@@ -93,7 +93,7 @@ async def delete_raw_image(
 async def delete_raw_images(
         ids: list[UUID],
         service: Annotated[RawImageService, Depends(get_raw_image_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> None:
     """
     Удаляет исходное изображения по списку ID

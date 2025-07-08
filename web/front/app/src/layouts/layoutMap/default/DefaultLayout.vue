@@ -11,7 +11,7 @@
       <v-divider />
 
       <!-- Список пунктов меню -->
-      <v-list-item v-for="item in menuItems" :key="item.title" :title="item.title" :prepend-icon="item.icon" link
+      <v-list-item v-for="item in visibleMenuItems" :key="item.title" :title="item.title" :prepend-icon="item.icon" link
         :to="{ name: item.to }" @click="drawer = false" />
     </v-list>
   </v-navigation-drawer>
@@ -23,7 +23,7 @@
 
     <!-- Заголовок -->
     <v-toolbar-title>
-      <router-link :to="{ name: 'home' }" class="text-white text-decoration-none">
+      <router-link :to="{ path: '/' }" class="text-white text-decoration-none">
         Гиперспектрус
       </router-link>
     </v-toolbar-title>
@@ -101,12 +101,29 @@ const { mobile } = useDisplay() // определение, мобильное л
 
 // Элементы бокового меню
 const menuItems = [
-  { title: 'Главная', icon: 'mdi-home', to: 'home' },
-  { title: 'Пациенты', icon: 'mdi-account-multiple', to: 'patient' },
-  { title: 'Устройства', icon: 'mdi-camera', to: 'device' },
-  { title: 'Хромофоры', icon: 'mdi-molecule', to: 'chromophore' },
-  { title: 'Настройки', icon: 'mdi-cog', to: 'config' },
+  { title: 'Пациенты', icon: 'mdi-account-multiple', to: 'patient', roles: ['employee', 'admin'] },
+  { title: 'Устройства', icon: 'mdi-camera', to: 'device', roles: ['admin'] },
+  { title: 'Хромофоры', icon: 'mdi-molecule', to: 'chromophore', roles: ['admin'] },
+  { title: 'Пользователи', icon: 'mdi-account-group', to: 'user', roles: ['admin'] },
+  { title: 'Организации', icon: 'mdi-domain', to: 'organization', superuser: true },
 ]
+
+const visibleMenuItems = computed(() => {
+  const user = authStore.user;
+  if (!user) return [];
+
+  if (user.is_superuser) return menuItems;
+
+  const userRoles = (user.roles || []).map(r => typeof r === 'string' ? r : r.name);
+
+  return menuItems.filter(item => {
+    if (item.superuser) return false;
+    if (item.roles) {
+      return item.roles.some(role => userRoles.includes(role));
+    }
+    return true;
+  });
+});
 
 // Работа с глобальной темой
 const { global: theme } = useTheme()

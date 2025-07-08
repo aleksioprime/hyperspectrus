@@ -12,7 +12,7 @@
 
       <!-- Список пунктов меню -->
       <v-list-item v-for="item in visibleMenuItems" :key="item.title" :title="item.title" :prepend-icon="item.icon" link
-        :to="{ name: item.to }" @click="drawer = false" />
+        :to="{ name: item.to }" />
     </v-list>
   </v-navigation-drawer>
 

@@ -43,6 +43,7 @@ async def get_spectrums(
     status_code=status.HTTP_201_CREATED,
 )
 async def create_spectrum(
+        device_id: UUID,
         body: SpectrumCreateSchema,
         service: Annotated[SpectrumService, Depends(get_spectrum_service)],
         user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
@@ -50,7 +51,7 @@ async def create_spectrum(
     """
     Создаёт новый спектр
     """
-    spectrum = await service.create(body)
+    spectrum = await service.create(device_id, body)
     return spectrum
 
 
@@ -61,6 +62,7 @@ async def create_spectrum(
     status_code=status.HTTP_200_OK,
 )
 async def update_spectrum(
+        device_id: UUID,
         spectrum_id: UUID,
         body: SpectrumUpdateSchema,
         service: Annotated[SpectrumService, Depends(get_spectrum_service)],
@@ -69,7 +71,7 @@ async def update_spectrum(
     """
     Обновляет спектр по его ID
     """
-    spectrum = await service.update(spectrum_id, body)
+    spectrum = await service.update(device_id, spectrum_id, body)
     return spectrum
 
 
@@ -79,6 +81,7 @@ async def update_spectrum(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_spectrum(
+        device_id: UUID,
         spectrum_id: UUID,
         service: Annotated[SpectrumService, Depends(get_spectrum_service)],
         user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
@@ -86,4 +89,4 @@ async def delete_spectrum(
     """
     Удаляет спектр по его ID
     """
-    await service.delete(spectrum_id)
+    await service.delete(device_id, spectrum_id)

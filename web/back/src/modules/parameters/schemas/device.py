@@ -39,6 +39,7 @@ class OverlapCoefficientSchema(BaseModel):
 class SpectrumSchema(BaseModel):
     id: UUID = Field(..., description="ID спектра")
     wavelength: int = Field(..., description="Длина волны в нанометрах")
+    name: str | None = Field(None, description="Название спектра")
     overlaps: list[OverlapCoefficientSchema] = Field(default_factory=list, description="Коэффициенты перекрытия для хромофоров")
 
     class Config:

@@ -103,3 +103,20 @@ async def delete_device(
     Удаляет устройство по его ID
     """
     await service.delete(device_id)
+
+
+@router.post(
+    path='/{device_id}/overlaps/random-fill',
+    summary='Заполнить матрицу перекрытий случайными значениями для устройства',
+    status_code=status.HTTP_200_OK,
+)
+async def fill_device_overlaps_random(
+    device_id: UUID,
+    service: Annotated[DeviceService, Depends(get_device_service)],
+    user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
+):
+    """
+    Заполняет матрицу перекрытий случайными коэффициентами для всех спектров устройства
+    """
+    await service.fill_overlaps_random(device_id)
+    return {"status": "ok"}

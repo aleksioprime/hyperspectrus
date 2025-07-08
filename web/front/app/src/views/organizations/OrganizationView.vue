@@ -8,26 +8,26 @@
 
   <v-list class="my-3" density="compact" style="background: transparent;">
     <template v-for="(org, index) in organizations" :key="org.id">
-        <v-list-item class="org-list-item-bg">
+      <v-list-item class="org-list-item-bg">
 
-          <!-- Данные -->
-          <v-list-item-title>
-            <b>{{ org.name }}</b>
-          </v-list-item-title>
-          <v-list-item-subtitle v-if="org.description">
-            {{ org.description }}
-          </v-list-item-subtitle>
+        <!-- Данные -->
+        <v-list-item-title>
+          <b>{{ org.name }}</b>
+        </v-list-item-title>
+        <v-list-item-subtitle v-if="org.description">
+          {{ org.description }}
+        </v-list-item-subtitle>
 
-          <!-- Кнопки редактирования или удаления -->
-          <template #append>
-            <v-btn icon size="small" @click="openEditDialog(org)">
-              <v-icon>mdi-pencil</v-icon>
-            </v-btn>
-            <v-btn icon size="small" @click="openDeleteDialog(org)" class="ms-2">
-              <v-icon color="red">mdi-delete</v-icon>
-            </v-btn>
-          </template>
-        </v-list-item>
+        <!-- Кнопки редактирования или удаления -->
+        <template #append>
+          <v-btn icon size="small" @click="openEditDialog(org)">
+            <v-icon>mdi-pencil</v-icon>
+          </v-btn>
+          <v-btn icon size="small" @click="openDeleteDialog(org)" class="ms-2">
+            <v-icon color="red">mdi-delete</v-icon>
+          </v-btn>
+        </template>
+      </v-list-item>
 
     </template>
   </v-list>
@@ -101,7 +101,6 @@ const openEditDialog = (organization = null) => {
   };
 };
 
-
 // Подготовка данных формы для запроса создания/редактирования организациии
 const getFormPayload = (form) => ({ ...form });
 
@@ -159,6 +158,7 @@ const confirmDeleteOrganization = async () => {
   transition: background 0.2s;
   padding: 10px 0 10px 0;
 }
+
 .org-list-item-bg:hover {
   background: #e3eaf5;
 }

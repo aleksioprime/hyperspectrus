@@ -13,11 +13,11 @@ export class SpectrumResource extends ApiService {
     return this.$post(`/api/v1/devices/${deviceId}/spectra/`, data);
   }
 
-  partialUpdatePatient(deviceId, spectrumId, data) {
+  updateSpectrum(deviceId, spectrumId, data) {
     return this.$patch(`/api/v1/devices/${deviceId}/spectra/${spectrumId}/`, data);
   }
 
-  deletePatient(deviceId, spectrumId) {
+  deleteSpectrum(deviceId, spectrumId) {
     return this.$delete(`/api/v1/devices/${deviceId}/spectra/${spectrumId}/`);
   }
 }

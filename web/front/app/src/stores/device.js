@@ -3,23 +3,20 @@ import resources from "@/services/resources";
 
 
 export const useDeviceStore = defineStore("device", {
-  state: () => ({
-    devices: [],
-  }),
+  state: () => ({}),
   getters: {
 
   },
   actions: {
-    // Загрузка списка пациентов (пагинированный)
+    // Загрузка списка устройств
     async loadDevices(config) {
       const res = await resources.device.getDevices(config);
       if (res.__state === "success") {
-        this.devices = res.data
         return res.data
       }
       return null
     },
-    // Загрузка детальной информации о пациенте по ID
+    // Загрузка детальной информации об устройстве
     async loadDeviceDetailed(id) {
       const res = await resources.device.getDeviceDetailed(id);
       if (res.__state === "success") {
@@ -27,7 +24,7 @@ export const useDeviceStore = defineStore("device", {
       }
       return null
     },
-    // Добавление пациента
+    // Добавление устройства
     async createDevice(data) {
       const res = await resources.device.createDevice(data);
       if (res.__state === "success") {
@@ -35,15 +32,15 @@ export const useDeviceStore = defineStore("device", {
       }
       return null
     },
-    // Обновление пациента
+    // Обновление устройства
     async updateDevice(id, data) {
-      const res = await resources.device.partialUpdateDevice(id, data);
+      const res = await resources.device.updateDevice(id, data);
       if (res.__state === "success") {
         return res.data
       }
       return null
     },
-    // Удаление пациента
+    // Удаление устройства
     async deleteDevice(id) {
       const res = await resources.device.deleteDevice(id);
       if (res.__state === "success") {
@@ -51,5 +48,13 @@ export const useDeviceStore = defineStore("device", {
       }
       return null
     },
+    // Заполнение матрицы коэффициентов рандомными числами
+    async randomFillOverlapsDevice(id) {
+      const res = await resources.device.randomFillOverlapsDevice(id);
+      if (res.__state === "success") {
+        return true
+      }
+      return null
+    }
   }
 });

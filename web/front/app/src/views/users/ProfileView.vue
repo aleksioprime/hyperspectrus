@@ -32,14 +32,10 @@
 
     <!-- Форма профиля -->
     <v-col cols="12" md="9">
-      <v-row class="mb-4" v-if="isSuperuser">
-        <v-col cols="12">
-          <v-chip v-if="isSuperuser" color="amber" size="large" class="me-2" label style="font-weight: bold">
+          <v-chip v-if="authStore.isSuperuser"  color="amber" size="large" class="me-2" label style="font-weight: bold">
             <v-icon start size="20">mdi-crown</v-icon>
             Суперпользователь
           </v-chip>
-        </v-col>
-      </v-row>
       <v-form @submit.prevent="saveProfile" v-model="valid" ref="formRef">
         <v-text-field v-model="form.username" label="Логин" :rules="usernameRules" />
         <v-row>
@@ -108,8 +104,6 @@ import { useUserStore } from "@/stores/user";
 const userStore = useUserStore();
 
 const user = reactive(authStore.user)
-
-const isSuperuser = computed(() => user.is_superuser);
 
 // --- РЕДАКТИРОВАНИЕ ПОЛЕЙ ---
 

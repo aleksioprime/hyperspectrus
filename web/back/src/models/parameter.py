@@ -27,7 +27,8 @@ class Spectrum(Base):
     __tablename__ = 'spectra'
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    wavelength = Column(Integer, nullable=False) # Длина волны спектра (в нанометрах)
+    wavelength = Column(Integer, nullable=False)
+    name = Column(String(255), nullable=True)
     device_id = Column(UUID(as_uuid=True), ForeignKey('devices.id'), nullable=False)  # Связь с устройством
 
     device = relationship("Device", back_populates="spectra")

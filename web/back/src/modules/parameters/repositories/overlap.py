@@ -45,3 +45,12 @@ class OverlapCoefficientRepository:
             raise NoResultFound(f"Хромофор с ID {overlap_coefficient_id} не найден")
 
         await self.session.delete(result)
+
+    async def get_by_spec_and_chrom(self, spectrum_id: UUID, chromophore_id: UUID) -> OverlapCoefficient | None:
+        """ Получить все коэффициенты по спектру и хромофору """
+        query = select(OverlapCoefficient).where(
+            OverlapCoefficient.spectrum_id == spectrum_id,
+            OverlapCoefficient.chromophore_id == chromophore_id
+        )
+        result = await self.session.execute(query)
+        return result.scalars().one_or_none()

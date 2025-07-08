@@ -34,6 +34,7 @@ class ChromophoreService:
                 chromophore = Chromophore(
                     name=body.name,
                     symbol=body.symbol,
+                    description=body.description,
                 )
                 await self.uow.chromophore.create(chromophore)
             except IntegrityError as exc:

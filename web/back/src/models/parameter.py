@@ -41,8 +41,9 @@ class Chromophore(Base):
     __tablename__ = 'chromophores'
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    name = Column(String, unique=True, nullable=False) # Название хромофора
-    symbol = Column(String, unique=True, nullable=False) # Обозначение хромофора
+    name = Column(String, unique=True, nullable=False)
+    symbol = Column(String, unique=True, nullable=False)
+    description = Column(String, nullable=True)
 
     overlaps = relationship("OverlapCoefficient", back_populates="chromophore")
     reconstructed_images = relationship("ReconstructedImage", back_populates="chromophore")

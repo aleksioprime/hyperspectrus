@@ -1,7 +1,7 @@
 <template>
   <h1 class="text-h5 mb-4">Организации</h1>
 
-  <v-btn color="primary" class="my-2" @click="openCreateDialog">
+  <v-btn color="primary" class="my-2" @click="openEditDialog()">
     <v-icon start>mdi-plus</v-icon>
     Добавить
   </v-btn>
@@ -90,50 +90,22 @@ const modalDialogEdit = ref({
   form: {},
 });
 
-// Открытие модального окна для создания пользователя
-const openCreateDialog = () => {
+// Открытие модального окна для создания организации
+const openEditDialog = (organization = null) => {
   modalDialogEdit.value = {
     visible: true,
-    editing: false,
-    form: {
-      id: null,
-      name: "",
-      description: "",
-    },
+    editing: !!organization,
+    form: organization
+      ? { ...organization }
+      : { id: null, name: "", description: "" }
   };
 };
 
-// Открытие модального окна для редактирования пользователя
-const openEditDialog = (organization) => {
-  modalDialogEdit.value = {
-    visible: true,
-    editing: true,
-    form: {
-      id: organization.id,
-      name: organization.name,
-      description: organization.description,
-    },
-  };
-};
 
-// Подготовка данных формы для запроса редактирования пользователя
-const getOrganizationUpdatePayload = (form) => {
-  return {
-    id: form.id,
-    name: form.name,
-    description: form.description,
-  }
-}
+// Подготовка данных формы для запроса создания/редактирования организациии
+const getFormPayload = (form) => ({ ...form });
 
-// Подготовка данных формы для запроса создания пользователя
-const getOrganizationCreatePayload = (form) => {
-  return {
-    name: form.name,
-    description: form.description
-  }
-}
-
-// Подтверждение создания/редактирования пользователя
+// Подтверждение создания/редактирования организации
 const organizationFormRef = ref();
 
 const submitDialog = async () => {
@@ -143,11 +115,11 @@ const submitDialog = async () => {
   const { form, editing } = modalDialogEdit.value;
 
   if (editing) {
-    await organizationStore.updateOrganization(form.id, getOrganizationUpdatePayload(form));
+    await organizationStore.updateOrganization(form.id, getFormPayload(form));
     const index = organizations.value.findIndex(p => p.id === form.id);
     if (index !== -1) organizations.value[index] = { ...organizations.value[index], ...form };
   } else {
-    const newOrganization = await organizationStore.createOrganization(getOrganizationCreatePayload(form));
+    const newOrganization = await organizationStore.createOrganization(getFormPayload(form));
     if (newOrganization) organizations.value.unshift(newOrganization);
   }
 

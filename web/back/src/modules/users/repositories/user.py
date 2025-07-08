@@ -29,7 +29,10 @@ class UserRepository(BaseUserRepository, BaseSQLRepository):
         """
         query = (
             select(User)
-            .options(joinedload(User.roles))
+            .options(
+                joinedload(User.roles),
+                joinedload(User.organization),
+                )
             .filter(User.id == user_id)
         )
         result = await self.session.execute(query)
@@ -37,7 +40,10 @@ class UserRepository(BaseUserRepository, BaseSQLRepository):
 
     async def get_user_all(self, params: UserQueryParams) -> Tuple[List[User], int]:
         """ Получает список всех пользователей с предзагрузкой ролей """
-        query = select(User).options(joinedload(User.roles))
+        query = select(User).options(
+            joinedload(User.roles),
+            joinedload(User.organization)
+        )
 
         if params.organization_id is not None:
             query = query.where(User.organization_id == params.organization_id)

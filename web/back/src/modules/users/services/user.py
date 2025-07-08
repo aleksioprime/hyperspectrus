@@ -30,8 +30,10 @@ class UserService:
         async with self.uow:
             users, total = await self.uow.user.get_user_all(params)
 
+        items = [UserSchema.model_validate(user) for user in users]
+
         return PaginatedResponse[UserSchema](
-                items=[self.serializer.serialize(user) for user in users],
+                items=items,
                 total=total,
                 limit=params.limit,
                 offset=params.offset,

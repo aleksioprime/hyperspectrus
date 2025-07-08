@@ -15,7 +15,7 @@
       <!-- Фото -->
       <template #prepend>
         <v-avatar size="56">
-          <v-img :src="user.photo || defaultPhoto" alt="Фото пользователя" cover />
+          <v-img :src="cacheBustUrl(user.photo) || defaultPhoto" alt="Фото пользователя" cover />
         </v-avatar>
       </template>
 
@@ -153,6 +153,7 @@ import logger from '@/common/helpers/logger';
 import UserForm from "@/components/users/UserForm.vue";
 import PasswordForm from "@/components/users/PasswordForm.vue";
 import defaultPhoto from '@/assets/img/user-default.png'
+import { cacheBustUrl } from "@/common/helpers/cacheBust";
 
 import { useAuthStore } from "@/stores/auth";
 const authStore = useAuthStore();
@@ -196,10 +197,10 @@ const fetchUsers = async (reset = false) => {
     limit,
   };
 
-  // Если выбран фильтр по организации — добавляем organization_id в параметры запроса
-  if (selectedOrganization.value) {
-    params.organization_id = selectedOrganization.value;
-  }
+  // Если выбран фильтр по организации — добавляем organization в параметры запроса
+ if (selectedOrganization.value) {
+  params.organization_id = selectedOrganization.value;
+}
 
   // Делаем запрос к userStore (например, к API), передавая параметры
   const data = await userStore.loadUsers({ params: params });
@@ -261,7 +262,7 @@ const openCreateDialog = () => {
       password: "",
       repeat_password: "",
       roles: [],
-      organization_id: '',
+      organization: '',
       is_superuser: false,
     },
   };
@@ -279,7 +280,7 @@ const openEditDialog = (user) => {
       last_name: user.last_name,
       email: user.email,
       roles: user.roles,
-      organization_id: user.organization_id,
+      organization: user.organization,
       is_superuser: user.is_superuser,
     },
   };
@@ -294,7 +295,7 @@ const getUserUpdatePayload = (form) => {
     email: form.email,
     username: form.username,
     roles: form.roles,
-    organization_id: form.organization_id,
+    organization_id: form.organization,
     is_superuser: form.is_superuser,
   }
 }
@@ -308,7 +309,7 @@ const getUserCreatePayload = (form) => {
     username: form.username,
     password: form.password,
     roles: form.roles,
-    organization_id: form.organization_id,
+    organization_id: form.organization,
     is_superuser: form.is_superuser,
   }
 }

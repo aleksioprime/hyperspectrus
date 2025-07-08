@@ -21,10 +21,13 @@
     <!-- Иконка открытия/закрытия боковой панели -->
     <v-app-bar-nav-icon @click="drawer = !drawer" />
 
+    <!-- Логотип -->
+    <v-img :src="logo" alt="Логотип" max-width="38" max-height="38" class="ms-2" />
+
     <!-- Заголовок -->
     <v-toolbar-title>
       <router-link :to="{ path: '/' }" class="text-white text-decoration-none">
-        Гиперспектрус
+        Hyperspectrus
       </router-link>
     </v-toolbar-title>
 
@@ -42,7 +45,7 @@
         <template #activator="{ props }">
           <v-btn v-bind="props" text class="text-none">
             <v-avatar size="32" class="me-2">
-              <v-img :src="authStore.user?.photo || defaultPhoto" />
+              <v-img :src="cacheBustUrl(authStore.user?.photo) || defaultPhoto" />
             </v-avatar>
             {{ userFullName }}
             <v-icon end>mdi-menu-down</v-icon>
@@ -80,6 +83,10 @@ import { ref, computed } from 'vue'
 
 // Импорт Vuetify утилит: определение устройства и темы
 import { useDisplay, useTheme } from 'vuetify'
+// Импорт логотипа для отображения на странице входа
+import logo from '@/assets/img/logo.png'
+
+import { cacheBustUrl } from "@/common/helpers/cacheBust";
 
 // Импорт стора авторизации
 import { useAuthStore } from '@/stores/auth'

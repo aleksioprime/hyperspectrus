@@ -31,7 +31,7 @@ export const routes = [
   {
     path: "/profile",
     name: "profile",
-    component: () => import("@/views/ProfileView.vue"),
+    component: () => import("@/views/users/ProfileView.vue"),
     meta: {
       title: 'Профиль пользователя',
       middlewares: [isLoggedIn],

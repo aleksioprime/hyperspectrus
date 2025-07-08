@@ -22,7 +22,7 @@
         <v-text-field v-model="form.last_name" label="Фамилия" :rules="nameRules" required clearable />
       </v-col>
     </v-row>
-    <v-select v-model="form.organization_id" :items="organizations" item-title="name" item-value="id" label="Организация"
+    <v-select v-model="form.organization" :items="organizations" item-title="name" item-value="id" label="Организация"
       :rules="[rules.required]" clearable required />
     <v-select v-model="form.roles" :items="roles" item-title="display_name" item-value="id" label="Роли" multiple chips
       :rules="[rules.requiredList]" clearable required />
@@ -65,7 +65,7 @@ const form = reactive({
   repeat_password: "",
   is_admin: "",
   roles: [],
-  organization_id: "",
+  organization: null,
   is_superuser: false,
 });
 

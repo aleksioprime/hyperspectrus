@@ -21,9 +21,13 @@ class RoleSchema(BaseModel):
     display_name: str | None = Field(None, description="Отображение названия")
 
     class Config:
-        """
-        Дополнительная конфигурация для поддержки from_orm
-        """
+        from_attributes = True
+
+class OrganizationSchema(BaseModel):
+    id: UUID = Field(..., description="Уникальный идентификатор организации")
+    name: str = Field(..., description="Название организации")
+
+    class Config:
         from_attributes = True
 
 
@@ -36,7 +40,7 @@ class UserSchema(BaseModel):
     last_name: Optional[str] = Field(None, description="Фамилия пользователя")
     username: Optional[str] = Field(None, description="Логин пользователя")
     email: Optional[str] = Field(None, description="Email пользователя")
-    organization_id: UUID | None = Field(None, description="ID организации")
+    organization: OrganizationSchema | None = Field(None, description="Организация")
     is_superuser: bool | None = Field(False, description="Суперпользователь")
     roles: List[RoleSchema] = Field(..., description="Список ролей пользователя")
     photo: str | None = Field(None, description="Изображение пользователя")

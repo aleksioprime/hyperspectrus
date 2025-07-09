@@ -65,7 +65,7 @@ services:
     <<: *app
     command: python src/main.py
     volumes:
-      - ./back:/usr/src/app/
+      - media:/usr/src/app/media
     depends_on:
       redis:
         condition: service_healthy

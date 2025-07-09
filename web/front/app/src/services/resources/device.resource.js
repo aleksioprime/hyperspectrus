@@ -13,15 +13,19 @@ export class DeviceResource extends ApiService {
     return this.$get(`/api/v1/devices/${id}/`);
   }
 
-  createDevice(id, data) {
-    return this.$post(`/api/v1/devices/${id}/`, data);
+  createDevice(data) {
+    return this.$post(`/api/v1/devices/`, data);
   }
 
-  partialUpdatePatient(id, data) {
+  updateDevice(id, data) {
     return this.$patch(`/api/v1/devices/${id}/`, data);
   }
 
-  deletePatient(id, data) {
+  deleteDevice(id, data) {
     return this.$delete(`/api/v1/devices/${id}/`, data);
+  }
+
+  randomFillOverlapsDevice(id) {
+    return this.$post(`/api/v1/devices/${id}/overlaps/random-fill`);
   }
 }

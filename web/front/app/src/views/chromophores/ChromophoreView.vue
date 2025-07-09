@@ -1,35 +1,32 @@
 <template>
   <div>
-    <h1 class="text-h5 mb-4">Параметры хромофоров</h1>
+    <h1 class="text-h5 mb-4">Справочник хромофоров</h1>
 
-    <v-snackbar v-model="snackbar.show" :timeout="4000" color="red" variant="tonal">
-      {{ snackbar.text }}
-    </v-snackbar>
-
-    <v-btn color="primary" class="mb-4" @click="openCreateDialog">
+    <v-btn color="primary" class="mb-4" @click="openEditDialog()">
       <v-icon start>mdi-plus</v-icon>
       Добавить хромофор
     </v-btn>
 
+    <!-- Таблица хромофоров -->
     <v-table>
       <thead>
         <tr>
-          <th>Название</th>
-          <th>Краткое имя</th>
+          <th style="width: 150px">Название</th>
+          <th style="width: 120px;">Обозначение</th>
           <th>Описание</th>
-          <th></th>
+          <th style="width: 130px;"></th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="chrom in chromophores" :key="chrom.id">
           <td>{{ chrom.name }}</td>
-          <td>{{ chrom.short_name }}</td>
+          <td>{{ chrom.symbol }}</td>
           <td>{{ chrom.description }}</td>
-          <td>
-            <v-btn icon size="small" @click="openEditDialog(chrom)">
+          <td class="text-center">
+            <v-btn icon class="ma-1" size="small" @click="openEditDialog(chrom)">
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
-            <v-btn icon size="small" color="red" @click="confirmDeleteChromophore(chrom)">
+            <v-btn icon class="ma-1" size="small" color="red" @click="openDeleteDialog(chrom)">
               <v-icon>mdi-delete</v-icon>
             </v-btn>
           </td>
@@ -37,108 +34,121 @@
       </tbody>
     </v-table>
 
-    <!-- Диалог создания/редактирования -->
-    <v-dialog v-model="dialog.visible" max-width="400px">
+
+    <!-- Модальное окно добавления/редактирования хромофора -->
+    <v-dialog v-model="modalDialogEdit.visible" max-width="500px">
       <v-card>
         <v-card-title>
-          {{ dialog.editing ? "Редактировать хромофор" : "Добавить хромофор" }}
+          {{ modalDialogEdit.editing ? 'Редактировать хромофор' : 'Новый хромофор' }}
         </v-card-title>
         <v-card-text>
-          <v-text-field v-model="dialog.form.name" label="Название" required />
-          <v-text-field v-model="dialog.form.short_name" label="Краткое имя" />
-          <v-text-field v-model="dialog.form.description" label="Описание" />
+          <ChromophoreForm ref="chromophoreFormRef" v-model="modalDialogEdit.form" />
         </v-card-text>
         <v-card-actions class="justify-end">
-          <v-btn @click="dialog.visible = false">Отмена</v-btn>
+          <v-btn @click="modalDialogEdit.visible = false">Отмена</v-btn>
           <v-btn color="primary" @click="submitDialog">
-            {{ dialog.editing ? "Сохранить" : "Создать" }}
+            {{ modalDialogEdit.editing ? 'Сохранить' : 'Создать' }}
           </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
-    <!-- Диалог удаления -->
-    <v-dialog v-model="deleteDialog.visible" max-width="400px">
+    <!-- Модальное окно удаления хромофора -->
+    <v-dialog v-model="modalDialogDelete.visible" max-width="400px">
       <v-card>
         <v-card-title>Удалить хромофор?</v-card-title>
         <v-card-text>
-          Вы уверены, что хотите удалить хромофор <strong>{{ deleteDialog.chrom?.name }}</strong>?
+          Вы уверены, что хотите удалить хромофор <strong>
+            {{ modalDialogDelete.chromophore?.name }}</strong>?
         </v-card-text>
         <v-card-actions class="justify-end">
-          <v-btn @click="deleteDialog.visible = false">Отмена</v-btn>
-          <v-btn color="red" @click="deleteChromophore">Удалить</v-btn>
+          <v-btn @click="modalDialogDelete.visible = false">Отмена</v-btn>
+          <v-btn color="red" @click="confirmDeleteChromophore">Удалить</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
+
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useChromophoreStore } from "@/stores/chromophore"; // реализуй store или подставь API
+
+import ChromophoreForm from "@/components/chromophores/ChromophoreForm.vue";
+
+import { useChromophoreStore } from "@/stores/chromophore";
 const chromophoreStore = useChromophoreStore();
 
 const chromophores = ref([]);
-const snackbar = ref({ show: false, text: "" });
 
-const dialog = ref({
+// --- ДОБАВЛЕНИЕ/РЕДАКТИРОВАНИЕ ХРОМОФОРОВ ---
+
+// Объект модального окна
+const modalDialogEdit = ref({
   visible: false,
   editing: false,
-  form: { id: null, name: "", short_name: "", description: "" },
+  form: {},
 });
 
-const deleteDialog = ref({ visible: false, chrom: null });
-
-// CRUD методы
-
-const loadChromophores = async () => {
-  chromophores.value = await chromophoreStore.loadChromophores();
-};
-
-const openCreateDialog = () => {
-  dialog.value = {
+const openEditDialog = (chromophore = null) => {
+  modalDialogEdit.value = {
     visible: true,
-    editing: false,
-    form: { id: null, name: "", short_name: "", description: "" },
+    editing: !!chromophore,
+    form: chromophore
+      ? { ...chromophore }
+      : { id: null, name: "", symbol: "", description: "" }
   };
 };
 
-const openEditDialog = (chrom) => {
-  dialog.value = {
-    visible: true,
-    editing: true,
-    form: { ...chrom },
-  };
-};
+// Подготовка данных формы для запроса создания/редактирования хромофора
+const getFormPayload = (form) => ({ ...form });
+
+// Подтверждение создания/редактирования хромофора
+const chromophoreFormRef = ref();
 
 const submitDialog = async () => {
-  const { form, editing } = dialog.value;
-  if (!form.name) {
-    snackbar.value = { show: true, text: "Заполните название" };
-    return;
-  }
+  const valid = await chromophoreFormRef.value?.submit();
+  if (!valid) return;
+
+  const { form, editing } = modalDialogEdit.value;
 
   if (editing) {
-    await chromophoreStore.updateChromophore(form.id, form);
-    const idx = chromophores.value.findIndex((c) => c.id === form.id);
-    if (idx !== -1) chromophores.value[idx] = { ...form };
+    await chromophoreStore.updateChromophore(form.id, getFormPayload(form));
+    const index = chromophores.value.findIndex(p => p.id === form.id);
+    if (index !== -1) chromophores.value[index] = { ...chromophores.value[index], ...form };
   } else {
-    const newChrom = await chromophoreStore.createChromophore(form);
-    if (newChrom) chromophores.value.unshift(newChrom);
+    const newChromophore = await chromophoreStore.createChromophore(getFormPayload(form));
+    if (newChromophore) chromophores.value.unshift(newChromophore);
   }
-  dialog.value.visible = false;
+
+  modalDialogEdit.value.visible = false;
 };
 
-const confirmDeleteChromophore = (chrom) => {
-  deleteDialog.value = { visible: true, chrom };
+// --- УДАЛЕНИЕ ХРОМОФОРА ---
+
+// Объект модального окна
+const modalDialogDelete = ref({
+  visible: false,
+  chromophore: null,
+});
+
+// Вызов модального окна удаления
+const openDeleteDialog = (chromophore) => {
+  modalDialogDelete.value = { visible: true, chromophore };
 };
 
-const deleteChromophore = async () => {
-  const chrom = deleteDialog.value.chrom;
-  await chromophoreStore.deleteChromophore(chrom.id);
-  chromophores.value = chromophores.value.filter((c) => c.id !== chrom.id);
-  deleteDialog.value.visible = false;
+// Подтверждение удаления в модальном окне
+
+const confirmDeleteChromophore = async () => {
+  const chromophore = modalDialogDelete.value.chromophore;
+
+  const success = await chromophoreStore.deleteChromophore(chromophore.id);
+  if (success) chromophores.value = chromophores.value.filter((p) => p.id !== chromophore.id);
+
+  modalDialogDelete.value.visible = false;
 };
 
-onMounted(loadChromophores);
+onMounted(async () => {
+  chromophores.value = await chromophoreStore.loadChromophores();
+});
 </script>

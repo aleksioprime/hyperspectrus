@@ -9,6 +9,9 @@ from src.modules.patients.schemas.session import (
     SessionSchema, SessionCreateSchema, SessionUpdateSchema, SessionDetailSchema, SessionQueryParams,)
 from src.modules.patients.repositories.uow import UnitOfWork
 
+from src.celery_app import celery_app
+from src.constants.celery import CeleryStatus, CELERY_STATUS_MAP
+
 
 class SessionService:
     """ Сервис для управления сеансами пациентов """
@@ -72,10 +75,55 @@ class SessionService:
         Удаляет сеанс по его ID
         """
         async with self.uow:
-            session = await self._get_session_checked(session_id, patient_id)
+            await self._get_session_checked(session_id, patient_id)
             await self.uow.session_repo.delete(session_id)
 
+    async def set_processing_task_id(self, patient_id: UUID, session_id: UUID, task_id: str) -> None:
+        """
+        Записывает ID задачи обработки данных в указанный сеанс
+        """
+        async with self.uow:
+            await self._get_session_checked(session_id, patient_id)
+            await self.uow.session_repo.set_processing_task_id(session_id, task_id)
+
+    async def get_processing_status(self, patient_id: UUID, session_id: UUID) -> dict:
+        async with self.uow:
+            await self._get_session_checked(session_id, patient_id)
+
+            task_id = await self.uow.session_repo.get_processing_task_id(session_id)
+
+            if not task_id:
+                return {
+                    "task_id": None,
+                    "celery_status": None,
+                    "status": "NO_TASK",
+                    "result": None,
+                    "error": None,
+                }
+
+        result = celery_app.AsyncResult(task_id)
+        celery_status = CeleryStatus(result.status) if result.status in CeleryStatus.__members__.values() else result.status
+
+        return {
+            "task_id": task_id,
+            "celery_status": celery_status,
+            "status": CELERY_STATUS_MAP.get(celery_status, celery_status),
+            "result": result.result if celery_status == CeleryStatus.SUCCESS else None,
+            "error": str(result.result) if celery_status == CeleryStatus.FAILURE else None,
+        }
+
+    async def clear_processing_task_id(self, patient_id: UUID, session_id: UUID) -> None:
+        """
+        Очищает ID задачи в указанном сеансе
+        """
+        async with self.uow:
+            await self._get_session_checked(session_id, patient_id)
+            await self.uow.session_repo.clear_processing_task_id(session_id)
+
     async def _get_session_checked(self, session_id: UUID, patient_id: UUID) -> Session:
+        """
+        Проверяет принадлежность сеанса указанному пользователю
+        """
         session = await self.uow.session_repo.get_by_id(session_id)
         if not session:
             raise BaseException("Сеанс не найден")

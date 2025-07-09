@@ -12,11 +12,14 @@ from src.core.schemas import UserJWT
 from src.constants.role import RoleName
 from src.core.security import JWTBearer
 from src.modules.patients.dependencies.raw_image import get_raw_image_service
-from src.modules.patients.schemas.raw_image import RawImageSchema, RawImageUpdateSchema
+from src.modules.patients.schemas.raw_image import RawImageSchema, RawImageUpdateSchema, RawImageIdsSchema
 from src.modules.patients.services.raw_image import RawImageService
+
+from src.tasks.session import process_session
 
 
 router = APIRouter()
+
 
 @router.post(
     path='/upload',
@@ -26,7 +29,7 @@ router = APIRouter()
 )
 async def upload_raw_image(
         service: Annotated[RawImageService, Depends(get_raw_image_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={ RoleName.USER }))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={ RoleName.EMPLOYEE }))],
         session_id: UUID = Form(...),
         spectrum_ids: List[UUID] = Form(...),
         files: List[UploadFile] = File(...),
@@ -35,6 +38,7 @@ async def upload_raw_image(
     Загружает новые исходные изображения
     """
     raw_images = await service.upload_files(session_id, spectrum_ids, files)
+    process_session.delay(str(session_id))
     return raw_images
 
 
@@ -60,7 +64,7 @@ async def update_raw_image(
         raw_image_id: UUID,
         body: RawImageUpdateSchema,
         service: Annotated[RawImageService, Depends(get_raw_image_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> RawImageSchema:
     """
     Обновляет информацию об исходном изображении по его ID
@@ -77,7 +81,7 @@ async def update_raw_image(
 async def delete_raw_image(
         raw_image_id: UUID,
         service: Annotated[RawImageService, Depends(get_raw_image_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> None:
     """
     Удаляет исходное изображения по его ID
@@ -85,17 +89,17 @@ async def delete_raw_image(
     await service.delete(raw_image_id)
 
 
-@router.delete(
-    path='/',
+@router.post(
+    path='/delete',
     summary='Удалить изображения по списку ID',
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_raw_images(
-        ids: list[UUID],
+        data: RawImageIdsSchema,
         service: Annotated[RawImageService, Depends(get_raw_image_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> None:
     """
     Удаляет исходное изображения по списку ID
     """
-    await service.bulk_delete(ids)
+    await service.bulk_delete(data.ids)

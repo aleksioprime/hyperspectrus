@@ -2,6 +2,7 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import update, select
+from sqlalchemy.orm import selectinload
 from sqlalchemy.exc import NoResultFound
 
 from src.models.parameter import Spectrum
@@ -15,21 +16,29 @@ class SpectrumRepository:
 
     async def get_all(self, device_id: UUID) -> list[Spectrum]:
         """ Получает список всех cпектров """
-        query = select(Spectrum)
-        query = query.where(Spectrum.device_id == device_id)
-
+        query = (
+            select(Spectrum)
+            .where(Spectrum.device_id == device_id)
+            .options(selectinload(Spectrum.overlaps))
+        )
         result = await self.session.execute(query)
         return result.scalars().unique().all()
 
     async def get_by_id(self, spectrum_id: UUID) -> Spectrum:
         """ Получает спектр по его ID """
-        query = select(Spectrum).where(Spectrum.id == spectrum_id)
+        query = (
+            select(Spectrum)
+            .where(Spectrum.id == spectrum_id)
+            .options(selectinload(Spectrum.overlaps))
+        )
         result = await self.session.execute(query)
         return result.scalars().one_or_none()
 
     async def create(self, spectrum: Spectrum) -> None:
         """ Создаёт новый спектр """
         self.session.add(spectrum)
+        await self.session.flush()
+        return await self.get_by_id(spectrum.id)
 
     async def update(self, spectrum_id: UUID, body: SpectrumUpdateSchema) -> Spectrum:
         """ Обновляет спектр по его ID """

@@ -27,7 +27,7 @@ router = APIRouter()
 async def get_spectrums(
         device_id: UUID,
         service: Annotated[SpectrumService, Depends(get_spectrum_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> list[SpectrumSchema]:
     """
     Возвращает список всех спектров выбранного устройства
@@ -43,14 +43,15 @@ async def get_spectrums(
     status_code=status.HTTP_201_CREATED,
 )
 async def create_spectrum(
+        device_id: UUID,
         body: SpectrumCreateSchema,
         service: Annotated[SpectrumService, Depends(get_spectrum_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> SpectrumSchema:
     """
     Создаёт новый спектр
     """
-    spectrum = await service.create(body)
+    spectrum = await service.create(device_id, body)
     return spectrum
 
 
@@ -61,15 +62,16 @@ async def create_spectrum(
     status_code=status.HTTP_200_OK,
 )
 async def update_spectrum(
+        device_id: UUID,
         spectrum_id: UUID,
         body: SpectrumUpdateSchema,
         service: Annotated[SpectrumService, Depends(get_spectrum_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> SpectrumSchema:
     """
     Обновляет спектр по его ID
     """
-    spectrum = await service.update(spectrum_id, body)
+    spectrum = await service.update(device_id, spectrum_id, body)
     return spectrum
 
 
@@ -79,11 +81,12 @@ async def update_spectrum(
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_spectrum(
+        device_id: UUID,
         spectrum_id: UUID,
         service: Annotated[SpectrumService, Depends(get_spectrum_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> None:
     """
     Удаляет спектр по его ID
     """
-    await service.delete(spectrum_id)
+    await service.delete(device_id, spectrum_id)

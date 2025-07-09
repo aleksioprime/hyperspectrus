@@ -1,4 +1,4 @@
-FROM --platform=linux/amd64 python:3.11.3-buster
+FROM python:3.12.11-slim-bullseye
 
 WORKDIR /usr/src/app
 

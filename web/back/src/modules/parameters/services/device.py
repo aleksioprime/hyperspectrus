@@ -1,12 +1,14 @@
 from uuid import UUID
 from typing import List
+import random
 
 from sqlalchemy.exc import IntegrityError, NoResultFound
 
 from src.exceptions.base import BaseException
-from src.models.parameter import Device
+from src.models.parameter import Device, OverlapCoefficient
 from src.modules.parameters.repositories.uow import UnitOfWork
 from src.modules.parameters.schemas.device import DeviceSchema, DeviceUpdateSchema, DeviceDetailSchema
+from src.modules.parameters.schemas.overlap import OverlapCoefficientUpdateSchema
 
 
 class DeviceService:
@@ -69,3 +71,37 @@ class DeviceService:
                 await self.uow.device.delete(device_id)
             except NoResultFound as exc:
                 raise BaseException(f"Устройство с ID {device_id} не найдено") from exc
+
+    async def fill_overlaps_random(self, device_id: UUID):
+        """
+        Заполнить все коэффициенты перекрытия устройства случайными числами (0...100, 2 знака)
+        """
+        async with self.uow:
+            # Получаем устройство и связанные спектры
+            device = await self.uow.device.get_detail_by_id(device_id)
+            if not device:
+                raise BaseException(f"Устройство с ID {device_id} не найдено")
+
+            # Получаем список всех хромофоров
+            chromophores = await self.uow.chromophore.get_all()
+
+            for spectrum in device.spectra:
+                for chromophore in chromophores:
+                    # Проверяем, есть ли уже коэффициент
+                    overlap = await self.uow.overlap.get_by_spec_and_chrom(
+                        spectrum.id, chromophore.id
+                    )
+                    value = round(random.uniform(0, 100), 2)
+                    if overlap:
+                        await self.uow.overlap.update(
+                            overlap.id,
+                            OverlapCoefficientUpdateSchema(coefficient=value)
+                        )
+                    else:
+                        await self.uow.overlap.create(
+                            OverlapCoefficient(
+                                spectrum_id=spectrum.id,
+                                chromophore_id=chromophore.id,
+                                coefficient=value,
+                            )
+                        )

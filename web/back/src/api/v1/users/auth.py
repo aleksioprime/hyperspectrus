@@ -17,7 +17,7 @@ router = APIRouter()
 
 
 @router.post(
-    path='/login',
+    path='/login/',
     summary='Выполняет вход в аккаунт',
     description='Авторизирует пользователя, выдает новые jwt токены',
     response_model=TokenSchema,
@@ -35,7 +35,7 @@ async def login(
 
 
 @router.post(
-    path='/logout',
+    path='/logout/',
     summary='Выполняет выход из аккаунта',
     description='Помечает access токен отозванным, а refresh токен удаляет из базы',
     status_code=status.HTTP_200_OK,
@@ -52,7 +52,7 @@ async def logout(
 
 
 @router.post(
-    path='/refresh',
+    path='/refresh/',
     summary='Выдает новый access-токен',
     description='Выдает новый access-токен по предоставленному refresh-токену',
     response_model=AccessTokenSchema,

@@ -1,6 +1,6 @@
 import os
 from uuid import UUID
-from typing import Optional
+from typing import Optional, List
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import update, select, delete
@@ -59,22 +59,15 @@ class RawImageRepository:
         # Удаление из БД
         await self.session.delete(raw_image)
 
+    async def get_by_ids(self, ids: List[UUID]) -> list[RawImage]:
+        """ Возвращает список изображений по списку UUID """
+        if not ids:
+            return []
+        query = select(RawImage).where(RawImage.id.in_(ids))
+        result = await self.session.execute(query)
+        return result.scalars().all()
+
     async def bulk_delete(self, ids: list[UUID]) -> None:
         """ Удаляет исходные изображения по списку ID """
         stmt = delete(RawImage).where(RawImage.id.in_(ids))
         await self.session.execute(stmt)
-
-    async def bulk_delete(self, ids: list[UUID]) -> None:
-        """ Удаляет исходные изображения по списку ID вместе с файлами """
-        query = select(RawImage).where(RawImage.id.in_(ids))
-        result = await self.session.execute(query)
-        images = result.scalars().all()
-
-        for img in images:
-            try:
-                if os.path.exists(img.file_path):
-                    os.remove(img.file_path)
-            except Exception as e:
-                print(f"[WARN] Ошибка при удалении файла {img.file_path}: {e}")
-
-            await self.session.delete(img)

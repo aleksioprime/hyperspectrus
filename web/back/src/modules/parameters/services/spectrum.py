@@ -23,7 +23,7 @@ class SpectrumService:
         async with self.uow:
             spectrums = await self.uow.spectrum.get_all(device_id)
 
-        return spectrums
+        return [SpectrumSchema.model_validate(s) for s in spectrums]
 
     async def create(self, device_id: UUID, body: SpectrumUpdateSchema) -> SpectrumSchema:
         """
@@ -33,13 +33,14 @@ class SpectrumService:
             try:
                 spectrum = Spectrum(
                     wavelength=body.wavelength,
+                    name=body.name,
                     device_id=device_id,
                 )
                 await self.uow.spectrum.create(spectrum)
             except IntegrityError as exc:
                 raise BaseException("Спектр уже существует") from exc
 
-        return spectrum
+        return SpectrumSchema.model_validate(spectrum)
 
     async def update(self, device_id: UUID, spectrum_id: UUID, body: SpectrumUpdateSchema) -> SpectrumSchema:
         """
@@ -49,7 +50,7 @@ class SpectrumService:
             spectrum = await self._get_spectrum_checked(device_id, spectrum_id)
             spectrum = await self.uow.spectrum.update(spectrum_id, body)
 
-        return spectrum
+        return SpectrumSchema.model_validate(spectrum)
 
     async def delete(self, device_id: UUID, spectrum_id: UUID) -> None:
         """

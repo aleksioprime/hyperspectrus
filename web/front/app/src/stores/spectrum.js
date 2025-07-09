@@ -27,7 +27,7 @@ export const useSpectrumStore = defineStore("spectrum", {
     },
     // Обновление спектра
     async updateSpectrum(deviceId, spectrumId, data) {
-      const res = await resources.spectrum.partialUpdateSpectrum(deviceId, spectrumId, data);
+      const res = await resources.spectrum.updateSpectrum(deviceId, spectrumId, data);
       if (res.__state === "success") {
         return res.data
       }

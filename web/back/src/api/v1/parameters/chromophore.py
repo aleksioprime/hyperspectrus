@@ -12,7 +12,7 @@ from src.core.schemas import UserJWT
 from src.constants.role import RoleName
 from src.core.security import JWTBearer
 from src.modules.parameters.dependencies.chromophore import get_chromophore_service
-from src.modules.parameters.schemas.chromophore import ChromophoreSchema, ChromophoreCreateSchema, ChromophoreUpdateSchema
+from src.modules.parameters.schemas.chromophore import ChromophoreSchema, ChromophoreUpdateSchema
 from src.modules.parameters.services.chromophore import ChromophoreService
 
 
@@ -26,7 +26,7 @@ router = APIRouter()
 )
 async def get_chromophores(
         service: Annotated[ChromophoreService, Depends(get_chromophore_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> list[ChromophoreSchema]:
     """
     Возвращает список всех хромофоров
@@ -41,9 +41,9 @@ async def get_chromophores(
     status_code=status.HTTP_201_CREATED,
 )
 async def create_chromophore(
-        body: ChromophoreCreateSchema,
+        body: ChromophoreUpdateSchema,
         service: Annotated[ChromophoreService, Depends(get_chromophore_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> ChromophoreSchema:
     """
     Создаёт новый хромофор
@@ -62,7 +62,7 @@ async def update_chromophore(
         chromophore_id: UUID,
         body: ChromophoreUpdateSchema,
         service: Annotated[ChromophoreService, Depends(get_chromophore_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> ChromophoreSchema:
     """
     Обновляет хромофор по его ID
@@ -79,7 +79,7 @@ async def update_chromophore(
 async def delete_chromophore(
         chromophore_id: UUID,
         service: Annotated[ChromophoreService, Depends(get_chromophore_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> None:
     """
     Удаляет хромофор по его ID

@@ -5,6 +5,7 @@ from datetime import datetime, date
 from pydantic import BaseModel, Field
 
 from src.core.schemas import BasePaginationParams
+from src.constants.celery import CeleryStatus
 
 
 class SessionQueryParams(BasePaginationParams):
@@ -24,6 +25,10 @@ class SessionSchema(BaseModel):
     date: datetime = Field(..., description="Дата и время сеанса")
     operator_id: UUID = Field(..., description="ID оператора")
     notes: str | None = Field(None, description="Дополнительные заметки")
+    processing_task_id: str | None = Field(None, description="ID задачи Celery")
+    processing_status: CeleryStatus | None = Field(
+        None, description="Статус задачи обработки"
+    )
 
     class Config:
         from_attributes = True
@@ -56,10 +61,19 @@ class SessionUpdateSchema(BaseModel):
         from_attributes = True
 
 
+class SpectrumSchema(BaseModel):
+    id: UUID = Field(..., description="ID спектра")
+    wavelength: int = Field(..., description="Длина волны в нанометрах")
+    name: str | None = Field(None, description="Название спектра")
+
+    class Config:
+        from_attributes = True
+
+
 class RawImageSchema(BaseModel):
     id: UUID = Field(..., description="ID исходного изображения")
     file_path: str = Field(..., description="Путь к файлу изображения")
-    spectrum_id: UUID = Field(..., description="ID длины волны")
+    spectrum: SpectrumSchema = Field(..., description="ID длины волны")
 
     class Config:
         from_attributes = True
@@ -123,3 +137,4 @@ class SessionDetailSchema(SessionSchema):
     raw_images: list[RawImageSchema] = Field(default_factory=list, description="Список исходных изображений")
     reconstructed_images: list[ReconstructedImageSchema] = Field(default_factory=list, description="Список восстановленных изображений")
     result: ResultSchema | None = Field(None, description="Результаты анализа сеанса (если есть)")
+    processing_task_id: str | None = Field(None, description="ID задачи Celery")

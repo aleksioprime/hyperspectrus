@@ -36,21 +36,43 @@ services:
       timeout: 5s
       retries: 5
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: hyperspectrus-rabbitmq
+    <<: *app
+    ports:
+      - "5672:5672"     # для celery
+      - "15672:15672"   # web-интерфейс: http://localhost:15672 guest/guest
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  celery_worker:
+    build:
+      context: ./back
+    container_name: hyperspectrus-celery
+    <<: *app
+    command: celery -A src.celery_app.celery_app worker --loglevel=info
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+
   backend:
     build:
       context: ./back
     container_name: hyperspectrus-backend
     <<: *app
+    command: python src/main.py
     volumes:
       - ./back:/usr/src/app/
     ports:
       - "8101:8000"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/ping"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 5s
     depends_on:
       redis:
         condition: service_healthy
@@ -72,7 +94,7 @@ services:
       - "8102:5173"
     depends_on:
       backend:
-        condition: service_healthy
+        condition: service_started
 
   adminer:
     image: adminer

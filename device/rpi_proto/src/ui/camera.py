@@ -4,10 +4,13 @@
 """
 
 from picamera2 import Picamera2
-import cv2
+import time
+import logging
 from PyQt5.QtWidgets import QWidget, QLabel, QVBoxLayout, QSizePolicy
 from PyQt5.QtCore import QTimer, Qt
 from PyQt5.QtGui import QImage, QPixmap
+
+logger = logging.getLogger(__name__)
 
 
 class CameraWidget(QWidget):
@@ -25,7 +28,20 @@ class CameraWidget(QWidget):
             main={"format": "RGB888", "size": (1920, 1080)}  # подставь своё max
         )
         self.picam2.configure(self.preview_config)
+        self.picam2.set_controls({
+            "AeEnable": True  # Автоматическая экспозиция и усиление
+        })
         self.picam2.start()
+        #Устанавливаем параметры съемки для длины волны
+        self.controls = {
+            520: (1000, 1.0),
+            660: (500, 1.0),
+            700: (500, 1.0),
+            810: (800, 1.0),
+            850: (3000, 1.0),
+            900: (4000, 1.0),
+            940: (6000, 1.0),
+        }
 
         # Виджет для отображения кадров
         self.label = QLabel()
@@ -44,18 +60,6 @@ class CameraWidget(QWidget):
         self.timer = QTimer()
         self.timer.timeout.connect(self.update_frame)
         self.timer.start(30)
-
-    def update_frame(self):
-        """Считывает кадр с камеры и выводит его на экран."""
-        frame = self.picam2.capture_array()
-        if frame is not None:
-            rgb = frame[..., ::-1]
-            h, w, ch = rgb.shape
-            img = QImage(rgb.tobytes(), w, h, ch * w, QImage.Format_RGB888)
-
-            # crop=True — "cover", crop=False — стандартное поведение
-            pixmap = self.make_pixmap(self.label, img, mode = "height")
-            self.label.setPixmap(pixmap)
 
     def make_pixmap(self, label: QLabel, img: QImage, mode: str = "cover") -> QPixmap:
         """
@@ -98,26 +102,42 @@ class CameraWidget(QWidget):
             pixmap = QPixmap.fromImage(scaled_img)
         return pixmap
 
-    def get_preview_frame(self):
-        """Всегда возвращает кадр маленького разрешения."""
-        return self.picam2.capture_array()
+    def update_frame(self):
+        """Считывает кадр с камеры и выводит его на экран."""
+        frame = self.picam2.capture_array()
+        if frame is not None:
+            rgb = frame[..., ::-1]
+            h, w, ch = rgb.shape
+            img = QImage(rgb.tobytes(), w, h, ch * w, QImage.Format_RGB888)
 
-    def get_frame(self, highres=False):
+            # crop=True — "cover", crop=False — стандартное поведение
+            pixmap = self.make_pixmap(self.label, img, mode = "height")
+            self.label.setPixmap(pixmap)
+
+    def get_frame(self, spec):
         """
-        Возвращает кадр. Если highres=True, временно переключается на highres.
-        Никогда не выводит highres в интерфейс!
+        Возвращает кадр
         """
-        if highres:
-            self.picam2.stop()
-            self.picam2.configure(self.capture_config)
-            self.picam2.start()
-            frame = self.picam2.capture_array()
-            self.picam2.stop()
-            self.picam2.configure(self.preview_config)
-            self.picam2.start()
-        else:
-            frame = self.get_preview_frame()
+        self.picam2.set_controls({
+            "AeEnable": False,
+            "ExposureTime": self.controls[spec][0],
+            "AnalogueGain": self.controls[spec][1]
+        })
+        # time.sleep(0.2)
+        self.wait_for_controls(self.controls[spec][0], self.controls[spec][1])
+        frame = self.picam2.switch_mode_and_capture_array(self.capture_config)
         return frame
+
+    def wait_for_controls(self, target_exposure, target_gain, timeout=1.0):
+        start = time.time()
+        while time.time() - start < timeout:
+            metadata = self.picam2.capture_metadata()
+            if (abs(metadata.get("ExposureTime", 0) - target_exposure) < 100 and
+                abs(metadata.get("AnalogueGain", 0) - target_gain) < 0.1):
+                logger.info(f"Время настройки камеры: {time.time() - start}")
+                return
+            time.sleep(0.05)
+
 
     def close(self):
         """Останавливает камеру и освобождает ресурсы."""

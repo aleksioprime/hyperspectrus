@@ -3,25 +3,23 @@ from typing import Generic, TypeVar, List
 
 from fastapi import Query
 from pydantic import BaseModel, Field
-from pydantic.generics import GenericModel
-
 
 T = TypeVar("T")
 
 
-class PaginatedResponse(GenericModel, Generic[T]):
-    items: List[T]
-    total: int
-    limit: int
-    offset: int
-    has_next: bool
-    has_previous: bool
+class PaginatedResponse(BaseModel, Generic[T]):
+    items: List[T] = Field(..., description="Список элементов на текущей странице")
+    total: int = Field(..., description="Общее количество элементов")
+    limit: int = Field(..., description="Максимальное количество элементов на странице")
+    offset: int = Field(..., description="Смещение от начала коллекции")
+    has_next: bool = Field(..., description="Есть ли следующая страница")
+    has_previous: bool = Field(..., description="Есть ли предыдущая страница")
 
 
 class BasePaginationParams(BaseModel):
     """ Базовый класс параметров пагинации """
-    limit: int = Field(Query(alias='page_size', gt=0))
-    offset: int = Field(Query(alias='page_number', ge=0))
+    limit: int = Field(Query(alias='limit', gt=0))
+    offset: int = Field(Query(alias='offset', ge=0))
 
 
 class UserJWT(BaseModel):

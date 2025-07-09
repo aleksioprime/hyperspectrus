@@ -8,10 +8,18 @@ from src.core.schemas import BasePaginationParams
 
 
 class PatientQueryParams(BasePaginationParams):
-    organization: UUID | None
+    organization_id: UUID | None
 
     class Config:
         arbitrary_types_allowed = True
+
+
+class OrganizationSchema(BaseModel):
+    id: UUID = Field(..., description="Уникальный идентификатор организации")
+    name: str = Field(..., description="Название организации")
+
+    class Config:
+        from_attributes = True
 
 
 class PatientSchema(BaseModel):
@@ -21,6 +29,7 @@ class PatientSchema(BaseModel):
     id: UUID = Field(..., description="Уникальный идентификатор пациента")
     full_name: str = Field(..., description="ФИО пациента")
     birth_date: date = Field(..., description="Дата рождения пациента")
+    organization: OrganizationSchema | None = Field(None, description="Организация")
 
     class Config:
         from_attributes = True
@@ -54,6 +63,7 @@ class PatientUpdateSchema(BaseModel):
     full_name: Optional[str] = Field(None, description="ФИО пациента")
     birth_date: Optional[date] = Field(None, description="Дата рождения пациента")
     notes: Optional[str] = Field(None, description="Дополнительные заметки")
+    organization_id: UUID | None = Field(None, description="ID организации")
 
     @validator("birth_date", pre=True)
     def parse_birth_date(cls, value):
@@ -76,6 +86,7 @@ class SessionSchema(BaseModel):
     device_id: UUID = Field(..., description="ID устройства, используемого в сеансе")
     operator_id: UUID = Field(..., description="ID оператора")
     notes: Optional[str] = Field(None, description="Дополнительные заметки о сессии")
+    processing_task_id: str | None = Field(None, description="ID задачи Celery")
 
     class Config:
         from_attributes = True
@@ -90,6 +101,7 @@ class PatientDetailSchema(BaseModel):
     birth_date: datetime = Field(..., description="Дата рождения пациента")
     created_at: datetime = Field(..., description="Дата создания записи")
     notes: Optional[str] = Field(None, description="Дополнительные заметки")
+    organization: OrganizationSchema | None = Field(None, description="Организация")
     sessions: List[SessionSchema] = Field(..., description="Список сеансов пациента")
 
     class Config:

@@ -56,11 +56,11 @@ class DeviceRepository:
             .values(**update_data)
         )
         await self.session.execute(stmt)
-        return await self.get_device_by_id(device_id)
+        return await self.get_by_id(device_id)
 
     async def delete(self, device_id: UUID) -> None:
         """ Удаляет устройство по его ID """
-        result = await self.get_device_by_id(device_id)
+        result = await self.get_by_id(device_id)
         if not result:
             raise NoResultFound(f"Устройство с ID {device_id} не найдено")
 

@@ -14,6 +14,8 @@ from src.core.security import JWTBearer
 from src.modules.patients.dependencies.patient import get_patient_service, get_patient_params
 from src.modules.patients.schemas.patient import PatientSchema, PatientCreateSchema, PatientUpdateSchema, PatientDetailSchema, PatientQueryParams
 from src.modules.patients.services.patient import PatientService
+from src.modules.users.services.user import UserService
+from src.modules.users.dependencies.user import get_user_service
 
 
 router = APIRouter()
@@ -27,12 +29,15 @@ router = APIRouter()
 async def get_patients(
         params: Annotated[PatientQueryParams, Depends(get_patient_params)],
         service: Annotated[PatientService, Depends(get_patient_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE, RoleName.ADMIN}))],
+        user_service: Annotated[UserService, Depends(get_user_service)],
 ) -> PaginatedResponse[PatientSchema]:
     """
     Возвращает список всех пациентов организации
     """
-    patients = await service.get_all(params)
+    user_obj = await user_service.get_user_by_id(user.user_id)
+
+    patients = await service.get_all(params, user_obj)
     return patients
 
 
@@ -45,7 +50,7 @@ async def get_patients(
 async def get_patient(
         patient_id: UUID,
         service: Annotated[PatientService, Depends(get_patient_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> PatientDetailSchema:
     """
     Получает детальную информацию о пациенте
@@ -62,7 +67,7 @@ async def get_patient(
 async def create_patient(
         body: PatientCreateSchema,
         service: Annotated[PatientService, Depends(get_patient_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> PatientSchema:
     """
     Создаёт нового пациента
@@ -81,7 +86,7 @@ async def update_patient(
         patient_id: UUID,
         body: PatientUpdateSchema,
         service: Annotated[PatientService, Depends(get_patient_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> PatientSchema:
     """
     Обновляет пациента по его ID
@@ -98,7 +103,7 @@ async def update_patient(
 async def delete_patient(
         patient_id: UUID,
         service: Annotated[PatientService, Depends(get_patient_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.USER}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> None:
     """
     Удаляет пациента по его ID

@@ -3,15 +3,6 @@ import { isLoggedIn } from "@/middlewares/isLoggedIn";
 export const routes = [
   {
     path: "/",
-    name: "home",
-    component: () => import("@/views/HomeView.vue"),
-    meta: {
-      title: 'Главная страница',
-      middlewares: [isLoggedIn],
-    },
-  },
-  {
-    path: "/patients",
     name: "patient",
     component: () => import("@/views/patients/PatientView.vue"),
     meta: {
@@ -24,7 +15,7 @@ export const routes = [
     name: 'patient-detail',
     component: () => import('@/views/patients/PatientDetail.vue'),
     meta: {
-      title: '',
+      title: 'Просмотр пациента',
       middlewares: [isLoggedIn],
     },
   },
@@ -33,16 +24,16 @@ export const routes = [
     name: 'session-detail',
     component: () => import('@/views/sessions/SessionDetail.vue'),
     meta: {
-      title: '',
+      title: 'Просмотр сессии',
       middlewares: [isLoggedIn],
     },
   },
   {
     path: "/profile",
     name: "profile",
-    component: () => import("@/views/ProfileView.vue"),
+    component: () => import("@/views/users/ProfileView.vue"),
     meta: {
-      title: '',
+      title: 'Профиль пользователя',
       middlewares: [isLoggedIn],
     },
   },
@@ -65,11 +56,20 @@ export const routes = [
     },
   },
   {
-    path: "/config",
-    name: "config",
-    component: () => import("@/views/ConfigView.vue"),
+    path: "/users",
+    name: "user",
+    component: () => import("@/views/users/UserView.vue"),
     meta: {
-      title: '',
+      title: 'Пользователи',
+      middlewares: [isLoggedIn],
+    },
+  },
+  {
+    path: "/organizations",
+    name: "organization",
+    component: () => import("@/views/organizations/OrganizationView.vue"),
+    meta: {
+      title: 'Организации',
       middlewares: [isLoggedIn],
     },
   },

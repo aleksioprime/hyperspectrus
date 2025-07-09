@@ -8,5 +8,5 @@ while ! nc -z "$DB_HOST" "$DB_PORT"; do
 done
 echo "PostgreSQL доступен!"
 
-echo "Запускаем сервис..."
-exec python src/main.py
+echo "Запускаем сервис: $@"
+exec "$@"

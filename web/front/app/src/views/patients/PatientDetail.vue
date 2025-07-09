@@ -1,39 +1,40 @@
 <template>
-  <!-- Назад -->
-  <!-- <v-btn variant="text" @click="router.back()" class="mb-2">
-    <v-icon start>mdi-arrow-left</v-icon>
-    Назад
-  </v-btn> -->
-
-  <v-breadcrumbs :items="breadcrumbs" class="mb-4 ps-0">
-    <template #prepend>
-      <v-icon class="me-2">mdi-home</v-icon>
-    </template>
-  </v-breadcrumbs>
-
-  <template v-if="!patient">
+  <!-- Анимация загрузки пациента -->
+  <div v-if="!patient" class="d-flex align-center justify-center mt-6">
     <v-progress-circular indeterminate color="primary" class="ma-4" />
-  </template>
+  </div>
 
-  <!-- Только если пациент загружен -->
+  <!-- Информация о пациенте -->
   <template v-if="patient">
+    <v-breadcrumbs :items="breadcrumbs" class="mb-4 ps-0">
+      <template #prepend>
+        <v-icon class="me-2">mdi-home</v-icon>
+      </template>
+    </v-breadcrumbs>
+
     <h1 class="text-h5 font-weight-bold mb-2">Пациент: {{ patient?.full_name }}</h1>
 
-    <v-row class="mb-4">
-      <v-col cols="12" sm="6">
-        <strong>Дата рождения:</strong> {{ formatDate(patient.birth_date) }}
-      </v-col>
-      <v-col cols="12" sm="6">
-        <strong>Заметки:</strong> {{ patient.notes || '—' }}
-      </v-col>
-    </v-row>
+    <div class="mb-4">
+      <v-row>
+        <v-col cols="12" sm="4">
+          <strong>Дата рождения:</strong> {{ formatDate(patient.birth_date) }}
+        </v-col>
+        <v-col cols="12" sm="8">
+          <strong>Заметки:</strong> {{ patient.notes || '—' }}
+        </v-col>
+      </v-row>
+      <div class="mt-2">
+        <strong>Организация приёма:</strong> {{ patient.organization?.name || '—' }}
+      </div>
+    </div>
 
     <v-divider class="my-4" />
 
+    <!-- Работа с сеансами -->
 
     <div class="d-flex justify-space-between align-center mb-2">
       <h2 class="text-h6">Сеансы</h2>
-      <v-btn color="primary" @click="addSession">
+      <v-btn color="primary" @click="openEditDialog()">
         <v-icon start>mdi-plus</v-icon>
         Добавить сеанс
       </v-btn>
@@ -42,20 +43,19 @@
     <v-table dense>
       <thead>
         <tr>
-          <th>Дата</th>
-          <th>Оператор</th>
+          <th style="width: 120px;"><v-icon size="18" color="primary" class="me-1">mdi-calendar</v-icon>Дата</th>
+          <th style="width: 300px;"><v-icon size="18" color="info" class="me-1">mdi-account</v-icon>Оператор</th>
           <th>Заметки</th>
-          <th class="text-end">Действия</th>
+          <th style="width: 130px;"></th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="session in patient.sessions" :key="session.id">
+        <tr v-for="session in patient.sessions" :key="session.id" @click="openSession(session.id)"
+          class="hoverable-row">
           <td>
-            <v-icon size="18" color="primary" class="me-1">mdi-calendar</v-icon>
             {{ formatDateTime(session.date) }}
           </td>
           <td>
-            <v-icon size="18" color="info" class="me-1">mdi-account</v-icon>
             <span v-if="session.operator_id === currentUser?.id">
               {{ currentUser.first_name }} {{ currentUser.last_name }}
             </span>
@@ -64,14 +64,11 @@
             </span>
           </td>
           <td>{{ session.notes || '—' }}</td>
-          <td class="text-end">
-            <v-btn icon size="small" @click="openSession(session.id)" :title="'Открыть сеанс'">
-              <v-icon color="primary">mdi-eye</v-icon>
-            </v-btn>
-            <v-btn icon size="small" @click="editSession(session)" :title="'Редактировать сеанс'">
+          <td>
+            <v-btn icon size="small" class="ms-2" @click.stop="openEditDialog(session)" :title="'Редактировать сеанс'">
               <v-icon color="orange">mdi-pencil</v-icon>
             </v-btn>
-            <v-btn icon size="small" @click="deleteSession(session.id)" :title="'Удалить сеанс'">
+            <v-btn icon size="small" class="ms-2" @click.stop="deleteSession(session)" :title="'Удалить сеанс'">
               <v-icon color="red">mdi-delete</v-icon>
             </v-btn>
           </td>
@@ -84,33 +81,33 @@
     </v-alert>
   </template>
 
-  <!-- Модалка создания/редактирования -->
-  <v-dialog v-model="sessionDialog.visible" max-width="500px">
+  <!-- Модальное окно создания/редактирования -->
+  <v-dialog v-model="modalDialogEdit.visible" max-width="500px">
     <v-card>
       <v-card-title>
-        {{ sessionDialog.editing ? "Редактировать сеанс" : "Новый сеанс" }}
+        {{ modalDialogEdit.editing ? "Редактировать сеанс" : "Новый сеанс" }}
       </v-card-title>
       <v-card-text>
-        <SessionForm ref="formSessionRef" v-model="sessionDialog.form" @submit="submitSessionDialog" />
+        <SessionForm ref="sessionFormRef" v-model="modalDialogEdit.form" />
       </v-card-text>
       <v-card-actions class="justify-end">
-        <v-btn @click="sessionDialog.visible = false">Отмена</v-btn>
-        <v-btn color="primary" @click="formSessionRef?.submit()">
-          {{ sessionDialog.editing ? "Сохранить" : "Создать" }}
+        <v-btn @click="modalDialogEdit.visible = false">Отмена</v-btn>
+        <v-btn color="primary" @click="submitDialog">
+          {{ modalDialogEdit.editing ? "Сохранить" : "Создать" }}
         </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 
   <!-- Модалка подтверждения удаления -->
-  <v-dialog v-model="confirmDelete.visible" max-width="400px">
+  <v-dialog v-model="modalDialogDelete.visible" max-width="400px">
     <v-card>
       <v-card-title>Удалить сеанс?</v-card-title>
       <v-card-text>
         Вы уверены, что хотите удалить этот сеанс?
       </v-card-text>
       <v-card-actions class="justify-end">
-        <v-btn @click="confirmDelete.visible = false">Отмена</v-btn>
+        <v-btn @click="modalDialogDelete.visible = false">Отмена</v-btn>
         <v-btn color="red" @click="confirmDeleteSession">Удалить</v-btn>
       </v-card-actions>
     </v-card>
@@ -124,141 +121,138 @@
 
 <script setup>
 import { onMounted, ref, computed } from "vue";
-import { useRoute, useRouter } from "vue-router";
 import { format } from "date-fns";
 import ru from "date-fns/locale/ru";
 
-// Сторы
-import { usePatientStore } from "@/stores/patient";
-import { useAuthStore } from "@/stores/auth";
-import { useSessionStore } from "@/stores/session";
-
-// UI & компоненты
 import SessionForm from "@/components/sessions/SessionForm.vue";
 import { useSnackbar } from "@/composables/useSnackbar";
-
-// --- Инициализация ---
-const route = useRoute();
-const router = useRouter();
-const patientStore = usePatientStore();
-const sessionStore = useSessionStore();
-const authStore = useAuthStore();
-const currentUser = computed(() => authStore.user);
 const { showSuccess, snackbar } = useSnackbar();
 
-// Пациент
-const patient = ref(null);
+import { usePatientStore } from "@/stores/patient";
+const patientStore = usePatientStore();
 
-// Breadcrumbs
+import { useAuthStore } from "@/stores/auth";
+const authStore = useAuthStore();
+const currentUser = computed(() => authStore.user);
+
+import { useSessionStore } from "@/stores/session";
+const sessionStore = useSessionStore();
+
+import { useRoute, useRouter } from "vue-router";
+const route = useRoute();
+const router = useRouter();
+
 const breadcrumbs = computed(() => [
-  { title: "Главная", to: { name: "home" }, disabled: false },
   { title: "Пациенты", to: { name: "patient" }, disabled: false },
   { title: patient.value?.full_name || "Загрузка...", disabled: true },
 ]);
 
-// Загрузка пациента
+// Текущий пациент
+const patient = ref(null);
+
 onMounted(async () => {
   patient.value = await patientStore.loadPatientDetailed(route.params.id);
 });
 
-// --- Форматирование дат ---
+// Переход на детальную страницу сеанса
+const openSession = (sessionId) => {
+  router.push({ name: "session-detail", params: { patient_id: patient.value.id, id: sessionId } });
+};
+
+// Форматирование дат
 const formatDate = (dateStr) => format(new Date(dateStr), "d MMMM yyyy", { locale: ru });
 const formatDateTime = (dateStr) => format(new Date(dateStr), "d MMMM yyyy HH:mm", { locale: ru });
 
-// --- Управление формой сеанса ---
-const formSessionRef = ref();
+// --- ДОБАВЛЕНИЕ/РЕДАКТИРОВАНИЕ СЕАНСОВ ---
 
-const sessionDialog = ref({
+// Объект модального окна
+const modalDialogEdit = ref({
   visible: false,
   editing: false,
-  form: {
-    id: null,
-    device_id: null,
-    date: "",
-    operator_id: "",
-    notes: "",
-  },
+  form: {},
 });
 
-// Открыть форму добавления
-const addSession = () => {
-  sessionDialog.value = {
+// Открытие модального окна для создания/редактирования сеанса
+const openEditDialog = (session = null) => {
+  modalDialogEdit.value = {
     visible: true,
-    editing: false,
-    form: {
-      id: null,
-      device_id: null,
-      date: new Date().toISOString().slice(0, 16),
-      operator_id: currentUser.value?.id,
-      notes: "",
-    },
+    editing: !!session,
+    form: session
+      ? {
+        ...session,
+        date: session.date.slice(0, 16),
+      }
+      : {
+        id: null,
+        device_id: null,
+        date: new Date().toISOString().slice(0, 16),
+        operator_id: currentUser.value?.id,
+        notes: "",
+      },
   };
 };
 
-// Открыть форму редактирования
-const editSession = (session) => {
-  sessionDialog.value = {
-    visible: true,
-    editing: true,
-    form: {
-      id: session.id,
-      device_id: session.device_id,
-      date: session.date.slice(0, 16),
-      operator_id: session.operator_id,
-      notes: session.notes || "",
-    },
-  };
-};
+// Подготовка данных формы для запроса создания/редактирования сеансов
+const getFormPayload = (form) => ({ ...form });
+
+// Подтверждение создания/редактирования пациента
+const sessionFormRef = ref();
 
 // Обработка отправки формы
-const submitSessionDialog = async () => {
-  const form = sessionDialog.value.form;
+const submitDialog = async () => {
+  const valid = await sessionFormRef.value?.submit();
+  if (!valid) return;
 
-  if (!form.date || !form.operator_id || !form.device_id) return;
+  const { form, editing } = modalDialogEdit.value;
 
-  if (sessionDialog.value.editing) {
-    const updated = await sessionStore.updateSession(patient.value.id, form.id, form);
-    if (updated) {
-      const index = patient.value.sessions.findIndex(s => s.id === form.id);
-      if (index !== -1) patient.value.sessions[index] = { ...patient.value.sessions[index], ...updated };
-      showSuccess("Сеанс обновлён");
-    }
+  if (editing) {
+    const result = await sessionStore.updateSession(patient.value.id, form.id, getFormPayload(form));
+    if (!result) return;
+
+    const index = patient.value.sessions.findIndex(s => s.id === form.id);
+    if (index !== -1) patient.value.sessions[index] = { ...patient.value.sessions[index], ...form };
+
   } else {
     const newSession = await sessionStore.createSession(patient.value.id, form);
-    if (newSession) {
-      patient.value.sessions.unshift(newSession);
-      showSuccess("Сеанс добавлен");
-    }
+    if (!newSession) return
+
+    patient.value.sessions.unshift(newSession);
   }
 
-  sessionDialog.value.visible = false;
+  modalDialogEdit.value.visible = false;
 };
 
-// --- Удаление сеанса ---
-const confirmDelete = ref({ visible: false, sessionId: null });
+// --- УДАЛЕНИЕ CЕАНСА ---
 
-const deleteSession = (id) => {
-  confirmDelete.value = {
+// Объект модального окна
+const modalDialogDelete = ref({
+  visible: false,
+  session: null,
+});
+
+// Вызов модального окна удаления
+const deleteSession = (session) => {
+  modalDialogDelete.value = {
     visible: true,
-    sessionId: id,
+    session,
   };
 };
 
 const confirmDeleteSession = async () => {
-  const sessionId = confirmDelete.value.sessionId;
-  const patientId = patient.value.id;
+  const session = modalDialogDelete.value.session;
 
-  const success = await sessionStore.deleteSession(patientId, sessionId);
-  if (success) {
-    patient.value.sessions = patient.value.sessions.filter(s => s.id !== sessionId);
-    showSuccess("Сеанс успешно удалён");
-  }
+  const result = await sessionStore.deleteSession(patient.value?.id, session.id);
+  if (!result) return;
 
-  confirmDelete.value.visible = false;
+  patient.value.sessions = patient.value.sessions.filter(s => s.id !== session.id);
+  modalDialogDelete.value.visible = false;
 };
 
-// --- Переход на детальную страницу сеанса ---
-const openSession = (sessionId) => {
-  router.push({ name: "session-detail", params: { patient_id: patient.value.id, id: sessionId } });
-};
 </script>
+
+<style scoped>
+.hoverable-row:hover {
+  background: #f0f0f7;
+  cursor: pointer;
+}
+</style>

@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 from src.core.schemas import BasePaginationParams
 
 class UserQueryParams(BasePaginationParams):
+    organization_id: UUID | None = Field(None, description="ID организации")
 
     class Config:
         arbitrary_types_allowed = True
@@ -17,11 +18,16 @@ class RoleSchema(BaseModel):
     id: UUID = Field(..., description="Уникальный идентификатор роли")
     name: str = Field(..., description="Название роли")
     description: str = Field(..., description="Описание роли")
+    display_name: str | None = Field(None, description="Отображение названия")
 
     class Config:
-        """
-        Дополнительная конфигурация для поддержки from_orm
-        """
+        from_attributes = True
+
+class OrganizationSchema(BaseModel):
+    id: UUID = Field(..., description="Уникальный идентификатор организации")
+    name: str = Field(..., description="Название организации")
+
+    class Config:
         from_attributes = True
 
 
@@ -34,8 +40,13 @@ class UserSchema(BaseModel):
     last_name: Optional[str] = Field(None, description="Фамилия пользователя")
     username: Optional[str] = Field(None, description="Логин пользователя")
     email: Optional[str] = Field(None, description="Email пользователя")
-    organization_id: Optional[str] = Field(None, description="ID организации")
+    organization: OrganizationSchema | None = Field(None, description="Организация")
+    is_superuser: bool | None = Field(False, description="Суперпользователь")
     roles: List[RoleSchema] = Field(..., description="Список ролей пользователя")
+    photo: str | None = Field(None, description="Изображение пользователя")
+
+    class Config:
+        from_attributes = True
 
 
 class UserCreateSchema(BaseModel):
@@ -49,15 +60,26 @@ class UserCreateSchema(BaseModel):
     email: str = Field(..., description="Email пользователя")
     first_name: str = Field(..., description="Имя пользователя")
     last_name: str = Field(..., description="Фамилия пользователя")
-    organization_id: Optional[str] = Field(None, description="ID организации")
+    organization_id: UUID | None = Field(None, description="ID организации")
+    is_superuser: bool | None = Field(False, description="Суперпользователь")
+    roles: List[UUID] | None = Field(None, description="Список id ролей пользователя")
 
 
 class UserUpdateSchema(BaseModel):
     """
     Схема для обновления данных пользователя
     """
-    username: Optional[str] = Field(None, description="Логин пользователя для обновления")
-    first_name: Optional[str] = Field(None, description="Имя пользователя для обновления")
-    last_name: Optional[str] = Field(None, description="Фамилия пользователя для обновления")
-    email: Optional[str] = Field(None, description="Email пользователя")
-    organization_id: Optional[str] = Field(None, description="ID организации")
+    username: str | None = Field(None, description="Логин пользователя для обновления")
+    first_name: str | None = Field(None, description="Имя пользователя для обновления")
+    last_name: str | None = Field(None, description="Фамилия пользователя для обновления")
+    email: str | None = Field(None, description="Email пользователя")
+    organization_id: UUID | None = Field(None, description="ID организации")
+    is_superuser: bool | None = Field(False, description="Суперпользователь")
+    roles: List[UUID] | None = Field(None, description="Список id ролей пользователя")
+
+
+class UpdatePasswordUserSchema(BaseModel):
+    """
+    Схема обновления пароля пользователя
+    """
+    password: str = Field(..., description="Пароль пользователя")

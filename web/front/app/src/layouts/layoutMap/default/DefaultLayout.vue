@@ -11,8 +11,8 @@
       <v-divider />
 
       <!-- Список пунктов меню -->
-      <v-list-item v-for="item in menuItems" :key="item.title" :title="item.title" :prepend-icon="item.icon" link
-        :to="{ name: item.to }" @click="drawer = false" />
+      <v-list-item v-for="item in visibleMenuItems" :key="item.title" :title="item.title" :prepend-icon="item.icon" link
+        :to="{ name: item.to }" @click="handleMenuItemClick"/>
     </v-list>
   </v-navigation-drawer>
 
@@ -21,10 +21,13 @@
     <!-- Иконка открытия/закрытия боковой панели -->
     <v-app-bar-nav-icon @click="drawer = !drawer" />
 
+    <!-- Логотип -->
+    <v-img :src="logo" alt="Логотип" max-width="38" max-height="38" class="ms-2" />
+
     <!-- Заголовок -->
     <v-toolbar-title>
-      <router-link :to="{ name: 'home' }" class="text-white text-decoration-none">
-        Гиперспектрус
+      <router-link :to="{ path: '/' }" class="text-white text-decoration-none">
+        Hyperspectrus
       </router-link>
     </v-toolbar-title>
 
@@ -42,7 +45,7 @@
         <template #activator="{ props }">
           <v-btn v-bind="props" text class="text-none">
             <v-avatar size="32" class="me-2">
-              <v-img :src="authStore.user?.photo || defaultPhoto" />
+              <v-img :src="cacheBustUrl(authStore.user?.photo) || defaultPhoto" />
             </v-avatar>
             {{ userFullName }}
             <v-icon end>mdi-menu-down</v-icon>
@@ -76,10 +79,15 @@
 
 <script setup>
 // Импорт реактивных инструментов Vue
-import { ref, computed } from 'vue'
+import { ref, watch, computed } from 'vue'
 
 // Импорт Vuetify утилит: определение устройства и темы
 import { useDisplay, useTheme } from 'vuetify'
+
+// Импорт логотипа для отображения на странице входа
+import logo from '@/assets/img/logo.png'
+
+import { cacheBustUrl } from "@/common/helpers/cacheBust";
 
 // Импорт стора авторизации
 import { useAuthStore } from '@/stores/auth'
@@ -96,17 +104,48 @@ const userFullName = computed(() => {
   return user ? `${user.first_name} ${user.last_name}` : "";
 });
 
-const drawer = ref(false) // состояние боковой панели
-const { mobile } = useDisplay() // определение, мобильное ли устройство
+const { mobile } = useDisplay();
+const drawer = ref(false);
+
+if (!mobile.value) {
+  drawer.value = localStorage.getItem('drawerOpen') === 'true';
+}
+
+watch(drawer, (val) => {
+  if (!mobile.value) {
+    localStorage.setItem('drawerOpen', val);
+  }
+});
+
+function handleMenuItemClick() {
+  if (mobile.value) drawer.value = false;
+}
 
 // Элементы бокового меню
 const menuItems = [
-  { title: 'Главная', icon: 'mdi-home', to: 'home' },
-  { title: 'Пациенты', icon: 'mdi-account-multiple', to: 'patient' },
-  { title: 'Устройства', icon: 'mdi-camera', to: 'device' },
-  { title: 'Хромофоры', icon: 'mdi-molecule', to: 'chromophore' },
-  { title: 'Настройки', icon: 'mdi-cog', to: 'config' },
+  { title: 'Пациенты', icon: 'mdi-account-multiple', to: 'patient', roles: ['employee', 'admin'] },
+  { title: 'Устройства', icon: 'mdi-camera', to: 'device', roles: ['admin'] },
+  { title: 'Хромофоры', icon: 'mdi-molecule', to: 'chromophore', roles: ['admin'] },
+  { title: 'Пользователи', icon: 'mdi-account-group', to: 'user', roles: ['admin'] },
+  { title: 'Организации', icon: 'mdi-domain', to: 'organization', superuser: true },
 ]
+
+const visibleMenuItems = computed(() => {
+  const user = authStore.user;
+  if (!user) return [];
+
+  if (user.is_superuser) return menuItems;
+
+  const userRoles = (user.roles || []).map(r => typeof r === 'string' ? r : r.name);
+
+  return menuItems.filter(item => {
+    if (item.superuser) return false;
+    if (item.roles) {
+      return item.roles.some(role => userRoles.includes(role));
+    }
+    return true;
+  });
+});
 
 // Работа с глобальной темой
 const { global: theme } = useTheme()

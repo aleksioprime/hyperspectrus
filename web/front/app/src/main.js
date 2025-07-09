@@ -1,5 +1,6 @@
 // Custom logging utility
 import logger from '@/common/helpers/logger';
+import '@/assets/styles/main.css'
 
 // Import core libraries and app structure
 import { createApp } from "vue";

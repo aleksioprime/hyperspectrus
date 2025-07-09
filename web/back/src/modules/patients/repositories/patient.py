@@ -1,13 +1,16 @@
+import logging
 from uuid import UUID
 from typing import List, Optional
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, update, func
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload, joinedload
 from sqlalchemy.exc import NoResultFound
 
 from src.models.patient import Patient, Session
 from src.modules.patients.schemas.patient import PatientSchema, PatientUpdateSchema, PatientDetailSchema, PatientQueryParams
+
+logger = logging.getLogger(__name__)
 
 
 class PatientRepository:
@@ -18,23 +21,11 @@ class PatientRepository:
     def __init__(self, session: AsyncSession):
         self.session = session
 
-    async def get_all(self, params: PatientQueryParams) -> List[PatientSchema]:
-        """ Возвращает список пациентов """
-        query = select(Patient)
-
-        if params.organization:
-            query = query.where(Patient.organization_id == params.organization)
-
-        query = query.limit(params.limit).offset(params.offset * params.limit)
-
-        result = await self.session.execute(query)
-        return result.scalars().unique().all()
-
-    async def get_all_with_count(self, params: PatientQueryParams) -> tuple[list[PatientSchema], int]:
+    async def get_all(self, params: PatientQueryParams) -> tuple[list[PatientSchema], int]:
         """ Возвращает постраничный список пациентов и их общее количество """
-        query = select(Patient)
-        if params.organization:
-            query = query.where(Patient.organization_id == params.organization)
+        query = select(Patient).options(joinedload(Patient.organization))
+        if params.organization_id:
+            query = query.where(Patient.organization_id == params.organization_id)
 
         total_query = select(func.count()).select_from(query.subquery())
 
@@ -50,7 +41,7 @@ class PatientRepository:
 
     async def get_by_id(self, patient_id: UUID) -> PatientDetailSchema:
         """ Возвращает пациента по его ID """
-        query = select(Patient).where(Patient.id == patient_id)
+        query = select(Patient).options(joinedload(Patient.organization)).where(Patient.id == patient_id)
         result = await self.session.execute(query)
         return result.scalars().unique().one_or_none()
 
@@ -63,6 +54,7 @@ class PatientRepository:
                 .joinedload(Session.device),
                 selectinload(Patient.sessions)
                 .joinedload(Session.operator),
+                joinedload(Patient.organization)
             )
             .where(Patient.id == patient_id)
         )

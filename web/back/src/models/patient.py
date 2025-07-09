@@ -1,11 +1,13 @@
 import uuid
+import enum
 
+from sqlalchemy import Enum as SAEnum
 from sqlalchemy import Column, String, func, ForeignKey, Float, DateTime, Date
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import UUID
 
 from src.db.postgres import Base
-
+from src.constants.celery import CeleryStatus
 
 class Patient(Base):
     """
@@ -41,6 +43,8 @@ class Session(Base):
     date = Column(DateTime(timezone=True), default=func.now())  # Дата и время сеанса
     operator_id = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)  # ID оператора
     notes = Column(String)  # Дополнительные заметки
+    processing_task_id = Column(String, nullable=True)
+    processing_status = Column(SAEnum(CeleryStatus), nullable=True)
 
     patient = relationship("Patient", back_populates="sessions")
     device = relationship("Device", back_populates="sessions")
@@ -63,6 +67,7 @@ class RawImage(Base):
     file_path = Column(String, nullable=False)  # Путь к файлу изображения
 
     session = relationship("Session", back_populates="raw_images")
+    spectrum = relationship("Spectrum", back_populates="raw_images")
 
 
 class ReconstructedImage(Base):

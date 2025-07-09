@@ -205,7 +205,7 @@ class CameraApp(QWidget):
             id="test_task",
             title="Тестовая задача",
             status="test",
-            spectra=[470, 660, 940],
+            spectra=[520, 660, 810, 850, 900, 940],
             created_at=datetime.utcnow()
         )
         tasks.insert(0, test_task)

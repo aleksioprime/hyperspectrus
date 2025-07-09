@@ -5,7 +5,7 @@ export const middlewarePipeline = (router) => {
       return true;
     }
     for (const middleware of middlewares) {
-      const result = await middleware({ to, from });
+      const result = await middleware({ to, from, router });
       if (
         typeof result === "object" ||
         typeof result === "string" ||
@@ -17,4 +17,3 @@ export const middlewarePipeline = (router) => {
     return true;
   });
 };
-  

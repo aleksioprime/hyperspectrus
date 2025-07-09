@@ -91,5 +91,6 @@ services:
         condition: service_started
 
 volumes:
+  media:
   postgres_volume:
   redis_volume:

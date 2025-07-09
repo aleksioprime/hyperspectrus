@@ -12,7 +12,7 @@
 
       <!-- Список пунктов меню -->
       <v-list-item v-for="item in visibleMenuItems" :key="item.title" :title="item.title" :prepend-icon="item.icon" link
-        :to="{ name: item.to }" />
+        :to="{ name: item.to }" @click="handleMenuItemClick"/>
     </v-list>
   </v-navigation-drawer>
 
@@ -79,10 +79,11 @@
 
 <script setup>
 // Импорт реактивных инструментов Vue
-import { ref, computed } from 'vue'
+import { ref, watch, computed } from 'vue'
 
 // Импорт Vuetify утилит: определение устройства и темы
 import { useDisplay, useTheme } from 'vuetify'
+
 // Импорт логотипа для отображения на странице входа
 import logo from '@/assets/img/logo.png'
 
@@ -103,8 +104,22 @@ const userFullName = computed(() => {
   return user ? `${user.first_name} ${user.last_name}` : "";
 });
 
-const drawer = ref(false) // состояние боковой панели
-const { mobile } = useDisplay() // определение, мобильное ли устройство
+const { mobile } = useDisplay();
+const drawer = ref(false);
+
+if (!mobile.value) {
+  drawer.value = localStorage.getItem('drawerOpen') === 'true';
+}
+
+watch(drawer, (val) => {
+  if (!mobile.value) {
+    localStorage.setItem('drawerOpen', val);
+  }
+});
+
+function handleMenuItemClick() {
+  if (mobile.value) drawer.value = false;
+}
 
 // Элементы бокового меню
 const menuItems = [

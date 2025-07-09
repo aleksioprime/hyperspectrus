@@ -20,4 +20,12 @@ export class SessionResource extends ApiService {
   deleteSession(patientId, sessionId) {
     return this.$delete(`/api/v1/patients/${patientId}/sessions/${sessionId}`);
   }
+
+  processSession(patientId, sessionId) {
+    return this.$post(`/api/v1/patients/${patientId}/sessions/${sessionId}/process`);
+  }
+
+  processSessionStatus(patientId, sessionId) {
+    return this.$get(`/api/v1/patients/${patientId}/sessions/${sessionId}/process/status`);
+  }
 }

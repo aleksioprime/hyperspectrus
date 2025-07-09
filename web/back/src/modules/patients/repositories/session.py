@@ -78,3 +78,30 @@ class SessionRepository:
             raise NoResultFound(f"Сеанс с ID {session_id} не найден")
 
         await self.session.delete(result)
+
+    async def set_processing_task_id(self, session_id: UUID, task_id: str) -> None:
+        """Сохраняет ID задачи в указанный сеанс"""
+        stmt = (
+            update(Session)
+            .where(Session.id == session_id)
+            .values(processing_task_id=task_id)
+        )
+        await self.session.execute(stmt)
+
+    async def clear_processing_task_id(self, session_id: UUID) -> None:
+        """
+        Очищает ID задачи для указанного сеанса
+        """
+        stmt = (
+            update(Session)
+            .where(Session.id == session_id)
+            .values(processing_task_id=None)
+        )
+        await self.session.execute(stmt)
+
+    async def get_processing_task_id(self, session_id: UUID) -> str | None:
+        """Получает ID задачи указанного сеанса"""
+        query = select(Session.processing_task_id).where(Session.id == session_id)
+        result = await self.session.execute(query)
+        row = result.first()
+        return row[0] if row else None

@@ -42,5 +42,21 @@ export const useSessionStore = defineStore("session", {
       }
       return null
     },
+    // Запуск обработки данных сеанса у пациента по их ID
+    async processSession(patientId, sessionId) {
+      const res = await resources.session.processSession(patientId, sessionId);
+      if (res.__state === "success") {
+        return res.data
+      }
+      return null
+    },
+    // Получение статуса обработки данных сеанса у пациента по их ID
+    async processSessionStatus(patientId, sessionId) {
+      const res = await resources.session.processSessionStatus(patientId, sessionId);
+      if (res.__state === "success") {
+        return res.data
+      }
+      return null
+    },
   }
 });

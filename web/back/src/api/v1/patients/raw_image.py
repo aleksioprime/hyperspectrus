@@ -15,6 +15,8 @@ from src.modules.patients.dependencies.raw_image import get_raw_image_service
 from src.modules.patients.schemas.raw_image import RawImageSchema, RawImageUpdateSchema, RawImageIdsSchema
 from src.modules.patients.services.raw_image import RawImageService
 
+from src.tasks.session import process_session
+
 
 router = APIRouter()
 
@@ -36,6 +38,7 @@ async def upload_raw_image(
     Загружает новые исходные изображения
     """
     raw_images = await service.upload_files(session_id, spectrum_ids, files)
+    process_session.delay(str(session_id))
     return raw_images
 
 

@@ -86,6 +86,7 @@ class SessionSchema(BaseModel):
     device_id: UUID = Field(..., description="ID устройства, используемого в сеансе")
     operator_id: UUID = Field(..., description="ID оператора")
     notes: Optional[str] = Field(None, description="Дополнительные заметки о сессии")
+    processing_task_id: str | None = Field(None, description="ID задачи Celery")
 
     class Config:
         from_attributes = True

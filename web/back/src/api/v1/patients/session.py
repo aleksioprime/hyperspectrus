@@ -15,6 +15,8 @@ from src.modules.patients.dependencies.session import get_session_service, get_s
 from src.modules.patients.schemas.session import SessionSchema, SessionCreateSchema, SessionUpdateSchema, SessionDetailSchema, SessionQueryParams
 from src.modules.patients.services.session import SessionService
 
+from src.tasks.session import process_session
+
 
 router = APIRouter()
 
@@ -91,3 +93,39 @@ async def delete_session(
     Удаляет сеанс по его ID
     """
     await service.delete(patient_id, session_id)
+
+
+@router.post(
+    path='/{session_id}/process',
+    summary='Запустить обработку данных сеанса',
+    status_code=status.HTTP_202_ACCEPTED,
+)
+async def set_processing_session(
+        patient_id: UUID,
+        session_id: UUID,
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
+        service: Annotated[SessionService, Depends(get_session_service)],
+):
+    """
+    Запускает обработку данных и вычисление результата сеанса
+    """
+    celery_task = process_session.delay(str(session_id))
+    await service.set_processing_task_id(patient_id, session_id, celery_task.id)
+    return {"message": "Обработка запущена", "task_id": celery_task.id}
+
+
+@router.get(
+    path='/{session_id}/process/status',
+    summary='Проверить статус обработки сеанса',
+    status_code=status.HTTP_200_OK,
+)
+async def get_processing_status(
+        patient_id: UUID,
+        session_id: UUID,
+        service: Annotated[SessionService, Depends(get_session_service)],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
+):
+    """
+    Проверить статус фоновой задачи обработки для сеанса по его ID
+    """
+    return await service.get_processing_status(patient_id, session_id)

@@ -58,11 +58,6 @@ jobs:
         docker build -t aleksioprime/hyperspectrus-back:latest ./web/back
         docker push aleksioprime/hyperspectrus-back:latest
 
-    - name: Build and push worker image
-      run: |
-        docker build -t aleksioprime/hyperspectrus-worker:latest ./web/worker
-        docker push aleksioprime/hyperspectrus-worker:latest
-
     - name: Build and push frontend image
       run: |
         docker build --target prod \

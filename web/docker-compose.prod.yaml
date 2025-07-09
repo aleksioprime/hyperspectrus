@@ -47,8 +47,7 @@ services:
       retries: 5
 
   celery_worker:
-    build:
-      context: ./back
+    image: aleksioprime/hyperspectrus-back:latest
     container_name: hyperspectrus-celery
     <<: *app
     command: celery -A src.celery_app.celery_app worker --loglevel=info
@@ -61,8 +60,8 @@ services:
         condition: service_healthy
 
   backend:
-    image: aleksioprime/empolimer-back:latest
-    container_name: hyperspectrus-backend
+    image: aleksioprime/hyperspectrus-back:latest
+    container_name: hyperspectrus-back
     <<: *app
     command: python src/main.py
     volumes:
@@ -75,7 +74,7 @@ services:
 
   frontend:
     image: aleksioprime/hyperspectrus-front:latest
-    container_name: hyperspectrus-frontend
+    container_name: hyperspectrus-front
     <<: *app
     volumes:
       - media:/usr/share/nginx/html/media

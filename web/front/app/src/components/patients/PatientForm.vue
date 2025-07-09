@@ -1,32 +1,20 @@
 <template>
-  <v-form @submit.prevent="submit" ref="formRef">
-    <v-text-field
-      v-model="form.full_name"
-      label="ФИО"
-      :rules="[v => !!v || 'Обязательное поле']"
-      required
-    />
-    <v-text-field
-      v-model="form.birth_date"
-      label="Дата рождения"
-      type="date"
-      :rules="[v => !!v || 'Обязательное поле']"
-      required
-    />
-    <v-textarea
-      v-model="form.notes"
-      label="Заметки"
-    />
+  <v-form ref="formRef" @submit.prevent="onSubmit" >
+    <v-text-field v-model="form.full_name" label="ФИО" :rules="[rules.required]" required />
+    <v-text-field v-model="form.birth_date" label="Дата рождения" type="date" :rules="[rules.required]"
+      required />
+    <v-textarea v-model="form.notes" label="Заметки" auto-grow />
   </v-form>
 </template>
 
 <script setup>
 import { ref, watch, reactive } from "vue";
+import rules from "@/common/helpers/rules";
 
 const props = defineProps({
   modelValue: Object,
 });
-const emit = defineEmits(["submit", "update:modelValue"]);
+const emit = defineEmits(["update:modelValue"]);
 
 const form = reactive({
   full_name: "",
@@ -34,20 +22,30 @@ const form = reactive({
   notes: "",
 });
 
+// Синхронизация изменения внешнего modelValue с внутренним
+watch(
+  () => props.modelValue?.id,
+  (newId, oldId) => {
+    if (newId !== oldId) {
+      Object.assign(form, { ...props.modelValue });
+    }
+  },
+  { immediate: true }
+);
+
+// Синхронизация изменения внутренего modelValue с внешним
+watch(
+  () => ({ ...form }),
+  val => emit("update:modelValue", val)
+);
+
+// Валидация формы
 const formRef = ref();
 
-watch(() => props.modelValue, (newVal) => {
-  if (newVal) {
-    Object.assign(form, newVal);
-  }
-}, { immediate: true });
-
-watch(form, () => {
-  emit("update:modelValue", { ...form });
-}, { deep: true });
-
-const submit = () => {
-  formRef.value?.validate();
-  emit("submit");
+const onSubmit = async () => {
+  const { valid } = await formRef.value?.validate();
+  return valid
 };
+
+defineExpose({ submit: onSubmit });
 </script>

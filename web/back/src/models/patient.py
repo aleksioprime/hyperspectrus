@@ -63,6 +63,7 @@ class RawImage(Base):
     file_path = Column(String, nullable=False)  # Путь к файлу изображения
 
     session = relationship("Session", back_populates="raw_images")
+    spectrum = relationship("Spectrum", back_populates="raw_images")
 
 
 class ReconstructedImage(Base):

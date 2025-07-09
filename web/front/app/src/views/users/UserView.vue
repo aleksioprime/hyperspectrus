@@ -184,7 +184,7 @@ const fetchUsers = async (reset = false) => {
   // Ставим флаг загрузки, чтобы не вызвать функцию повторно
   loading.value = true;
 
-  // Если reset=true (например, изменился фильтр организации или нужно перезагрузить весь список):
+  // Если изменился фильтр или нужно перезагрузить весь список
   if (reset) {
     users.value = [];
     page.value = 0;
@@ -197,12 +197,12 @@ const fetchUsers = async (reset = false) => {
     limit,
   };
 
-  // Если выбран фильтр по организации — добавляем organization в параметры запроса
- if (selectedOrganization.value) {
-  params.organization_id = selectedOrganization.value;
-}
+  // Если выбраны фильтры, то они добавляются в параметры
+  if (selectedOrganization.value) {
+    params.organization_id = selectedOrganization.value;
+  }
 
-  // Делаем запрос к userStore (например, к API), передавая параметры
+  // Запрос к API с передачей параметров
   const data = await userStore.loadUsers({ params: params });
 
   // Если данные получены:
@@ -216,11 +216,10 @@ const fetchUsers = async (reset = false) => {
   loading.value = false; // Снимаем флаг загрузки
 };
 
-
-// Элемент страницы, который активирует подзагрузку списка пользователей
+// Элемент страницы, который активирует подзагрузку списка
 const infiniteScrollTarget = ref(null);
 
-// Хук, который следит, попал ли элемент подзагрузки пользователей в поле видимости
+// Хук, который следит, попал ли элемент подзагрузки списка в поле видимости
 useIntersectionObserver(
   infiniteScrollTarget,
   ([{ isIntersecting }]) => {
@@ -336,7 +335,6 @@ const submitDialog = async () => {
 
   modalDialogEdit.value.visible = false;
 };
-
 
 // --- УДАЛЕНИЕ ПОЛЬЗОВАТЕЛЯ ---
 

@@ -6,14 +6,17 @@
       {{ snackbar.text }}
     </v-snackbar>
 
-    <v-btn color="primary" class="mb-4" @click="openCreateDialog">
-      <v-icon start>mdi-plus</v-icon>
-      Добавить
-    </v-btn>
+    <div class="d-flex align-top justify-space-between">
+      <v-btn v-if="canEdit" color="primary" class="my-2" @click="openEditDialog()">
+        <v-icon start>mdi-plus</v-icon>
+        Добавить
+      </v-btn>
+      <v-select v-if="authStore.isSuperuser" v-model="selectedOrganization" :items="organizations" item-value="id" item-title="name"
+        label="Организация" clearable style="max-width: 300px" />
+    </div>
 
-    <v-list>
-      <v-list-item v-for="(patient, index) in patients" :key="patient.id" link
-        @click="goToPatient(patient.id)">
+    <v-list class="pa-0 mt-4">
+      <v-list-item v-for="(patient, index) in patients" :key="patient.id" link @click="goToPatient(patient.id)">
         <!-- Фото (если есть) -->
         <template #prepend>
           <v-avatar size="56">
@@ -33,10 +36,10 @@
         <!-- Например, кнопки редактирования или удаления -->
         <template #append>
           <template v-if="canEdit(patient)">
-            <v-btn icon @click="openEditDialog(patient)" class="me-2">
+            <v-btn icon @click.stop="openEditDialog(patient)" class="me-2">
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
-            <v-btn icon @click="deletePatient(patient.id)">
+            <v-btn icon @click.stop="deletePatient(patient)">
               <v-icon color="red">mdi-delete</v-icon>
             </v-btn>
           </template>
@@ -56,35 +59,37 @@
       </v-alert>
     </div>
 
-    <!-- Модальное окно добавления/редкатирования -->
-    <v-dialog v-model="dialog.visible" max-width="500px">
+    <v-alert v-if="!patients.length" type="info" class="mt-4">
+      Пациенты пока не добавлены
+    </v-alert>
+
+    <!-- Модальное окно добавления/редактирования -->
+    <v-dialog v-model="modalDialogEdit.visible" max-width="500px" persistent>
       <v-card>
         <v-card-title>
-          {{ dialog.editing ? 'Редактировать пациента' : 'Новый пациент' }}
+          {{ modalDialogEdit.editing ? 'Редактировать пациента' : 'Новый пациент' }}
         </v-card-title>
-
         <v-card-text>
-          <PatientForm v-model="dialog.form" @submit="submitDialog" />
+          <PatientForm ref="patientFormRef" v-model="modalDialogEdit.form" @submit="submitDialog" />
         </v-card-text>
-
         <v-card-actions class="justify-end">
-          <v-btn @click="dialog.visible = false">Отмена</v-btn>
+          <v-btn @click="modalDialogEdit.visible = false">Отмена</v-btn>
           <v-btn color="primary" @click="submitDialog">
-            {{ dialog.editing ? 'Сохранить' : 'Создать' }}
+            {{ modalDialogEdit.editing ? 'Сохранить' : 'Создать' }}
           </v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
     <!-- Модальное окно удаления -->
-    <v-dialog v-model="confirmDelete.visible" max-width="400px">
+    <v-dialog v-model="modalDialogDelete.visible" max-width="400px">
       <v-card>
         <v-card-title>Удалить пациента?</v-card-title>
         <v-card-text>
-          Вы уверены, что хотите удалить пациента <strong>{{ confirmDelete.patient?.full_name }}</strong>?
+          Вы уверены, что хотите удалить пациента <strong>{{ modalDialogDelete.patient?.full_name }}</strong>?
         </v-card-text>
         <v-card-actions class="justify-end">
-          <v-btn @click="confirmDelete.visible = false">Отмена</v-btn>
+          <v-btn @click="modalDialogDelete.visible = false">Отмена</v-btn>
           <v-btn color="red" @click="confirmDeletePatient">Удалить</v-btn>
         </v-card-actions>
       </v-card>
@@ -94,16 +99,21 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { useIntersectionObserver } from "@vueuse/core";
 import { format } from "date-fns";
 import ru from "date-fns/locale/ru";
-import defaultPhoto from '@/assets/img/user-default.png'
 
+import defaultPhoto from '@/assets/img/user-default.png'
 import PatientForm from "@/components/patients/PatientForm.vue";
 
 import { usePatientStore } from "@/stores/patient";
 const patientStore = usePatientStore();
+const patients = ref([]);
+
+import { useOrganizationStore } from "@/stores/organization";
+const organizationStore = useOrganizationStore();
+const organizations = ref([]);
 
 import { useAuthStore } from "@/stores/auth";
 const authStore = useAuthStore();
@@ -115,12 +125,13 @@ const goToPatient = (id) => {
   router.push({ name: 'patient-detail', params: { id } });
 };
 
-const organizationId = computed(() => authStore.user?.organization_id);
+const organizationId = computed(() => authStore.user?.organization?.id);
 
 const canEdit = (patient) => {
   return (
     authStore.isAdmin ||
-    (organizationId.value && patient.organization_id === organizationId.value)
+    authStore.isSuperuser ||
+    (organizationId.value && patient.organization?.id === organizationId.value)
   );
 };
 
@@ -129,112 +140,44 @@ const snackbar = ref({
   text: "",
 });
 
-const dialog = ref({
-  visible: false,
-  editing: false,
-  form: {
-    id: null,
-    full_name: "",
-    birth_date: "",
-    notes: "",
-  },
-});
+// --- СПИСОК ПАЦИЕНТОВ ---
 
-const openCreateDialog = () => {
-  if (!organizationId.value) {
-    snackbar.value = {
-      show: true,
-      text: "Вы не можете создавать пациентов, так как не указана организация.",
-    };
-    return;
-  }
-
-  dialog.value = {
-    visible: true,
-    editing: false,
-    form: {
-      id: null,
-      full_name: "",
-      birth_date: "",
-      notes: "",
-    },
-  };
-};
-
-const openEditDialog = (patient) => {
-  dialog.value = {
-    visible: true,
-    editing: true,
-    form: {
-      id: patient.id,
-      full_name: patient.full_name,
-      birth_date: patient.birth_date,
-      notes: patient.notes,
-    },
-  };
-};
-
-const submitDialog = async () => {
-  const { form, editing } = dialog.value;
-
-  if (!form.full_name || !form.birth_date) return;
-
-  if (editing) {
-    await patientStore.updatePatient(form.id, form);
-    const index = patients.value.findIndex(p => p.id === form.id);
-    if (index !== -1) patients.value[index] = { ...patients.value[index], ...form };
-  } else {
-    const newPatient = await patientStore.createPatient({
-      ...form,
-      organization_id: organizationId.value,
-    });
-    if (newPatient) patients.value.unshift(newPatient);
-  }
-
-  dialog.value.visible = false;
-};
-
-const confirmDelete = ref({
-  visible: false,
-  patient: null,
-});
-
-const deletePatient = (id) => {
-  const patient = patients.value.find(p => p.id === id);
-  confirmDelete.value = {
-    visible: true,
-    patient,
-  };
-};
-
-const confirmDeletePatient = async () => {
-  const patient = confirmDelete.value.patient;
-  const success = await patientStore.deletePatient(patient.id);
-  if (success) {
-    patients.value = patients.value.filter((p) => p.id !== patient.id);
-    confirmDelete.value.visible = false;
-  }
-};
-
-
-const patients = ref([]);
+// Переменные пагинированного списка
 const page = ref(0);
 const limit = 20;
 const total = ref(0);
-const loading = ref(false);
 const hasNextPage = ref(true);
 
-const infiniteScrollTarget = ref(null);
+// Переменная процесса загрузки
+const loading = ref(false);
 
-const fetchPatients = async () => {
-  if (loading.value || !hasNextPage.value) return;
+// Загрузка пагинированного списка
+const fetchPatients = async (reset = false) => {
+  if (loading.value) return;
   loading.value = true;
 
-  const data = await patientStore.loadPatients({
+  // Если изменился фильтр или нужно перезагрузить весь список:
+  if (reset) {
+    patients.value = [];
+    page.value = 0;
+    hasNextPage.value = true;
+  }
+
+  // Формируем параметры запроса для API
+  const params = {
     offset: page.value,
     limit,
-  });
+  };
 
+  // Добавление фильтров в параметры
+  if (selectedOrganization.value) {
+    params.organization_id = selectedOrganization.value;
+  }
+
+  // Запрос к API с передачей параметров
+  const data = await patientStore.loadPatients({ params: params });
+
+  // Если данные получены
   if (data) {
     patients.value.push(...data.items);
     total.value = data.total;
@@ -245,6 +188,10 @@ const fetchPatients = async () => {
   loading.value = false;
 };
 
+// Элемент страницы, который активирует подзагрузку списка
+const infiniteScrollTarget = ref(null);
+
+// Хук, который следит, попал ли элемент подзагрузки списка в поле видимости
 useIntersectionObserver(
   infiniteScrollTarget,
   ([{ isIntersecting }]) => {
@@ -257,9 +204,111 @@ useIntersectionObserver(
   }
 );
 
-onMounted(() => {
-  fetchPatients();
+// --- ФИЛЬТР ПО ОРГАНИЗАЦИИ ---
+const selectedOrganization = ref(null);
+
+onMounted(async () => {
+  if (authStore.isSuperuser) {
+    organizations.value = await organizationStore.loadOrganizations?.() || [];
+  }
 });
+
+watch(selectedOrganization, () => {
+  fetchPatients(true);
+});
+
+// --- ДОБАВЛЕНИЕ/РЕДАКТИРОВАНИЕ ПАЦИЕНТОВ ---
+
+// Объект модального окна
+const modalDialogEdit = ref({
+  visible: false,
+  editing: false,
+  form: {},
+});
+
+// Открытие модального окна для создания/редактирования пациента
+const openEditDialog = (patient = null) => {
+
+  if (!organizationId.value) {
+    snackbar.value = {
+      show: true,
+      text: "Вы не можете создавать пациентов, так как не указана организация.",
+    };
+    return;
+  }
+
+  modalDialogEdit.value = {
+    visible: true,
+    editing: !!patient,
+    form: patient
+      ? { ...patient }
+      : {
+        id: null,
+        full_name: "",
+        birth_date: "",
+        notes: "",
+        organization_id: organizationId.value
+      }
+  };
+};
+
+// Подготовка данных формы для запроса создания/редактирования пациентов
+const getFormPayload = (form) => ({ ...form });
+
+// Подтверждение создания/редактирования пациента
+const patientFormRef = ref();
+
+const submitDialog = async () => {
+  const valid = await patientFormRef.value?.submit();
+  if (!valid) return;
+
+  const { form, editing } = modalDialogEdit.value;
+
+  if (editing) {
+    const result = await patientStore.updatePatient(form.id, getFormPayload(form));
+    if (!result) return;
+
+    const index = patients.value.findIndex(p => p.id === form.id);
+    if (index !== -1) patients.value[index] = { ...patients.value[index], ...form };
+
+  } else {
+    const newPatient = await patientStore.createPatient(getFormPayload(form));
+    if (!newPatient) return;
+
+    patients.value.unshift(newPatient);
+  }
+
+  modalDialogEdit.value.visible = false;
+};
+
+// --- УДАЛЕНИЕ ПАЦИЕНТА ---
+
+// Объект модального окна
+const modalDialogDelete = ref({
+  visible: false,
+  patient: null,
+});
+
+// Вызов модального окна удаления
+const deletePatient = (patient) => {
+  modalDialogDelete.value = {
+    visible: true,
+    patient,
+  };
+};
+
+// Подтверждение удаления в модальном окне
+const confirmDeletePatient = async () => {
+  const patient = modalDialogDelete.value.patient;
+
+  const result = await patientStore.deletePatient(patient.id);
+  if (!result) return;
+
+  patients.value = patients.value.filter((p) => p.id !== patient.id);
+  modalDialogDelete.value.visible = false;
+};
+
+
 
 const formatDate = (dateStr) => {
   return format(new Date(dateStr), "d MMMM yyyy", { locale: ru });

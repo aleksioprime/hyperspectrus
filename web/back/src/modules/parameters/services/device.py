@@ -10,6 +10,7 @@ from src.modules.parameters.repositories.uow import UnitOfWork
 from src.modules.parameters.schemas.device import DeviceSchema, DeviceUpdateSchema, DeviceDetailSchema
 from src.modules.parameters.schemas.overlap import OverlapCoefficientUpdateSchema
 
+
 class DeviceService:
     """
     Сервис для управления устройствами

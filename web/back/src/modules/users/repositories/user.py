@@ -14,6 +14,7 @@ from src.modules.users.schemas.user import UserUpdateSchema, UpdatePasswordUserS
 
 logger = logging.getLogger(__name__)
 
+
 class BaseUserRepository(ABC):
 
     @abstractmethod

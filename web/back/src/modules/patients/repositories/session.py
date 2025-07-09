@@ -6,7 +6,7 @@ from sqlalchemy import update, select
 from sqlalchemy.orm import joinedload
 from sqlalchemy.exc import NoResultFound
 
-from src.models.patient import Session
+from src.models.patient import Session, RawImage
 from src.modules.patients.schemas.session import SessionSchema, SessionUpdateSchema, SessionDetailSchema, SessionQueryParams
 
 
@@ -44,7 +44,7 @@ class SessionRepository:
                 joinedload(Session.patient),
                 joinedload(Session.operator),
                 joinedload(Session.device),
-                joinedload(Session.raw_images),
+                joinedload(Session.raw_images).joinedload(RawImage.spectrum),
                 joinedload(Session.reconstructed_images),
                 joinedload(Session.result),
             )

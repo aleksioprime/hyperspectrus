@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import resources from "@/services/resources";
+import logger from "@/common/helpers/logger";
 
 
 export const useRawImageStore = defineStore("rawImage", {
@@ -25,6 +26,14 @@ export const useRawImageStore = defineStore("rawImage", {
     // Удаление изображения по его ID
     async deleteRawImage(rawImageId) {
       const res = await resources.rawImage.deleteRawImage(rawImageId);
+      if (res.__state === "success") {
+        return true
+      }
+      return null
+    },
+    // Удаление списка изображений
+    async deleteManyRawImage(data) {
+      const res = await resources.rawImage.deleteManyRawImage(data);
       if (res.__state === "success") {
         return true
       }

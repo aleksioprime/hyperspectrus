@@ -1,21 +1,25 @@
 <template>
-  <v-form @submit.prevent="submit" ref="formRef">
-    <v-select v-model="form.device_id" :items="deviceOptions" item-title="name" item-value="id" label="Устройство"
-      :rules="[v => !!v || 'Обязательное поле']" required />
-    <v-text-field v-model="form.date" label="Дата и время сеанса" type="datetime-local"
-      :rules="[v => !!v || 'Обязательное поле']" required />
+  <v-form ref="formRef" @submit.prevent="onSubmit">
+    <v-select v-model="form.device_id" :items="devices" item-title="name" item-value="id" label="Устройство"
+      :rules="[rules.required]" required />
+    <v-text-field v-model="form.date" label="Дата и время сеанса" type="datetime-local" :rules="[rules.required]"
+      required />
     <v-textarea v-model="form.notes" label="Заметки" rows="2" />
   </v-form>
 </template>
 
 <script setup>
-import { ref, watch, reactive, onMounted, computed } from "vue";
+import { ref, watch, reactive, onMounted } from "vue";
+import rules from "@/common/helpers/rules";
 
 import { useDeviceStore } from "@/stores/device";
 const deviceStore = useDeviceStore();
+const devices = ref([])
 
-const props = defineProps({ modelValue: Object });
-const emit = defineEmits(["submit", "update:modelValue"]);
+const props = defineProps({
+  modelValue: Object,
+});
+const emit = defineEmits(["update:modelValue"]);
 
 const form = reactive({
   date: "",
@@ -24,37 +28,34 @@ const form = reactive({
   notes: "",
 });
 
+// Синхронизация изменения внешнего modelValue с внутренним
+watch(
+  () => props.modelValue?.id,
+  (newId, oldId) => {
+    if (newId !== oldId) {
+      Object.assign(form, { ...props.modelValue });
+    }
+  },
+  { immediate: true }
+);
+
+// Синхронизация изменения внутренего modelValue с внешним
+watch(
+  () => ({ ...form }),
+  val => emit("update:modelValue", val)
+);
+
+// Валидация формы
 const formRef = ref();
 
-watch(() => props.modelValue, (val) => {
-  if (val) Object.assign(form, val);
-}, { immediate: true });
-
-watch(form, () => {
-  emit("update:modelValue", { ...form });
-}, { deep: true });
-
-const submit = async () => {
-  const { valid } = await formRef.value.validate();
-
-  console.log("Валидация: ", valid)
-
-  if (!valid) {
-    console.warn("Форма не прошла валидацию");
-    return; // <<< не отправляем, если есть ошибки
-  }
-
-  emit("submit");
+const onSubmit = async () => {
+  const { valid } = await formRef.value?.validate();
+  return valid
 };
 
-onMounted(() => {
-  deviceStore.loadDevices();
+onMounted(async () => {
+  devices.value = await deviceStore.loadDevices();
 });
 
-const deviceOptions = computed(() => deviceStore.devices || []);
-
-defineExpose({
-  submit,
-});
-
+defineExpose({ submit: onSubmit });
 </script>

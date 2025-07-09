@@ -12,11 +12,12 @@ from src.core.schemas import UserJWT
 from src.constants.role import RoleName
 from src.core.security import JWTBearer
 from src.modules.patients.dependencies.raw_image import get_raw_image_service
-from src.modules.patients.schemas.raw_image import RawImageSchema, RawImageUpdateSchema
+from src.modules.patients.schemas.raw_image import RawImageSchema, RawImageUpdateSchema, RawImageIdsSchema
 from src.modules.patients.services.raw_image import RawImageService
 
 
 router = APIRouter()
+
 
 @router.post(
     path='/upload',
@@ -85,17 +86,17 @@ async def delete_raw_image(
     await service.delete(raw_image_id)
 
 
-@router.delete(
-    path='/',
+@router.post(
+    path='/delete',
     summary='Удалить изображения по списку ID',
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_raw_images(
-        ids: list[UUID],
+        data: RawImageIdsSchema,
         service: Annotated[RawImageService, Depends(get_raw_image_service)],
         user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> None:
     """
     Удаляет исходное изображения по списку ID
     """
-    await service.bulk_delete(ids)
+    await service.bulk_delete(data.ids)

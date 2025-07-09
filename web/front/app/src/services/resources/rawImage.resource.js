@@ -16,4 +16,8 @@ export class RawImageResource extends ApiService {
   deleteRawImage(id) {
     return this.$delete(`/api/v1/raw_images/${id}`);
   }
+
+  deleteManyRawImage(data) {
+    return this.$post(`/api/v1/raw_images/delete`, data);
+  }
 }

@@ -90,7 +90,7 @@ const modalDialogEdit = ref({
   form: {},
 });
 
-// Открытие модального окна для создания организации
+// Открытие модального окна для создания/редактирования организации
 const openEditDialog = (organization = null) => {
   modalDialogEdit.value = {
     visible: true,
@@ -114,12 +114,16 @@ const submitDialog = async () => {
   const { form, editing } = modalDialogEdit.value;
 
   if (editing) {
-    await organizationStore.updateOrganization(form.id, getFormPayload(form));
+    const result = await organizationStore.updateOrganization(form.id, getFormPayload(form));
+    if (!result) return;
+
     const index = organizations.value.findIndex(p => p.id === form.id);
     if (index !== -1) organizations.value[index] = { ...organizations.value[index], ...form };
   } else {
     const newOrganization = await organizationStore.createOrganization(getFormPayload(form));
-    if (newOrganization) organizations.value.unshift(newOrganization);
+    if (!newOrganization) return;
+
+    organizations.value.unshift(newOrganization);
   }
 
   modalDialogEdit.value.visible = false;

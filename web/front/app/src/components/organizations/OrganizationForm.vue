@@ -1,7 +1,7 @@
 <template>
   <v-form ref="formRef" @submit.prevent="onSubmit">
-    <v-text-field v-model="form.name" label="Название" :rules="nameRules" required clearable />
-    <v-textarea v-model="form.description" label="Описание" clearable auto-grow />
+    <v-text-field v-model="form.name" label="Название" :rules="nameRules" required />
+    <v-textarea v-model="form.description" label="Описание" auto-grow />
   </v-form>
 </template>
 

@@ -56,10 +56,19 @@ class SessionUpdateSchema(BaseModel):
         from_attributes = True
 
 
+class SpectrumSchema(BaseModel):
+    id: UUID = Field(..., description="ID спектра")
+    wavelength: int = Field(..., description="Длина волны в нанометрах")
+    name: str | None = Field(None, description="Название спектра")
+
+    class Config:
+        from_attributes = True
+
+
 class RawImageSchema(BaseModel):
     id: UUID = Field(..., description="ID исходного изображения")
     file_path: str = Field(..., description="Путь к файлу изображения")
-    spectrum_id: UUID = Field(..., description="ID длины волны")
+    spectrum: SpectrumSchema = Field(..., description="ID длины волны")
 
     class Config:
         from_attributes = True

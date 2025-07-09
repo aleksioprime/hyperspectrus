@@ -1,14 +1,18 @@
+import logging
 from uuid import UUID
 from typing import List
 
 from sqlalchemy.exc import IntegrityError
 
-from src.core.schemas import PaginatedResponse
+from src.core.schemas import PaginatedResponse, UserJWT
 from src.exceptions.base import BaseException
 from src.models.patient import Patient
 from src.modules.patients.schemas.patient import (
     PatientSchema, PatientCreateSchema, PatientUpdateSchema, PatientDetailSchema, PatientQueryParams,)
+from src.modules.users.schemas.user import UserSchema
 from src.modules.patients.repositories.uow import UnitOfWork
+
+logger = logging.getLogger(__name__)
 
 
 class PatientService:
@@ -16,15 +20,20 @@ class PatientService:
     def __init__(self, uow: UnitOfWork):
         self.uow = uow
 
-    async def get_all(self, params: PatientQueryParams) -> List[PatientSchema]:
+    async def get_all(self, params: PatientQueryParams, user_obj: UserSchema) -> List[PatientSchema]:
         """
         Выдаёт список пациентов
         """
+        if not user_obj.is_superuser:
+            params.organization_id = user_obj.organization.id
+
         async with self.uow:
-            patients, total = await self.uow.patient.get_all_with_count(params)
+            patients, total = await self.uow.patient.get_all(params)
+
+        items = [PatientSchema.model_validate(patient) for patient in patients]
 
         return PaginatedResponse[PatientSchema](
-            items=patients,
+            items=items,
             total=total,
             limit=params.limit,
             offset=params.offset,
@@ -42,7 +51,7 @@ class PatientService:
             if not patient:
                 raise BaseException(f"Пациент с ID {patient_id} не найден")
 
-        return patient
+        return PatientDetailSchema.model_validate(patient)
 
     async def create(self, body: PatientCreateSchema) -> PatientSchema:
         """

@@ -19,7 +19,7 @@ async function _refreshToken() {
   logger.info("Токен истёк. Обновление токена...");
 
   try {
-    const result = await backendClient.post("/api/v1/refresh", {
+    const result = await backendClient.post("/api/v1/refresh/", {
       refresh_token: jwtService.getRefreshToken(),
     });
 

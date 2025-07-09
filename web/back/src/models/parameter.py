@@ -29,10 +29,11 @@ class Spectrum(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     wavelength = Column(Integer, nullable=False)
     name = Column(String(255), nullable=True)
-    device_id = Column(UUID(as_uuid=True), ForeignKey('devices.id'), nullable=False)  # Связь с устройством
+    device_id = Column(UUID(as_uuid=True), ForeignKey('devices.id'), nullable=False)
 
     device = relationship("Device", back_populates="spectra")
     overlaps = relationship("OverlapCoefficient", back_populates="spectrum")
+    raw_images = relationship("RawImage", back_populates="spectrum")
 
 
 class Chromophore(Base):

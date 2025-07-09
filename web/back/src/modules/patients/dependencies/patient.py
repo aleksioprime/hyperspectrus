@@ -11,14 +11,14 @@ from src.modules.patients.services.patient import PatientService
 
 def get_patient_params(
         pagination: Annotated[BasePaginationParams, Depends(get_pagination_params)],
-        organization: str | None = Query(None, description='Параметр фильтрации по id организации'),
+        organization_id: str | None = Query(None, description='Параметр фильтрации по id организации'),
 ) -> PatientQueryParams:
     """ Получает query-параметры фильтрации для пациентов """
 
     return PatientQueryParams(
         limit=pagination.limit,
         offset=pagination.offset,
-        organization=organization,
+        organization_id=organization_id,
     )
 
 

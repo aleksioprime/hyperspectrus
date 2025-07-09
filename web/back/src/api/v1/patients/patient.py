@@ -14,6 +14,8 @@ from src.core.security import JWTBearer
 from src.modules.patients.dependencies.patient import get_patient_service, get_patient_params
 from src.modules.patients.schemas.patient import PatientSchema, PatientCreateSchema, PatientUpdateSchema, PatientDetailSchema, PatientQueryParams
 from src.modules.patients.services.patient import PatientService
+from src.modules.users.services.user import UserService
+from src.modules.users.dependencies.user import get_user_service
 
 
 router = APIRouter()
@@ -28,11 +30,14 @@ async def get_patients(
         params: Annotated[PatientQueryParams, Depends(get_patient_params)],
         service: Annotated[PatientService, Depends(get_patient_service)],
         user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE, RoleName.ADMIN}))],
+        user_service: Annotated[UserService, Depends(get_user_service)],
 ) -> PaginatedResponse[PatientSchema]:
     """
     Возвращает список всех пациентов организации
     """
-    patients = await service.get_all(params)
+    user_obj = await user_service.get_user_by_id(user.user_id)
+
+    patients = await service.get_all(params, user_obj)
     return patients
 
 

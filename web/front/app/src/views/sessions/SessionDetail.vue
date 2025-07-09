@@ -26,29 +26,27 @@
         </div>
       </v-col>
       <v-col cols="12" sm="8">
-        <div class="my-2">
-          <div class="d-flex align-center">
-            <div><strong>Заметки:</strong></div>
-            <v-btn icon size="small" variant="text" color="primary" class="ms-2" @click="startEditNotes"
-              title="Редактировать">
-              <v-icon>mdi-pencil</v-icon>
-            </v-btn>
-          </div>
-          <div>
-            <template v-if="!editingNotes">
-              <span style="white-space: pre-line;">{{ session.notes || '—' }}</span>
+        <div class="d-flex align-center">
+          <div><strong>Заметки:</strong></div>
+          <v-btn icon size="small" variant="text" color="primary" class="ms-2" @click="startEditNotes"
+            title="Редактировать">
+            <v-icon>mdi-pencil</v-icon>
+          </v-btn>
+        </div>
+        <div>
+          <template v-if="!editingNotes">
+            <span style="white-space: pre-line;">{{ session.notes || '—' }}</span>
 
-            </template>
-            <template v-else>
-              <v-textarea v-model="editedNotes" auto-grow rows="2" hide-details autofocus
-                class="my-2" @keydown.esc.stop="cancelEditNotes"></v-textarea>
-              <div class="d-flex gap-2">
-                <v-btn color="primary" size="small" @click="saveNotes" :loading="savingNotes">Сохранить</v-btn>
-                <v-btn color="secondary" size="small" class="ms-2" @click="cancelEditNotes"
-                  :disabled="savingNotes">Отмена</v-btn>
-              </div>
-            </template>
-          </div>
+          </template>
+          <template v-else>
+            <v-textarea v-model="editedNotes" auto-grow rows="2" hide-details autofocus class="my-2"
+              @keydown.esc.stop="cancelEditNotes"></v-textarea>
+            <div class="d-flex gap-2">
+              <v-btn color="primary" size="small" @click="saveNotes" :loading="savingNotes">Сохранить</v-btn>
+              <v-btn color="secondary" size="small" class="ms-2" @click="cancelEditNotes"
+                :disabled="savingNotes">Отмена</v-btn>
+            </div>
+          </template>
         </div>
       </v-col>
     </v-row>

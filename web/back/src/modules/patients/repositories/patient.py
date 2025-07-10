@@ -64,6 +64,7 @@ class PatientRepository:
     async def create(self, patient: Patient) -> PatientSchema:
         """ Создаёт нового пациента """
         self.session.add(patient)
+        await self.session.flush()
 
     async def update(self, patient_id: UUID, body: PatientUpdateSchema) -> Optional[PatientSchema]:
         """ Обновляет пациента по его ID """

@@ -66,10 +66,11 @@ class PatientService:
                     notes=body.notes
                     )
                 await self.uow.patient.create(patient)
+                patient_info = await self.uow.patient.get_by_id(patient.id)
             except IntegrityError as e:
                 raise BaseException("Пользователь уже существует") from e
 
-        return patient
+        return PatientSchema.model_validate(patient_info)
 
     async def update(self, patient_id: UUID, body: PatientUpdateSchema) -> PatientSchema:
         """

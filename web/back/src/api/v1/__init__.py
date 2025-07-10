@@ -12,7 +12,7 @@ router.include_router(organization.router, prefix="/organizations", tags=["organ
 router.include_router(patient.router, prefix="/patients", tags=["patients"])
 router.include_router(session.router, prefix="/patients/{patient_id}/sessions", tags=["sessions"])
 router.include_router(raw_image.router, prefix="/raw_images", tags=["raw_image"])
-router.include_router(result.router, prefix="/results", tags=["results"])
+# router.include_router(result.router, prefix="/results", tags=["results"])
 router.include_router(device.router, prefix="/devices", tags=["devices"])
 router.include_router(spectrum.router, prefix="/devices/{device_id}/spectra", tags=["spectra"])
 router.include_router(chromophore.router, prefix="/chromophores", tags=["chromophores"])

@@ -74,34 +74,34 @@ class DeviceService:
 
     async def fill_overlaps_random(self, device_id: UUID):
         """
-        Заполнить все коэффициенты перекрытия устройства случайными числами (0...100, 2 знака)
+        Заполнить все коэффициенты перекрытия устройства случайными числами (0...50000, 2 знака)
         """
         async with self.uow:
-            # Получаем устройство и связанные спектры
             device = await self.uow.device.get_detail_by_id(device_id)
             if not device:
                 raise BaseException(f"Устройство с ID {device_id} не найдено")
 
-            # Получаем список всех хромофоров
             chromophores = await self.uow.chromophore.get_all()
 
             for spectrum in device.spectra:
                 for chromophore in chromophores:
-                    # Проверяем, есть ли уже коэффициент
+                    if chromophore.symbol.lower() == "bkg":
+                        coefficient_value = 100.00
+                    else:
+                        coefficient_value = round(random.uniform(0, 50000), 2)
                     overlap = await self.uow.overlap.get_by_spec_and_chrom(
                         spectrum.id, chromophore.id
                     )
-                    value = round(random.uniform(0, 100), 2)
                     if overlap:
                         await self.uow.overlap.update(
                             overlap.id,
-                            OverlapCoefficientUpdateSchema(coefficient=value)
+                            OverlapCoefficientUpdateSchema(coefficient=coefficient_value)
                         )
                     else:
                         await self.uow.overlap.create(
                             OverlapCoefficient(
                                 spectrum_id=spectrum.id,
                                 chromophore_id=chromophore.id,
-                                coefficient=value,
+                                coefficient=coefficient_value,
                             )
                         )

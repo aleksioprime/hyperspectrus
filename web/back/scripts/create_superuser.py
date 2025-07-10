@@ -12,60 +12,38 @@ from src.db.postgres import async_session_maker
 
 async def create_or_update_superuser(session: AsyncSession, username: str, password: str, email: str, force: bool):
     """
-    Создаёт или обновляет суперпользователя.
+    Создаёт или обновляет суперпользователя
     """
-    # Загружаем пользователя вместе с ролями
+    default_first_name = "Администратор"
+    default_last_name = "Администраторов"
+
     existing_user_query = await session.execute(
-        select(User).options(joinedload(User.roles)).filter((User.username == username) | (User.email == email))
+        select(User).filter((User.username == username) | (User.email == email))
     )
     existing_user = existing_user_query.scalars().first()
 
     if existing_user:
         if force:
             print(f"Обновляем данные суперпользователя {existing_user.username}...")
+            existing_user.username = username
             existing_user.password = password
             existing_user.email = email
             existing_user.is_superuser = True
-
-            # Получаем или создаем роль "admin"
-            role_query = await session.execute(select(Role).filter_by(name="admin"))
-            admin_role = role_query.scalars().first()
-
-            if not admin_role:
-                admin_role = Role(name="admin", description="Administrator role")
-                session.add(admin_role)
-                await session.flush()
-
-            # Проверяем, есть ли у пользователя эта роль
-            if admin_role not in existing_user.roles:
-                existing_user.roles.append(admin_role)
-
             await session.commit()
             print(f"Суперпользователь {existing_user.username} обновлён!")
-            return
         else:
-            print(f"Суперпользователь {existing_user.username} уже существует. Используйте `--force`, чтобы обновить данные.")
-            return
+            print(f"Суперпользователь {existing_user.username} уже существует. Используйте --force для обновления.")
+        return
 
-    # Создаём нового суперпользователя
     superuser = User(
         username=username,
         email=email,
         password=password,
-        is_superuser=True
+        is_superuser=True,
+        first_name=default_first_name,
+        last_name=default_last_name,
     )
 
-    # Получаем или создаем роль "admin"
-    role_query = await session.execute(select(Role).filter_by(name="admin"))
-    admin_role = role_query.scalars().first()
-
-    if not admin_role:
-        admin_role = Role(name="admin", description="Administrator role")
-        session.add(admin_role)
-        await session.flush()
-
-    # Назначаем роль суперпользователю
-    superuser.roles.append(admin_role)
     session.add(superuser)
 
     try:

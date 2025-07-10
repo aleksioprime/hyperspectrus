@@ -37,7 +37,7 @@ async def create_overlap_coefficient(
 
 
 @router.patch(
-    path='/{overlap_coefficient_id}',
+    path='/{overlap_coefficient_id}/',
     summary='Обновить коэффициент перекрытия',
     response_model=OverlapCoefficientSchema,
     status_code=status.HTTP_200_OK,
@@ -56,7 +56,7 @@ async def update_overlap_coefficient(
 
 
 @router.delete(
-    path='/{overlap_coefficient_id}',
+    path='/{overlap_coefficient_id}/',
     summary='Удалить коэффициент перекрытия',
     status_code=status.HTTP_204_NO_CONTENT,
 )

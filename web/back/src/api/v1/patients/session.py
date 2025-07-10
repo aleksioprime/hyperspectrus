@@ -96,7 +96,7 @@ async def delete_session(
 
 
 @router.post(
-    path='/{session_id}/process',
+    path='/{session_id}/process/',
     summary='Запустить обработку данных сеанса',
     status_code=status.HTTP_202_ACCEPTED,
 )
@@ -115,7 +115,7 @@ async def set_processing_session(
 
 
 @router.get(
-    path='/{session_id}/process/status',
+    path='/{session_id}/process/status/',
     summary='Проверить статус обработки сеанса',
     status_code=status.HTTP_200_OK,
 )

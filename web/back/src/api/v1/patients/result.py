@@ -20,7 +20,7 @@ router = APIRouter()
 
 
 @router.get(
-    path='/{result_id}',
+    path='/{result_id}/',
     summary='Получить детальную информацию о результате анализа',
     response_model=ResultSchema,
     status_code=status.HTTP_200_OK,
@@ -55,7 +55,7 @@ async def create_result(
 
 
 @router.patch(
-    path='/{result_id}',
+    path='/{result_id}/',
     summary='Обновить результат анализа',
     response_model=ResultSchema,
     status_code=status.HTTP_200_OK,
@@ -74,7 +74,7 @@ async def update_result(
 
 
 @router.delete(
-    path='/{result_id}',
+    path='/{result_id}/',
     summary='Удалить результат анализа',
     status_code=status.HTTP_204_NO_CONTENT,
 )

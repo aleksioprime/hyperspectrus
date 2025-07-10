@@ -11,7 +11,7 @@ from src.db.redis import get_redis
 router = APIRouter()
 
 
-@router.get("/ping", status_code=status.HTTP_200_OK)
+@router.get("/ping/", status_code=status.HTTP_200_OK)
 async def ping():
     """
     Эндпоинт для проверки работы web-сервера
@@ -19,7 +19,7 @@ async def ping():
     return {"status": "ok", "message": "Server is up and running"}
 
 
-@router.get("/ping/postgres", status_code=status.HTTP_200_OK)
+@router.get("/ping/postgres/", status_code=status.HTTP_200_OK)
 async def postgres_health_check(db_session: AsyncSession = Depends(get_db_session)):
     """
     Эндпоинт для проверки состояния PostgreSQL
@@ -34,7 +34,7 @@ async def postgres_health_check(db_session: AsyncSession = Depends(get_db_sessio
             detail={"status": "error", "message": f"Postgres check failed: {str(e)}"},
         )
 
-@router.get("/ping/redis", status_code=status.HTTP_200_OK)
+@router.get("/ping/redis/", status_code=status.HTTP_200_OK)
 async def redis_health_check(redis: Redis = Depends(get_redis)):
     """
     Эндпоинт для проверки состояния Redis

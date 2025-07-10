@@ -190,3 +190,14 @@ docker exec hyperspectrus-back python scripts/create_superuser.py \
   --password <пароль суперпользователя> \
   --email <электронная почта>
 ```
+
+Создайте роли на сервере:
+
+```
+docker exec -it hyperspectrus-postgres psql -U <логин пользователя БД> -d <имя базы данных>
+
+INSERT INTO roles (id, name, display_name, description)
+VALUES
+  (gen_random_uuid(), 'admin', 'Администратор', 'Администратор организации'),
+  (gen_random_uuid(), 'employee', 'Сотрудник', 'Сотрудник организации');
+```

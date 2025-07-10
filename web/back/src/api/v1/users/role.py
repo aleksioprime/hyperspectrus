@@ -54,7 +54,7 @@ async def create_role(
 
 
 @router.patch(
-    path='/{role_id}',
+    path='/{role_id}/',
     summary='Обновить роль',
     response_model=RoleSchema,
     status_code=status.HTTP_200_OK,
@@ -73,7 +73,7 @@ async def update_role(
 
 
 @router.delete(
-    path='/{role_id}',
+    path='/{role_id}/',
     summary='Удалить роль',
     status_code=status.HTTP_204_NO_CONTENT,
 )

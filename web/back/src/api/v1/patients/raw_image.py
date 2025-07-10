@@ -22,7 +22,7 @@ router = APIRouter()
 
 
 @router.post(
-    path='/upload',
+    path='/upload/',
     summary='Загрузить исходные изображения',
     status_code=status.HTTP_201_CREATED,
     response_model=list[RawImageSchema],
@@ -42,7 +42,7 @@ async def upload_raw_image(
     return raw_images
 
 
-@router.post("/upload-debug")
+@router.post("/upload-debug/")
 async def debug_upload_raw_image(request: Request):
     form = await request.form()
 
@@ -55,7 +55,7 @@ async def debug_upload_raw_image(request: Request):
 
 
 @router.patch(
-    path='/{raw_image_id}',
+    path='/{raw_image_id}/',
     summary='Обновить информацию об исходном изображении',
     response_model=RawImageSchema,
     status_code=status.HTTP_200_OK,
@@ -74,7 +74,7 @@ async def update_raw_image(
 
 
 @router.delete(
-    path='/{raw_image_id}',
+    path='/{raw_image_id}/',
     summary='Удалить исходное изображение',
     status_code=status.HTTP_204_NO_CONTENT,
 )

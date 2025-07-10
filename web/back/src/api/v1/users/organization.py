@@ -54,7 +54,7 @@ async def create_organization(
 
 
 @router.patch(
-    path='/{organization_id}',
+    path='/{organization_id}/',
     summary='Обновить организацию',
     response_model=OrganizationSchema,
     status_code=status.HTTP_200_OK,
@@ -73,7 +73,7 @@ async def update_organization(
 
 
 @router.delete(
-    path='/{organization_id}',
+    path='/{organization_id}/',
     summary='Удалить организацию',
     status_code=status.HTTP_204_NO_CONTENT,
 )

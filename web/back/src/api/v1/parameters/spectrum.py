@@ -56,7 +56,7 @@ async def create_spectrum(
 
 
 @router.patch(
-    path='/{spectrum_id}',
+    path='/{spectrum_id}/',
     summary='Обновить спектр',
     response_model=SpectrumSchema,
     status_code=status.HTTP_200_OK,
@@ -76,7 +76,7 @@ async def update_spectrum(
 
 
 @router.delete(
-    path='/{spectrum_id}',
+    path='/{spectrum_id}/',
     summary='Удалить спектр',
     status_code=status.HTTP_204_NO_CONTENT,
 )

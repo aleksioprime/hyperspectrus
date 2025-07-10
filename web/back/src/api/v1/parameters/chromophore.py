@@ -53,7 +53,7 @@ async def create_chromophore(
 
 
 @router.patch(
-    path='/{chromophore_id}',
+    path='/{chromophore_id}/',
     summary='Обновить спектр',
     response_model=ChromophoreSchema,
     status_code=status.HTTP_200_OK,
@@ -72,7 +72,7 @@ async def update_chromophore(
 
 
 @router.delete(
-    path='/{chromophore_id}',
+    path='/{chromophore_id}/',
     summary='Удалить хромофор',
     status_code=status.HTTP_204_NO_CONTENT,
 )

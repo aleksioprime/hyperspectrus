@@ -6,7 +6,7 @@ export class SessionResource extends ApiService {
   }
 
   getSessionDetailed(patientId, sessionId) {
-    return this.$get(`/api/v1/patients/${patientId}/sessions/${sessionId}`);
+    return this.$get(`/api/v1/patients/${patientId}/sessions/${sessionId}/`);
   }
 
   createSession(patientId, data) {
@@ -14,18 +14,18 @@ export class SessionResource extends ApiService {
   }
 
   partialUpdateSession(patientId, sessionId, data) {
-    return this.$patch(`/api/v1/patients/${patientId}/sessions/${sessionId}`, data);
+    return this.$patch(`/api/v1/patients/${patientId}/sessions/${sessionId}/`, data);
   }
 
   deleteSession(patientId, sessionId) {
-    return this.$delete(`/api/v1/patients/${patientId}/sessions/${sessionId}`);
+    return this.$delete(`/api/v1/patients/${patientId}/sessions/${sessionId}/`);
   }
 
   processSession(patientId, sessionId) {
-    return this.$post(`/api/v1/patients/${patientId}/sessions/${sessionId}/process`);
+    return this.$post(`/api/v1/patients/${patientId}/sessions/${sessionId}/process/`);
   }
 
   processSessionStatus(patientId, sessionId) {
-    return this.$get(`/api/v1/patients/${patientId}/sessions/${sessionId}/process/status`);
+    return this.$get(`/api/v1/patients/${patientId}/sessions/${sessionId}/process/status/`);
   }
 }

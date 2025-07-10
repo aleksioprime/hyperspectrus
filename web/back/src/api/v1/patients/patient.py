@@ -42,7 +42,7 @@ async def get_patients(
 
 
 @router.get(
-    path='/{patient_id}',
+    path='/{patient_id}/',
     summary='Получить детальную информацию о пациенте',
     response_model=PatientDetailSchema,
     status_code=status.HTTP_200_OK,
@@ -77,7 +77,7 @@ async def create_patient(
 
 
 @router.patch(
-    path='/{patient_id}',
+    path='/{patient_id}/',
     summary='Обновляет пациента',
     response_model=PatientSchema,
     status_code=status.HTTP_200_OK,
@@ -96,7 +96,7 @@ async def update_patient(
 
 
 @router.delete(
-    path='/{patient_id}',
+    path='/{patient_id}/',
     summary='Удаляет пациента',
     status_code=status.HTTP_204_NO_CONTENT,
 )

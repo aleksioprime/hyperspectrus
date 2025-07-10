@@ -26,6 +26,6 @@ export class DeviceResource extends ApiService {
   }
 
   randomFillOverlapsDevice(id) {
-    return this.$post(`/api/v1/devices/${id}/overlaps/random-fill`);
+    return this.$post(`/api/v1/devices/${id}/overlaps/random-fill/`);
   }
 }

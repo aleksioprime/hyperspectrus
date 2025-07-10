@@ -68,7 +68,7 @@ services:
   backend:
     build:
       context: ./back
-    container_name: hyperspectrus-backend
+    container_name: hyperspectrus-back
     <<: *app
     command: python src/main.py
     volumes:
@@ -89,7 +89,7 @@ services:
         - VITE_LOGGING=1
         - VITE_SERVICE_URL=http://localhost:8101
     <<: *app
-    container_name: hyperspectrus-frontend
+    container_name: hyperspectrus-front
     volumes:
       - ./front/app/src:/usr/src/app/src
     ports:

@@ -15,7 +15,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       "^/(api|media)": {
-        target: `http://hyperspectrus-backend:8000`,
+        target: `http://hyperspectrus-back:8000`,
       }
     },
   },

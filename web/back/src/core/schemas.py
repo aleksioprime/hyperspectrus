@@ -28,3 +28,4 @@ class UserJWT(BaseModel):
     """
     user_id: UUID = Field(..., description="Уникальный идентификатор пользователя")
     roles: list = Field(..., description="Список ролей пользователя")
+    is_superuser: bool = Field(False, description="Суперпользователь")

@@ -31,6 +31,10 @@ class JWTBearer(HTTPBearer):
                 status_code=http.HTTPStatus.FORBIDDEN,
                 detail="Invalid or expired token.",
             )
+
+        if getattr(decoded_token, "is_superuser", False):
+            return decoded_token
+
         roles = set(decoded_token.roles)
         if self.allowed_roles and not roles & self.allowed_roles:
             raise HTTPException(

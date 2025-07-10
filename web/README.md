@@ -172,21 +172,21 @@ docker exec -it hyperspectrus-front rm -rf /etc/letsencrypt/archive/hyperspectru
 Проверьте логи на сервере
 
 ```
-docker compose -p empolimer logs
-docker logs empolimer-nodered
+docker compose -p hyperspectrus logs
+docker logs hyperspectrus-back
 ```
 
 Сделать ручные миграции на сервере:
 
 ```
-docker exec -it empolimer-back alembic upgrade head
+docker exec -it hyperspectrus-back alembic upgrade head
 ```
 
 Добавье администратора на сервер
 
 ```
-docker exec empolimer-back python scripts/create_superuser.py \
-  --username superuser \
-  --password 1qaz@WSX \
-  --email admin@empolimer.ru
+docker exec hyperspectrus-back python scripts/create_superuser.py \
+  --username <логин суперпользователя> \
+  --password <пароль суперпользователя> \
+  --email <электронная почта>
 ```

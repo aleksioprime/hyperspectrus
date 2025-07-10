@@ -10,7 +10,6 @@ class DBSettings(BaseSettings):
     """
     Конфигурация для настроек базы данных
     """
-
     name: str = Field(alias='DB_NAME', default='database')
     user: str = Field(alias='DB_USER', default='admin')
     password: str = Field(alias='DB_PASSWORD', default='123qwe')
@@ -33,16 +32,32 @@ class RedisSettings(BaseSettings):
     """
     Конфигурация для настроек Redis
     """
-
     host: str = Field(alias='REDIS_HOST', default='127.0.0.1')
     port: int = Field(alias='REDIS_PORT', default=6379)
+
+    @property
+    def url(self):
+        return f"redis://{self.host}:{self.port}/"
+
+
+class RabbitSettings(BaseSettings):
+    """
+    Конфигурация для настроек RabbitMQ
+    """
+    host: str = Field(alias="RABBITMQ_HOST", default="127.0.0.1")
+    port: int = Field(alias="RABBITMQ_PORT", default=5672)
+    user: str = Field(alias="RABBITMQ_USER", default="guest")
+    password: str = Field(alias="RABBITMQ_PASSWORD", default="guest")
+
+    @property
+    def url(self):
+        return f"amqp://{self.user}:{self.password}@{self.host}:{self.port}/"
 
 
 class JWTSettings(BaseSettings):
     """
     Конфигурация для настроек JWT
     """
-
     secret_key: str = Field(
         alias='JWT_SECRET_KEY',
         default='7Fp0SZsBRKqo1K82pnQ2tcXV9XUfuiIJxpDcE5FofP2fL0vlZw3SOkI3YYLpIGP',
@@ -53,6 +68,9 @@ class JWTSettings(BaseSettings):
 
 
 class MediaSettings(BaseSettings):
+    """
+    Конфигурация каталога изображений
+    """
     base: str = "media"
 
     @property
@@ -77,6 +95,7 @@ class Settings(BaseSettings):
     jwt: JWTSettings = JWTSettings()
     db: DBSettings = DBSettings()
     redis: RedisSettings = RedisSettings()
+    rabbit: RabbitSettings = RabbitSettings()
     media: MediaSettings = MediaSettings()
 
     default_host: str = "0.0.0.0"

@@ -41,13 +41,15 @@ services:
     container_name: hyperspectrus-rabbitmq
     <<: *app
     ports:
-      - "5672:5672"     # для celery
-      - "15672:15672"   # web-интерфейс: http://localhost:15672 guest/guest
+      - "15672:15672"
+    volumes:
+      - rabbit_volume:/var/lib/rabbitmq
     healthcheck:
       test: ["CMD", "rabbitmqctl", "status"]
       interval: 10s
-      timeout: 5s
+      timeout: 10s
       retries: 5
+      start_period: 30s
 
   celery_worker:
     build:
@@ -84,8 +86,8 @@ services:
       context: ./front
       target: dev
       args:
-        - VITE_LOGGING=${VITE_LOGGING}
-        - VITE_AUTH_URL=${VITE_AUTH_URL}
+        - VITE_LOGGING=1
+        - VITE_SERVICE_URL=http://localhost:8101
     <<: *app
     container_name: hyperspectrus-frontend
     volumes:
@@ -112,3 +114,4 @@ services:
 volumes:
   postgres_volume:
   redis_volume:
+  rabbit_volume:

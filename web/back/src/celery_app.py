@@ -1,10 +1,10 @@
 from celery import Celery
-
+from src.core.config import settings
 
 celery_app = Celery(
     "hyperspectrus",
-    broker="amqp://guest:guest@rabbitmq:5672//",
-    backend="redis://redis:6379/0"
+    broker=f"{settings.rabbit.url}/",
+    backend=f"{settings.redis.url}/0"
 )
 
 celery_app.autodiscover_tasks([

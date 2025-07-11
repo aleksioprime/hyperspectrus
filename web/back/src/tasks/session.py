@@ -114,7 +114,9 @@ def analyze_hyperspectral_session(db, session):
         img = imageio.imread(file_path)
         if img.ndim == 3:
             img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
-        img = img.astype(np.float32)  # Явно float32 для дальнейших расчётов
+
+        img = cv2.resize(img, (256, 256), interpolation=cv2.INTER_AREA)
+        img = img.astype(np.float32)
 
         images.append(img)
 
@@ -138,18 +140,24 @@ def analyze_hyperspectral_session(db, session):
 
     logger.info(f"OD гист: {[np.min(OD), np.max(OD), np.mean(OD), np.std(OD)]}")
 
-    # 4. Решаем систему для концентраций по каждому пикселю через least squares
+    # 4. Решаем систему для концентраций по каждому пикселю
     _, H, W = images.shape
-    concentrations = np.zeros((len(chromophores), H, W), dtype=np.float32)
-    for y in range(H):
-        for x in range(W):
-            od_col = OD[:, y, x]
-            try:
-                x_vec, *_ = np.linalg.lstsq(overlap_matrix, od_col, rcond=None)
-                concentrations[:, y, x] = x_vec
-            except Exception as e:
-                logger.debug(f"Ошибка решения СЛАУ в точке ({y}, {x}): {e}")
-                concentrations[:, y, x] = 0.0
+
+    # concentrations = np.zeros((len(chromophores), H, W), dtype=np.float32)
+    # for y in range(H):
+    #     for x in range(W):
+    #         od_col = OD[:, y, x]
+    #         try:
+    #             x_vec, *_ = np.linalg.lstsq(overlap_matrix, od_col, rcond=None)
+    #             concentrations[:, y, x] = x_vec
+    #         except Exception as e:
+    #             logger.debug(f"Ошибка решения СЛАУ в точке ({y}, {x}): {e}")
+    #             concentrations[:, y, x] = 0.0
+
+    OD_reshaped = OD.reshape(len(spectra), -1)
+    X, *_ = np.linalg.lstsq(overlap_matrix, OD_reshaped, rcond=None)
+    concentrations = X.reshape(len(chromophores), H, W)
+
     logger.info(f"Полученная концентрация: shape={concentrations.shape}, min={concentrations.min()}, max={concentrations.max()}")
     logger.info(f"Сondition number overlap_matrix: {np.linalg.cond(overlap_matrix)}")
     for i, chrom in enumerate(chromophores):
@@ -186,7 +194,6 @@ def analyze_hyperspectral_session(db, session):
     _, mask = cv2.threshold(blur, threshold, 255, cv2.THRESH_BINARY_INV)
     mask_ratio = np.count_nonzero(mask) / mask.size
     logger.info(f"Threshold={threshold:.1f} (alpha={alpha}), mask ratio={mask_ratio:.4f}")
-
 
     # 7. Статистика по зонам
     lesion = thb_map[mask > 0]

@@ -74,7 +74,7 @@ class SessionService:
         """
         async with self.uow:
             await self._get_session_checked(session_id, patient_id)
-            await self.uow.session_repo.delete(session_id)
+            await self.uow.session_repo.delete_full(session_id)
 
     async def set_processing_task_id(self, session_id: UUID, task_id: str) -> None:
         """

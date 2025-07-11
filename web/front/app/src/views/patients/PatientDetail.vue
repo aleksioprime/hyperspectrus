@@ -112,10 +112,6 @@
     </v-card>
   </v-dialog>
 
-  <v-snackbar v-model="snackbar.show" :color="snackbar.color" :timeout="snackbar.timeout">
-    {{ snackbar.text }}
-  </v-snackbar>
-
 </template>
 
 <script setup>

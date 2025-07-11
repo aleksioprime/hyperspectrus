@@ -16,7 +16,7 @@ class Device(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String(255), unique=True, nullable=False)  # Модель устройства
 
-    spectra = relationship("Spectrum", back_populates="device")
+    spectra = relationship("Spectrum", back_populates="device", cascade="all, delete-orphan")
     sessions = relationship("Session", back_populates="device")
 
 
@@ -32,7 +32,7 @@ class Spectrum(Base):
     device_id = Column(UUID(as_uuid=True), ForeignKey('devices.id'), nullable=False)
 
     device = relationship("Device", back_populates="spectra")
-    overlaps = relationship("OverlapCoefficient", back_populates="spectrum")
+    overlaps = relationship("OverlapCoefficient", back_populates="spectrum", cascade="all, delete-orphan")
     raw_images = relationship("RawImage", back_populates="spectrum")
 
 
@@ -47,7 +47,7 @@ class Chromophore(Base):
     symbol = Column(String, unique=True, nullable=False)
     description = Column(String, nullable=True)
 
-    overlaps = relationship("OverlapCoefficient", back_populates="chromophore")
+    overlaps = relationship("OverlapCoefficient", back_populates="chromophore", cascade="all, delete-orphan")
     reconstructed_images = relationship("ReconstructedImage", back_populates="chromophore")
 
 

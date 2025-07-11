@@ -1,3 +1,6 @@
+import logging
+import shutil
+import os
 from uuid import UUID
 from typing import List, Optional
 
@@ -6,9 +9,12 @@ from sqlalchemy import update, select
 from sqlalchemy.orm import joinedload
 from sqlalchemy.exc import NoResultFound
 
+from src.core.config import settings
 from src.constants.celery import CeleryStatus
 from src.models.patient import Session, RawImage, ReconstructedImage
 from src.modules.patients.schemas.session import SessionUpdateSchema
+
+logger = logging.getLogger(__name__)
 
 
 class SessionRepository:
@@ -71,6 +77,58 @@ class SessionRepository:
             raise NoResultFound(f"Сеанс с ID {session_id} не найден")
 
         await self.session.delete(result)
+
+    async def delete_full(self, session_id: UUID) -> None:
+        """
+        Удаляет сеанс и все связанные с ним raw_images, reconstructed_images, result и их файлы.
+        """
+        session_obj = await self.get_detail_by_id(session_id)
+        if not session_obj:
+            raise NoResultFound(f"Сеанс с ID {session_id} не найден")
+
+        # Удаляем raw images и их файлы
+        for raw in session_obj.raw_images:
+            rel_path = raw.file_path.removeprefix(settings.media.raw_images_url).lstrip("/")
+            abs_path = os.path.join(settings.media.raw_images_path, rel_path)
+            if os.path.exists(abs_path):
+                try:
+                    os.remove(abs_path)
+                except Exception as e:
+                    logger.warning(f"Ошибка при удалении raw image файла {abs_path}: {e}")
+
+        # Удаление папки
+        raw_images_dir = os.path.join(settings.media.raw_images_path, str(session_id))
+        if os.path.exists(raw_images_dir):
+            try:
+                if not os.listdir(raw_images_dir):
+                    os.rmdir(raw_images_dir)
+                else:
+                    shutil.rmtree(raw_images_dir)
+            except Exception as e:
+                logger.warning(f"Ошибка при удалении папки raw images {raw_images_dir}: {e}")
+
+        # Удаляем reconstructed images и их файлы
+        for rec in session_obj.reconstructed_images:
+            rel_path = rec.file_path.removeprefix(settings.media.reconstructed_images_url).lstrip("/")
+            abs_path = os.path.join(settings.media.reconstructed_images_path, rel_path)
+            if os.path.exists(abs_path):
+                try:
+                    os.remove(abs_path)
+                except Exception as e:
+                    logger.warning(f"Ошибка при удалении reconstructed image файла {abs_path}: {e}")
+
+        # Удаляем result и файл контура
+        if session_obj.result and session_obj.result.contour_path:
+            rel_path = session_obj.result.contour_path.removeprefix(settings.media.contour_url).lstrip("/")
+            abs_path = os.path.join(settings.media.contour_path, rel_path)
+            if os.path.exists(abs_path):
+                try:
+                    os.remove(abs_path)
+                except Exception as e:
+                    logger.warning(f"Ошибка при удалении contour файла {abs_path}: {e}")
+
+        # Удаляем объект сеанса (с каскадом должны удалиться все дочерние объекты в БД)
+        await self.session.delete(session_obj)
 
     async def set_processing_task_id(self, session_id: UUID, task_id: str) -> None:
         """Сохраняет ID задачи в указанный сеанс"""

@@ -2,10 +2,6 @@
   <div>
     <h1 class="text-h5 mb-4">Пациенты</h1>
 
-    <v-snackbar v-model="snackbar.show" :timeout="4000" color="red" variant="tonal">
-      {{ snackbar.text }}
-    </v-snackbar>
-
     <div class="d-flex align-top justify-space-between">
       <v-btn v-if="canEdit" color="primary" class="my-2" @click="openEditDialog()">
         <v-icon start>mdi-plus</v-icon>

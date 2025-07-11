@@ -188,12 +188,14 @@ def analyze_hyperspectral_session(db, session):
 
     logger.info(f"THb min: {thb_map.min()}, max: {thb_map.max()}, ptp: {ptp}")
 
-    alpha = 0.5
-    threshold = np.min(thb_norm) + alpha * (np.max(thb_norm) - np.min(thb_norm))
     blur = cv2.GaussianBlur(thb_norm, (5, 5), 2)
-    _, mask = cv2.threshold(blur, threshold, 255, cv2.THRESH_BINARY_INV)
+    otsu_thr, mask = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+
+    # Для тестирования маски
+    # mask = (blur > otsu_thr + 15).astype(np.uint8) * 255
+
     mask_ratio = np.count_nonzero(mask) / mask.size
-    logger.info(f"Threshold={threshold:.1f} (alpha={alpha}), mask ratio={mask_ratio:.4f}")
+    logger.info(f"Mask ratio={mask_ratio:.4f}")
 
     # 7. Статистика по зонам
     lesion = thb_map[mask > 0]

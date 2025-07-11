@@ -5,15 +5,17 @@
 from typing import Annotated, List
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, UploadFile, File, Form, Request
+from fastapi import APIRouter, Depends, UploadFile, File, Form
 from starlette import status
 
 from src.core.schemas import UserJWT
 from src.constants.role import RoleName
 from src.core.security import JWTBearer
 from src.modules.patients.dependencies.raw_image import get_raw_image_service
-from src.modules.patients.schemas.raw_image import RawImageSchema, RawImageUpdateSchema, RawImageIdsSchema
+from src.modules.patients.dependencies.session import get_session_service
+from src.modules.patients.schemas.raw_image import RawImageSchema, RawImageIdsSchema
 from src.modules.patients.services.raw_image import RawImageService
+from src.modules.patients.services.session import SessionService
 
 from src.tasks.session import process_session
 
@@ -29,6 +31,7 @@ router = APIRouter()
 )
 async def upload_raw_image(
         service: Annotated[RawImageService, Depends(get_raw_image_service)],
+        service_session: Annotated[SessionService, Depends(get_session_service)],
         user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={ RoleName.EMPLOYEE }))],
         session_id: UUID = Form(...),
         spectrum_ids: List[UUID] = Form(...),
@@ -38,40 +41,12 @@ async def upload_raw_image(
     Загружает новые исходные изображения
     """
     raw_images = await service.upload_files(session_id, spectrum_ids, files)
-    process_session.delay(str(session_id))
+
+    if session_id:
+        celery_task = process_session.delay(str(session_id))
+        await service_session.set_processing_task_id(session_id, celery_task.id)
+
     return raw_images
-
-
-@router.post("/upload-debug/")
-async def debug_upload_raw_image(request: Request):
-    form = await request.form()
-
-    print("\n\n=== [DEBUG] RAW FORM DATA ===")
-    for key in form:
-        print(f"{key}: {form.getlist(key) if hasattr(form, 'getlist') else form[key]}")
-    print("=== [END DEBUG] ===\n\n")
-
-    return {"detail": "ok"}
-
-
-@router.patch(
-    path='/{raw_image_id}/',
-    summary='Обновить информацию об исходном изображении',
-    response_model=RawImageSchema,
-    status_code=status.HTTP_200_OK,
-)
-async def update_raw_image(
-        raw_image_id: UUID,
-        body: RawImageUpdateSchema,
-        service: Annotated[RawImageService, Depends(get_raw_image_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
-) -> RawImageSchema:
-    """
-    Обновляет информацию об исходном изображении по его ID
-    """
-    raw_image = await service.update(raw_image_id, body)
-    return raw_image
-
 
 @router.delete(
     path='/{raw_image_id}/',
@@ -81,25 +56,35 @@ async def update_raw_image(
 async def delete_raw_image(
         raw_image_id: UUID,
         service: Annotated[RawImageService, Depends(get_raw_image_service)],
+        service_session: Annotated[SessionService, Depends(get_session_service)],
         user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> None:
     """
     Удаляет исходное изображения по его ID
     """
-    await service.delete(raw_image_id)
+    session_id = await service.delete(raw_image_id)
 
+    if session_id:
+        celery_task = process_session.delay(str(session_id))
+        await service_session.set_processing_task_id(session_id, celery_task.id)
 
 @router.post(
-    path='/delete',
+    path='/delete/',
     summary='Удалить изображения по списку ID',
     status_code=status.HTTP_204_NO_CONTENT,
 )
 async def delete_raw_images(
         data: RawImageIdsSchema,
         service: Annotated[RawImageService, Depends(get_raw_image_service)],
+        service_session: Annotated[SessionService, Depends(get_session_service)],
         user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
 ) -> None:
     """
     Удаляет исходное изображения по списку ID
     """
-    await service.bulk_delete(data.ids)
+    session_ids = await service.bulk_delete(data.ids)
+
+    for session_id in set(session_ids or []):
+        if session_id:
+            celery_task = process_session.delay(str(session_id))
+            await service_session.set_processing_task_id(session_id, celery_task.id)

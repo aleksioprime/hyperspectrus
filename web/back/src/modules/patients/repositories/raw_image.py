@@ -7,7 +7,7 @@ from sqlalchemy import update, select, delete
 from sqlalchemy.exc import NoResultFound
 
 from src.models.patient import RawImage
-from src.modules.patients.schemas.raw_image import RawImageSchema, RawImageUpdateSchema
+from src.modules.patients.schemas.raw_image import RawImageSchema
 
 
 class RawImageRepository:
@@ -27,20 +27,6 @@ class RawImageRepository:
     async def bulk_create(self, images: list[RawImage]) -> None:
         """ Загружает новые исходные изображения """
         self.session.add_all(images)
-
-    async def update(self, image_id: UUID, body: RawImageUpdateSchema) -> Optional[RawImageSchema]:
-        """ Обновляет данные исходного изображения по его ID """
-        update_data = {key: value for key, value in body.dict(exclude_unset=True).items()}
-        if not update_data:
-            raise NoResultFound(f"Нет данных для обновления")
-
-        stmt = (
-            update(RawImage)
-            .filter_by(id=image_id)
-            .values(**update_data)
-        )
-        await self.session.execute(stmt)
-        return await self.get_by_id(image_id)
 
     async def delete(self, image_id: UUID) -> bool:
         """ Удаляет исходное изображение и его файл с диска """
@@ -71,3 +57,15 @@ class RawImageRepository:
         """ Удаляет исходные изображения по списку ID """
         stmt = delete(RawImage).where(RawImage.id.in_(ids))
         await self.session.execute(stmt)
+
+    async def get_session_id_by_image_id(self, image_id: UUID) -> Optional[UUID]:
+        query = select(RawImage.session_id).where(RawImage.id == image_id)
+        result = await self.session.execute(query)
+        return result.scalar_one_or_none()
+
+    async def get_session_ids_by_image_ids(self, ids: list[UUID]) -> set[UUID]:
+        if not ids:
+            return set()
+        query = select(RawImage.session_id).where(RawImage.id.in_(ids))
+        result = await self.session.execute(query)
+        return set(result.scalars().all())

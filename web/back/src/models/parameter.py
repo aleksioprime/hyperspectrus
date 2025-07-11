@@ -52,6 +52,9 @@ class Chromophore(Base):
 
 
 class OverlapCoefficient(Base):
+    """
+    Модель матрицы коэффициентов перекрытий
+    """
     __tablename__ = 'overlap_coefficients'
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
@@ -59,6 +62,5 @@ class OverlapCoefficient(Base):
     chromophore_id = Column(UUID(as_uuid=True), ForeignKey('chromophores.id'), nullable=False)
     coefficient = Column(Float, nullable=False)  # Коэффициент перекрытия
 
-    # Связи с основными таблицами
     spectrum = relationship("Spectrum", back_populates="overlaps")
     chromophore = relationship("Chromophore", back_populates="overlaps")

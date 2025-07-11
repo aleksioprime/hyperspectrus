@@ -36,10 +36,9 @@
         <div>
           <template v-if="!editingNotes">
             <span style="white-space: pre-line;">{{ session.notes || '—' }}</span>
-
           </template>
           <template v-else>
-            <v-textarea v-model="editedNotes" auto-grow rows="2" hide-details autofocus class="my-2"
+            <v-textarea v-model="editedNotes" auto-grow rows="2" hide-details class="my-2"
               @keydown.esc.stop="cancelEditNotes"></v-textarea>
             <div class="d-flex gap-2">
               <v-btn color="primary" size="small" @click="saveNotes" :loading="savingNotes">Сохранить</v-btn>
@@ -61,13 +60,14 @@
         <div>
           <v-chip v-if="!session.raw_images?.length" color="grey" size="small" class="my-2">нет данных</v-chip>
         </div>
-
+        <!-- Сетка изображений -->
         <div class="d-flex flex-wrap gap-4">
           <div v-for="img in session.raw_images" :key="img.id"
             style="width: 150px; position: relative; text-align: center;" class="pa-1">
             <div style="position: relative;">
               <!-- Изображение с фиксированным размером -->
-              <v-img :src="img.file_path" width="150" height="150" cover class="rounded">
+              <v-img :src="img.file_path" width="150" height="150" cover class="rounded img-thumb"
+                @click="openImageDialog(img.file_path)">
                 <template #placeholder>
                   <v-skeleton-loader type="image" />
                 </template>
@@ -89,7 +89,7 @@
             </div>
           </div>
         </div>
-
+        <!-- Кнопки управления -->
         <div>
           <div v-if="session.raw_images.length" class="d-flex align-center">
             <v-btn color="warning" @click="openDeleteManyDialog" :disabled="!!session.processing_task_id">
@@ -97,7 +97,7 @@
               Удалить
             </v-btn>
             <v-btn color="primary" :loading="processing" @click="confirmStartProcessingDialog = true" class="ms-2"
-              v-if="session && session.raw_images.length && !session.processing_task_id">
+              v-if="session && session.raw_images.length" :disabled="!!session.processing_task_id">
               <v-icon start>mdi-cogs</v-icon>
               Запустить обработку
             </v-btn>
@@ -112,26 +112,23 @@
       <!-- Блок обработанных изображений -->
       <v-col cols="12" md="6">
         <strong>Восстановленные изображения:</strong>
-
         <!-- Анимация ожидания обработки -->
-        <div v-if="['PENDING', 'STARTED', 'RETRY'].includes(session.processing_status) || session.processing_task_id"
-          class="d-flex align-center my-2">
+        <div v-if="['PENDING', 'STARTED'].includes(session.processing_status)" class="d-flex align-center my-2">
           <v-progress-circular indeterminate color="primary" size="24" class="me-2" />
           <span class="text-grey">Изображения формируются...</span>
         </div>
-
-        <!-- Нет изображений (и нет обработки) -->
+        <!-- Нет изображений  -->
         <div v-else-if="!session.reconstructed_images?.length">
           <v-chip color="grey" size="small" class="my-2">нет данных</v-chip>
         </div>
-
-        <!-- Грид изображений -->
+        <!-- Сетка изображений -->
         <div v-else class="d-flex flex-wrap gap-4">
           <div v-for="img in session.reconstructed_images" :key="img.id"
             style="width: 150px; position: relative; text-align: center;" class="pa-1">
             <div style="position: relative;">
               <!-- Изображение с фиксированным размером -->
-              <v-img :src="img.file_path" width="150" height="150" cover class="rounded">
+              <v-img :src="img.file_path" width="150" height="150" cover class="rounded img-thumb"
+                @click="openImageDialog(img.file_path)">
                 <template #placeholder>
                   <v-skeleton-loader type="image" />
                 </template>
@@ -142,10 +139,10 @@
                 </template>
               </v-img>
               <!-- Кнопка удаления -->
-              <v-btn icon color="red" size="small" @click="openDeleteDialog(img)" class="position-absolute"
+              <!-- <v-btn icon color="red" size="small" @click="openDeleteDialog(img)" class="position-absolute"
                 style="top: 4px; right: 4px; z-index: 2;">
                 <v-icon size="18">mdi-delete</v-icon>
-              </v-btn>
+              </v-btn> -->
             </div>
             <!-- Подпись под изображением -->
             <div class="mt-1" style="font-size: 14px; color: #888;">
@@ -162,7 +159,7 @@
     <h2 class="text-h6 mb-2">Результат анализа</h2>
 
     <!-- Анимация, если задача в процессе -->
-    <div v-if="['PENDING', 'STARTED', 'RETRY'].includes(session.processing_status) || session.processing_task_id">
+    <div v-if="['PENDING', 'STARTED'].includes(session.processing_status)">
       <div class="my-2 d-flex align-center">
         <v-progress-circular indeterminate color="primary" size="24" class="me-2" />
         <span class="text-grey">
@@ -187,18 +184,34 @@
     <!-- Успешный результат -->
     <div v-else-if="session.processing_status === 'SUCCESS' && session.result">
       <v-row>
-        <v-col cols="12" sm="6">
-          <strong>Коэффициент S:</strong> {{ session.result.s_coefficient }}
+        <v-col cols="12" sm="4">
+          <div v-if="session?.result?.contour_path">
+            <v-img :src="session.result.contour_path" width="300" height="300" cover class="rounded my-2 img-thumb"
+              @click="openImageDialog(session.result.contour_path)">
+              <template #placeholder>
+                <v-skeleton-loader type="image" />
+              </template>
+              <template #error>
+                <div class="d-flex align-center justify-center" style="height: 300px; background-color: #f5f5f5;">
+                  <v-icon color="grey" size="48">mdi-image-off</v-icon>
+                </div>
+              </template>
+            </v-img>
+          </div>
+          <div v-else>
+            <v-chip color="grey" size="small" class="my-2">нет изображения</v-chip>
+          </div>
         </v-col>
-        <v-col cols="12" sm="6">
-          <strong>THb (поражение):</strong> {{ session.result.mean_lesion_thb }}
-        </v-col>
-        <v-col cols="12" sm="6">
-          <strong>THb (кожа):</strong> {{ session.result.mean_skin_thb }}
-        </v-col>
-        <v-col cols="12">
-          <strong>Заметки:</strong>
-          <div>{{ session.result.notes || '—' }}</div>
+        <v-col cols="12" sm="8">
+          <div class="my-2">
+            <strong>Коэффициент S:</strong> {{ session.result.s_coefficient }}
+          </div>
+          <div class="my-2">
+            <strong>THb (поражение):</strong> {{ session.result.mean_lesion_thb }}
+          </div>
+          <div class="my-2">
+            <strong>THb (кожа):</strong> {{ session.result.mean_skin_thb }}
+          </div>
         </v-col>
       </v-row>
     </div>
@@ -262,6 +275,16 @@
       </v-card>
     </v-dialog>
 
+    <v-dialog v-model="dialogImage.visible" max-width="800px" persistent>
+      <v-card class="pa-2" style="background: rgba(0,0,0,0.95);">
+        <v-img :src="dialogImage.src" max-width="100%" max-height="80vh" cover @click="closeImageDialog" />
+        <v-card-actions>
+          <v-spacer />
+          <v-btn color="white" variant="text" @click="closeImageDialog">Закрыть</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
   </template>
 </template>
 
@@ -269,6 +292,8 @@
 import { ref, watch, computed, onMounted, onUnmounted } from "vue";
 import { format } from "date-fns";
 import ru from "date-fns/locale/ru";
+
+import logger from '@/common/helpers/logger';
 
 import RawImageUploadForm from "@/components/sessions/RawImageUploadForm.vue";
 
@@ -318,7 +343,7 @@ function cancelEditNotes() {
 async function saveNotes() {
   if (!session.value) return;
   savingNotes.value = true;
-  await sessionStore.updateSession(session.value.patient_id, session.value.id, {
+  await sessionStore.updateSession(session.value.patient?.id, session.value.id, {
     notes: editedNotes.value,
   });
   session.value.notes = editedNotes.value;
@@ -346,9 +371,10 @@ const openUploadDialog = () => {
 const formRawImageUploadRef = ref();
 
 const submitImageUpload = async () => {
-  const formData = new FormData();
+  const valid = await formRawImageUploadRef.value?.submit();
+  if (!valid) return;
 
-  console.log("Текущие entries:", uploadDialog.value.entries);
+  const formData = new FormData();
 
   formData.append("session_id", session.value?.id);
 
@@ -356,11 +382,6 @@ const submitImageUpload = async () => {
     formData.append("spectrum_ids", entry.spectrum_id);
     formData.append("files", entry.file);
   });
-
-  console.log("Загружаемые данные: ");
-  for (let pair of formData.entries()) {
-    console.log(pair[0] + ':', pair[1]);
-  }
 
   const uploaded = await rawImageStore.uploadRawImages(formData);
 
@@ -402,6 +423,8 @@ const deleteImage = async () => {
   session.value = await sessionStore.loadSessionDetailed(patientId, route.params.id);
 
   showSuccess("Изображение удалено");
+
+  startStatusPolling();
 };
 
 // --- УДАЛЕНИЕ ВСЕХ ИСХОДНЫХ ИЗОБРАЖЕНИЙ ---
@@ -434,6 +457,8 @@ const deleteManyImage = async () => {
   session.value = await sessionStore.loadSessionDetailed(patientId, route.params.id);
 
   showSuccess("Изображение удалено");
+
+  startStatusPolling();
 };
 
 // --- ЗАПУСК И ПРОВЕРКА ЗАДАЧИ ---
@@ -457,7 +482,7 @@ const startProcessing = async () => {
   processStatus.value = null;
 
   const result = await sessionStore.processSession(
-    session.value.patient_id,
+    session.value.patient?.id,
     session.value.id
   );
 
@@ -483,12 +508,14 @@ const reloadSession = async () => {
 
 // Пулинг статуса задачи обработки
 const checkProcessingStatus = async () => {
-  if (!session.value?.processing_task_id) return;
+  if (!["PENDING", "STARTED"].includes(session.value?.processing_status)) return;
 
   processStatus.value = await sessionStore.processSessionStatus(
-    session.value.patient_id,
+    session.value.patient?.id,
     session.value.id
   );
+
+  logger.info("Процесс обработки запустился: ", processStatus.value)
 
   if (
     !processStatus.value ||
@@ -513,18 +540,37 @@ const stopStatusPolling = () => {
 
 // Слежение за появлением ID задачи в сессии для старта пуллинга
 watch(
-  () => session.value?.processing_task_id,
+  () => session.value?.processing_status,
   (newVal) => {
-    if (newVal) startStatusPolling();
+    if (["PENDING", "STARTED"].includes(newVal)) startStatusPolling();
     else stopStatusPolling();
   }
 );
+
+
+// --- ПРОСМОТР ИЗОБРАЖЕНИЙ ---
+
+const dialogImage = ref({ visible: false, src: null });
+
+function openImageDialog(src) {
+  dialogImage.value = {
+    visible: true,
+    src,
+  };
+}
+
+function closeImageDialog() {
+  dialogImage.value.visible = false;
+  dialogImage.value.src = null;
+}
 
 onMounted(async () => {
   const patientId = route.params.patient_id || "";
   session.value = await sessionStore.loadSessionDetailed(patientId, route.params.id);
 
-  if (session.value?.processing_task_id) startStatusPolling();
+  if (["PENDING", "STARTED"].includes(session.value?.processing_status)) {
+    startStatusPolling();
+  }
 });
 
 onUnmounted(() => {
@@ -532,3 +578,18 @@ onUnmounted(() => {
 });
 
 </script>
+
+<style scoped>
+.img-thumb {
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 0 0px rgba(0, 0, 0, 0);
+  /* no shadow by default */
+}
+
+.img-thumb:hover {
+  transform: scale(1.07);
+  box-shadow: 0 4px 24px 0 rgba(50, 120, 200, 0.15);
+  z-index: 2;
+  cursor: pointer;
+}
+</style>

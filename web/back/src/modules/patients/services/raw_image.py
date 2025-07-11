@@ -8,8 +8,7 @@ from fastapi import UploadFile
 from src.core.config import settings
 from src.exceptions.base import BaseException
 from src.models.patient import RawImage
-from src.modules.patients.schemas.raw_image import (
-    RawImageSchema, RawImageUpdateSchema)
+from src.modules.patients.schemas.raw_image import RawImageSchema
 from src.modules.patients.repositories.uow import UnitOfWork
 
 
@@ -18,12 +17,7 @@ class RawImageService:
     def __init__(self, uow: UnitOfWork):
         self.uow = uow
 
-    async def upload_files(
-        self,
-        session_id: UUID,
-        spectrum_ids: List[UUID],
-        files: List[UploadFile],
-    ) -> List[RawImageSchema]:
+    async def upload_files(self, session_id: UUID, spectrum_ids: List[UUID], files: List[UploadFile]) -> List[RawImageSchema]:
         """
         Сохраняет файлы фотографий и информацию о них в БД
         """
@@ -56,15 +50,6 @@ class RawImageService:
 
         return raw_images
 
-    async def update(self, raw_image_id: UUID, body: RawImageUpdateSchema) -> RawImageSchema:
-        """
-        Обновляет информацию об исходном изображении сессии по его ID
-        """
-        async with self.uow:
-            raw_image = await self.uow.raw_image.update(raw_image_id, body)
-
-        return raw_image
-
     async def delete(self, raw_image_id: UUID) -> None:
         """
         Удаляет исходное изображение сессии по его ID с файлом
@@ -74,27 +59,38 @@ class RawImageService:
             if not raw_image:
                 return
 
-            abs_path = os.path.join(settings.media.raw_images_path, raw_image.file_path.lstrip(settings.media.raw_images_url))
+            relative_path = raw_image.file_path.removeprefix(settings.media.raw_images_url).lstrip("/")
+            abs_path = os.path.join(settings.media.raw_images_path, relative_path)
+
             if os.path.exists(abs_path):
                 try:
                     os.remove(abs_path)
                 except Exception as e:
                     raise BaseException(f"Ошибка удаления файла: {e}")
 
+            session_id = await self.uow.raw_image.get_session_id_by_image_id(raw_image_id)
+
             await self.uow.raw_image.delete(raw_image_id)
 
-    async def bulk_delete(self, ids: list[UUID]) -> None:
+            return session_id
+
+    async def bulk_delete(self, ids: list[UUID]) -> set[UUID]:
         """
         Удаляет исходные изображения сессии по списку ID c файлами
         """
         async with self.uow:
             images = await self.uow.raw_image.get_by_ids(ids)
             for img in images:
-                abs_path = os.path.join(settings.media.raw_images_path, img.file_path.lstrip(settings.media.raw_images_url))
+                relative_path = img.file_path.removeprefix(settings.media.raw_images_url).lstrip("/")
+                abs_path = os.path.join(settings.media.raw_images_path, relative_path)
                 if os.path.exists(abs_path):
                     try:
                         os.remove(abs_path)
                     except Exception as e:
                         raise BaseException(f"Ошибка удаления файла: {e}")
 
+            session_ids = await self.uow.raw_image.get_session_ids_by_image_ids(ids)
+
             await self.uow.raw_image.bulk_delete(ids)
+
+            return session_ids

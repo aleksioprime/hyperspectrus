@@ -9,8 +9,6 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from src.db.postgres import Base
 
 # Ассоциативная таблица для связи пользователей и ролей
-
-
 class UserRoles(Base):
     __tablename__ = 'user_roles'
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)

@@ -15,6 +15,9 @@ class PatientQueryParams(BasePaginationParams):
 
 
 class OrganizationSchema(BaseModel):
+    """
+    Схема для представления данных организации
+    """
     id: UUID = Field(..., description="Уникальный идентификатор организации")
     name: str = Field(..., description="Название организации")
 
@@ -77,16 +80,37 @@ class PatientUpdateSchema(BaseModel):
         return value
 
 
+class UserSchema(BaseModel):
+    """
+    Схема для представления данных пользователя
+    """
+    id: UUID = Field(..., description="Уникальный идентификатор пользователя")
+    first_name: Optional[str] = Field(None, description="Имя пользователя")
+    last_name: Optional[str] = Field(None, description="Фамилия пользователя")
+
+    class Config:
+        from_attributes = True
+
+class DeviceSchema(BaseModel):
+    """
+    Схема для представления данных устройства
+    """
+    id: UUID = Field(..., description="ID устройства")
+    name: str = Field(..., description="Название модели устройства")
+
+    class Config:
+        from_attributes = True
+
+
 class SessionSchema(BaseModel):
     """
     Схема сессии (сеанса исследования)
     """
     id: UUID = Field(..., description="Уникальный идентификатор сессии")
     date: datetime = Field(..., description="Дата проведения сессии")
-    device_id: UUID = Field(..., description="ID устройства, используемого в сеансе")
-    operator_id: UUID = Field(..., description="ID оператора")
+    device: DeviceSchema = Field(..., description="Устройство, используемое в сеансе")
+    operator: UserSchema = Field(..., description="Оператор")
     notes: Optional[str] = Field(None, description="Дополнительные заметки о сессии")
-    processing_task_id: str | None = Field(None, description="ID задачи Celery")
 
     class Config:
         from_attributes = True

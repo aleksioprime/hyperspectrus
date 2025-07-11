@@ -11,12 +11,11 @@ from starlette import status
 from src.core.schemas import UserJWT
 from src.constants.role import RoleName
 from src.core.security import JWTBearer
-from src.modules.patients.dependencies.session import get_session_service, get_session_params
-from src.modules.patients.schemas.session import SessionSchema, SessionCreateSchema, SessionUpdateSchema, SessionDetailSchema, SessionQueryParams
+from src.modules.patients.dependencies.session import get_session_service
+from src.modules.patients.schemas.session import SessionCreateSchema, SessionUpdateSchema, SessionDetailSchema
 from src.modules.patients.services.session import SessionService
 
 from src.tasks.session import process_session
-
 
 router = APIRouter()
 
@@ -43,6 +42,7 @@ async def get_session(
 @router.post(
     path='/',
     summary='Создать сеанс',
+    response_model=SessionDetailSchema,
     status_code=status.HTTP_201_CREATED,
 )
 async def create_session(
@@ -50,7 +50,7 @@ async def create_session(
         body: SessionCreateSchema,
         service: Annotated[SessionService, Depends(get_session_service)],
         user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
-) -> SessionSchema:
+) -> SessionDetailSchema:
     """
     Создаёт новый сеанс
     """
@@ -61,7 +61,7 @@ async def create_session(
 @router.patch(
     path='/{session_id}/',
     summary='Обновить сеанс',
-    response_model=SessionSchema,
+    response_model=SessionDetailSchema,
     status_code=status.HTTP_200_OK,
 )
 async def update_session(
@@ -70,7 +70,7 @@ async def update_session(
         body: SessionUpdateSchema,
         service: Annotated[SessionService, Depends(get_session_service)],
         user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
-) -> SessionSchema:
+) -> SessionDetailSchema:
     """
     Обновляет сеанс по его ID
     """
@@ -101,7 +101,6 @@ async def delete_session(
     status_code=status.HTTP_202_ACCEPTED,
 )
 async def set_processing_session(
-        patient_id: UUID,
         session_id: UUID,
         user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
         service: Annotated[SessionService, Depends(get_session_service)],
@@ -110,7 +109,7 @@ async def set_processing_session(
     Запускает обработку данных и вычисление результата сеанса
     """
     celery_task = process_session.delay(str(session_id))
-    await service.set_processing_task_id(patient_id, session_id, celery_task.id)
+    await service.set_processing_task_id(session_id, celery_task.id)
     return {"message": "Обработка запущена", "task_id": celery_task.id}
 
 

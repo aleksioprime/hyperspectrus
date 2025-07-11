@@ -17,11 +17,11 @@ class Patient(Base):
     __tablename__ = 'patients'
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
-    full_name = Column(String(255), nullable=False)  # Имя пациента
-    birth_date = Column(Date, nullable=False)  # Дата рождения
-    created_at = Column(DateTime(timezone=True), default=func.now())  # Дата создания записи
-    notes = Column(String, nullable=True)  # Дополнительные заметки
-    organization_id = Column(UUID(as_uuid=True), ForeignKey('organizations.id'), nullable=True) # ID организации
+    full_name = Column(String(255), nullable=False)
+    birth_date = Column(Date, nullable=False)
+    created_at = Column(DateTime(timezone=True), default=func.now())
+    notes = Column(String, nullable=True)
+    organization_id = Column(UUID(as_uuid=True), ForeignKey('organizations.id'), nullable=True)
 
     sessions = relationship("Session", back_populates="patient")
     organization = relationship("Organization", back_populates="patients")
@@ -62,9 +62,9 @@ class RawImage(Base):
     __tablename__ = 'raw_images'
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    session_id = Column(UUID(as_uuid=True), ForeignKey('sessions.id'))  # Связь с сеансом
-    spectrum_id = Column(UUID(as_uuid=True), ForeignKey('spectra.id'))  # Связь с длиной волны
-    file_path = Column(String, nullable=False)  # Путь к файлу изображения
+    session_id = Column(UUID(as_uuid=True), ForeignKey('sessions.id'))
+    spectrum_id = Column(UUID(as_uuid=True), ForeignKey('spectra.id'))
+    file_path = Column(String, nullable=False)
 
     session = relationship("Session", back_populates="raw_images")
     spectrum = relationship("Spectrum", back_populates="raw_images")
@@ -78,9 +78,9 @@ class ReconstructedImage(Base):
     __tablename__ = 'reconstructed_images'
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    session_id = Column(UUID(as_uuid=True), ForeignKey('sessions.id'))  # Связь с сеансом
-    chromophore_id = Column(UUID(as_uuid=True), ForeignKey('chromophores.id'))  # Связь с хромофором
-    file_path = Column(String, nullable=False)  # Путь к файлу изображения
+    session_id = Column(UUID(as_uuid=True), ForeignKey('sessions.id'))
+    chromophore_id = Column(UUID(as_uuid=True), ForeignKey('chromophores.id'))
+    file_path = Column(String, nullable=False)
 
     session = relationship("Session", back_populates="reconstructed_images")
     chromophore = relationship("Chromophore", back_populates="reconstructed_images")
@@ -94,11 +94,10 @@ class Result(Base):
     __tablename__ = 'results'
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    session_id = Column(UUID(as_uuid=True), ForeignKey('sessions.id'), unique=True)  # Связь с сеансом
-    contour_path = Column(String, nullable=True)  # Путь к файлу с контуром пораженной области
-    s_coefficient = Column(Float, nullable=False)  # Коэффициент s
-    mean_lesion_thb = Column(Float, nullable=False)  # Средняя концентрация THb в пораженной области
-    mean_skin_thb = Column(Float, nullable=False)  # Средняя концентрация THb в коже
-    notes = Column(String)  # Дополнительные заметки
+    session_id = Column(UUID(as_uuid=True), ForeignKey('sessions.id'), unique=True)
+    contour_path = Column(String, nullable=True)
+    s_coefficient = Column(Float, nullable=False)
+    mean_lesion_thb = Column(Float, nullable=False)
+    mean_skin_thb = Column(Float, nullable=False)
 
     session = relationship("Session", back_populates="result")

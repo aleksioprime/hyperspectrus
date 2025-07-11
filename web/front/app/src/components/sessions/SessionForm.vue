@@ -1,10 +1,12 @@
 <template>
   <v-form ref="formRef" @submit.prevent="onSubmit">
-    <v-select v-model="form.device_id" :items="devices" item-title="name" item-value="id" label="Устройство"
-      :rules="[rules.required]" required />
     <v-text-field v-model="form.date" label="Дата и время сеанса" type="datetime-local" :rules="[rules.required]"
       required />
-    <v-textarea v-model="form.notes" label="Заметки" rows="2" />
+    <div v-if="isCreate">
+      <v-select v-model="form.device_id" :items="devices" item-title="name" item-value="id" label="Устройство"
+        :rules="[rules.required]" required />
+    </div>
+    <v-textarea v-model="form.notes" label="Заметки" rows="2" auto-grow/>
   </v-form>
 </template>
 
@@ -18,6 +20,7 @@ const devices = ref([])
 
 const props = defineProps({
   modelValue: Object,
+  isCreate: { type: Boolean, default: false },
 });
 const emit = defineEmits(["update:modelValue"]);
 

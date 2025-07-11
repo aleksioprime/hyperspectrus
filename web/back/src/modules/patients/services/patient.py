@@ -4,7 +4,7 @@ from typing import List
 
 from sqlalchemy.exc import IntegrityError
 
-from src.core.schemas import PaginatedResponse, UserJWT
+from src.core.schemas import PaginatedResponse
 from src.exceptions.base import BaseException
 from src.models.patient import Patient
 from src.modules.patients.schemas.patient import (

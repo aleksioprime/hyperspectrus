@@ -44,7 +44,8 @@
       <thead>
         <tr>
           <th style="width: 120px;"><v-icon size="18" color="primary" class="me-1">mdi-calendar</v-icon>Дата</th>
-          <th style="width: 300px;"><v-icon size="18" color="info" class="me-1">mdi-account</v-icon>Оператор</th>
+          <th style="width: 200px;"><v-icon size="18" color="info" class="me-1">mdi-account</v-icon>Оператор</th>
+          <th style="width: 200px;"><v-icon size="18" color="info" class="me-1">mdi-account</v-icon>Устройство</th>
           <th>Заметки</th>
           <th style="width: 130px;"></th>
         </tr>
@@ -56,12 +57,10 @@
             {{ formatDateTime(session.date) }}
           </td>
           <td>
-            <span v-if="session.operator_id === currentUser?.id">
-              {{ currentUser.first_name }} {{ currentUser.last_name }}
-            </span>
-            <span v-else>
-              {{ session.operator_id }}
-            </span>
+              {{ session.operator?.first_name }} {{ session.operator?.last_name }}
+          </td>
+          <td>
+              {{ session.device?.name }}
           </td>
           <td>{{ session.notes || '—' }}</td>
           <td>
@@ -88,7 +87,7 @@
         {{ modalDialogEdit.editing ? "Редактировать сеанс" : "Новый сеанс" }}
       </v-card-title>
       <v-card-text>
-        <SessionForm ref="sessionFormRef" v-model="modalDialogEdit.form" />
+        <SessionForm ref="sessionFormRef" v-model="modalDialogEdit.form" :is-create="!modalDialogEdit.editing"/>
       </v-card-text>
       <v-card-actions class="justify-end">
         <v-btn @click="modalDialogEdit.visible = false">Отмена</v-btn>
@@ -99,7 +98,7 @@
     </v-card>
   </v-dialog>
 
-  <!-- Модалка подтверждения удаления -->
+  <!-- Модальное окно подтверждения удаления -->
   <v-dialog v-model="modalDialogDelete.visible" max-width="400px">
     <v-card>
       <v-card-title>Удалить сеанс?</v-card-title>
@@ -180,6 +179,7 @@ const openEditDialog = (session = null) => {
     form: session
       ? {
         ...session,
+        device_id: session.device.id,
         date: session.date.slice(0, 16),
       }
       : {

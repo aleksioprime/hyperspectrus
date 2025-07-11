@@ -5,8 +5,7 @@ from sqlalchemy.exc import IntegrityError
 
 from src.exceptions.base import BaseException
 from src.models.patient import Session
-from src.modules.patients.schemas.session import (
-    SessionSchema, SessionCreateSchema, SessionUpdateSchema, SessionDetailSchema, SessionQueryParams,)
+from src.modules.patients.schemas.session import SessionCreateSchema, SessionUpdateSchema, SessionDetailSchema
 from src.modules.patients.repositories.uow import UnitOfWork
 
 from src.celery_app import celery_app
@@ -17,15 +16,6 @@ class SessionService:
     """ Сервис для управления сеансами пациентов """
     def __init__(self, uow: UnitOfWork):
         self.uow = uow
-
-    async def get_all(self, params: SessionQueryParams) -> List[SessionSchema]:
-        """
-        Выдаёт список сеансов пациентов
-        """
-        async with self.uow:
-            sessions = await self.uow.session_repo.get_all(params)
-
-        return sessions
 
     async def get_detail_by_id(self, patient_id: UUID, session_id: UUID) -> SessionDetailSchema:
         """
@@ -42,7 +32,7 @@ class SessionService:
 
         return session
 
-    async def create(self, body: SessionCreateSchema, user_id: UUID, patient_id: UUID) -> SessionSchema:
+    async def create(self, body: SessionCreateSchema, user_id: UUID, patient_id: UUID) -> SessionDetailSchema:
         """
         Создаёт новый сеанс пациента
         """
@@ -60,7 +50,7 @@ class SessionService:
 
         return session
 
-    async def update(self, body: SessionUpdateSchema, patient_id: UUID, session_id: UUID) -> SessionSchema:
+    async def update(self, body: SessionUpdateSchema, patient_id: UUID, session_id: UUID) -> SessionDetailSchema:
         """
         Обновляет информацию о сеансе пациента по его ID
         """
@@ -78,12 +68,11 @@ class SessionService:
             await self._get_session_checked(session_id, patient_id)
             await self.uow.session_repo.delete(session_id)
 
-    async def set_processing_task_id(self, patient_id: UUID, session_id: UUID, task_id: str) -> None:
+    async def set_processing_task_id(self, session_id: UUID, task_id: str) -> None:
         """
         Записывает ID задачи обработки данных в указанный сеанс
         """
         async with self.uow:
-            await self._get_session_checked(session_id, patient_id)
             await self.uow.session_repo.set_processing_task_id(session_id, task_id)
 
     async def get_processing_status(self, patient_id: UUID, session_id: UUID) -> dict:

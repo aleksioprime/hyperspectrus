@@ -16,14 +16,5 @@ class RawImageSchema(BaseModel):
     class Config:
         from_attributes = True
 
-
-class RawImageUpdateSchema(BaseModel):
-    """
-    Схема для редактирования информации об исходном изображении
-    """
-    spectrum_id: UUID | None = Field(None, description="Новый ID длины волны")
-    file_path: str | None = Field(None, description="Новый путь к файлу изображения")
-
-
 class RawImageIdsSchema(BaseModel):
     ids: List[UUID]

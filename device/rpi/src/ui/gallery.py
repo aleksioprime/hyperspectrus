@@ -1,9 +1,16 @@
-from PyQt5.QtWidgets import QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout
+from PyQt5.QtWidgets import (
+    QWidget, QLabel, QPushButton, QVBoxLayout, QHBoxLayout, QSizePolicy
+)
 from PyQt5.QtGui import QPixmap, QIcon
-from PyQt5.QtCore import Qt, QSize
+from PyQt5.QtCore import Qt, QSize, QTimer
 from services.photo import get_photos_for_task
 from config.settings import icon_path
 import os
+import logging
+
+
+logger = logging.getLogger(__name__)
+
 
 """
 Виджет галереи для просмотра фото выбранной задачи.
@@ -16,7 +23,6 @@ class GalleryWidget(QWidget):
     def __init__(self, task_id):
         super().__init__()
         self.setWindowTitle("Галерея")
-        self.setFixedSize(480, 320)
         self.setStyleSheet("font-size: 18px;")
         self.task_id = task_id
         self.photos = get_photos_for_task(task_id)
@@ -24,7 +30,8 @@ class GalleryWidget(QWidget):
 
         self.image_label = QLabel()
         self.image_label.setAlignment(Qt.AlignCenter)
-        self.image_label.setFixedSize(480, 240)
+        self.image_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        self.image_label.setMaximumHeight(int(self.height() * 0.76))
 
         self.counter_label = QLabel()
         self.counter_label.setAlignment(Qt.AlignCenter)
@@ -68,8 +75,10 @@ class GalleryWidget(QWidget):
         layout.addLayout(top_layout)
         layout.addWidget(self.image_label)
         layout.addWidget(self.filename_label)
+        layout.addStretch(1)
         layout.addLayout(nav_layout)
         self.setLayout(layout)
+
         self.update_image()
 
     def update_image(self):
@@ -86,6 +95,8 @@ class GalleryWidget(QWidget):
             self.next_btn.setEnabled(False)
             return
 
+        logger.info(f"Размеры label: {self.image_label.width()}x{self.image_label.height()}")
+
         # Убедимся, что индекс в допустимом диапазоне
         self.index = min(max(0, self.index), total - 1)
         photo_path = self.photos[self.index]
@@ -94,12 +105,20 @@ class GalleryWidget(QWidget):
         if not os.path.isfile(photo_path):
             self.image_label.setText("Файл не найден")
             self.filename_label.setText(photo_path)
+            self.image_label.setPixmap(QPixmap())
         else:
-            pixmap = QPixmap(photo_path).scaled(
-                self.image_label.width(), self.image_label.height(),
-                Qt.KeepAspectRatio, Qt.SmoothTransformation
-            )
-            self.image_label.setPixmap(pixmap)
+            pixmap = QPixmap(photo_path)
+            if not pixmap.isNull():
+                label_w = self.image_label.width()
+                label_h = self.image_label.height()
+                logger.info(f"Размеры фото: {label_w}x{label_h}")
+                scaled = pixmap.scaled(
+                    label_w, label_h,
+                    Qt.KeepAspectRatio, Qt.SmoothTransformation
+                )
+                self.image_label.setPixmap(scaled)
+            else:
+                self.image_label.setText("Ошибка загрузки")
             self.filename_label.setText(os.path.basename(photo_path))
         self.counter_label.setText(f"Фото {self.index + 1} / {total}")
 

@@ -23,7 +23,7 @@ class PhotoTask(Base):
     id = Column(String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     title = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
-    spectra = Column(JSON, nullable=False) # [{'id': '...', 'rgb': [R,G,B]}, ...]
+    spectra = Column(JSON, nullable=False) # [470, 660, 810]
     status = Column(String, default="pending")  # pending/completed
     photos = relationship("Photo", back_populates="task", cascade="all, delete-orphan")
 

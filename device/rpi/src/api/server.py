@@ -11,25 +11,16 @@ app = FastAPI()
 
 # ----------------------- Pydantic схемы ----------------------------
 
-class SpectrumIn(BaseModel):
-    # Схема для одного спектра при создании задачи (id справочника и параметры RGB)
-    id: str
-    rgb: List[int]
-
 class PhotoTaskIn(BaseModel):
     # Схема запроса создания задачи: название + список спектров (каждый - id + rgb)
     title: str
-    spectra: List[SpectrumIn]
-
-class SpectrumOut(SpectrumIn):
-    # Схема для вывода спектра в API-ответах (совпадает с входной)
-    pass
+    spectra: List[int]
 
 class PhotoTaskOut(BaseModel):
     # Схема для вывода задачи (id, название, список спектров, статус)
     id: str
     title: str
-    spectra: List[SpectrumOut]
+    spectra: List[int]
     status: str
 
 # ----------------------- API эндпойнты ----------------------------
@@ -68,12 +59,10 @@ def create_task(task: PhotoTaskIn):
     """
     db = SessionLocal()
     try:
-        # Преобразуем spectra в список dict'ов для записи как JSON в БД
-        obj = PhotoTask(title=task.title, spectra=[s.dict() for s in task.spectra])
+        obj = PhotoTask(title=task.title, spectra=task.spectra)
         db.add(obj)
         db.commit()
         db.refresh(obj)
-        # Возвращаем полную инфу о задаче (id, title, spectra, status)
         return PhotoTaskOut(
             id=obj.id, title=obj.title, spectra=obj.spectra, status=obj.status
         )

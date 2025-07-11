@@ -11,6 +11,11 @@ from ui.main import CameraApp
 
 import signal
 
+import logging.config
+from config.logging import LOGGING
+
+logging.config.dictConfig(LOGGING)
+
 def handle_sigint(*args):
     QApplication.quit()
 

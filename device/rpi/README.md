@@ -1,69 +1,82 @@
 # Приложения для устройства съёмки
 
-## Запуск программы на Raspberry Pi
+## Подготовка системного окружения
 
-Тестируемая конфигурация:
-
-- Микрокомпьютер: Raspberry Pi 3 B+
-- Камера: USB HD-камера 2MP CMOS OV2710 1080P
-- Экран: сенсорный экран Waveshare 3.5inch RPi LCD (C)
-- Операционная система: Raspberry PI OS (Legacy, 32-bit) - Debian Bullseye
-
-Справочная информация:
-
-- https://www.waveshare.com/wiki/3.5inch_RPi_LCD_(C)
-- https://www.waveshare.com/wiki/3.5inch_RPi_LCD_(C)_Manual_Configuration
-
-
-## Подготовка окружения (можно через SSH)
-
-Установите и запустите драйвера для LCD:
-```
-git clone https://github.com/waveshare/LCD-show.git
-cd LCD-show/
-chmod +x LCD35C-show
-./LCD35C-show 180
+Обновите список пакетов и установите системные обновления:
+```sh
+sudo apt update
+sudo apt upgrade -y
 ```
 
-Для поворота экрана откройте файл настроек:
+Установите дополнительные пакеты:
+```sh
+sudo apt install libatlas-base-dev -y
 ```
+
+Перейдите в консольную панель настроек Raspberry Pi:
+```sh
+sudo raspi-config
+```
+
+Для включения сервера удалённого рабочего стола из главного меню перейдите в `Interfacing Options` → `VNC` и выберите `Enable`.
+
+Для включения доступа к GPIO-пинам из главного меню перейдите в `Interfacing Options` → `Remote GPIO` и выберите `Yes`. Также лучше выключить SPI, чтобы освободить все пины, для этого выберит `SPI` и нажмите `No`.
+
+После всех настроек в главном меню выберите `Finish` и, если будет вопрос `Would you like to reboot now?`, нажмите на `Yes`
+
+Чтобы заставить Raspberry Pi всегда считать, что к HDMI-порту подключён монитор (необходимо для VNC и для корректировки изображения на китайских мини-дисплеях), и настроить его, откройте файл:
+```sh
 sudo nano /boot/config.txt
 ```
-Измените строку:
+
+Добавьте строки:
 ```
-...
-dtoverlay=waveshare35c:rotate=270
-...
+hdmi_force_hotplug=1
+hdmi_group=2
+hdmi_mode=87
+hdmi_cvt=800 480 60 6 0 0 0
+```
+Примечание: в настройке `hdmi_cvt` задайте разрешение вашего дисплея. Расшифровка настройки: `hdmi_cvt=<Ширина экрана в пикселях> <Высота экрана в пикселях> <Частота обновления экрана> <Соотношение сторон> <Междустрочные поля> <Чересстрочная развертка> <Reduced blanking>`
+
+
+Сохраните изменения в файле и перезагрузите устройство:
+```
+sudo reboot
 ```
 
-Установите библиотеку OpenCV:
-```
-sudo apt install libopenblas0 libatlas-base-dev
-pip install opencv-python==4.11.0.86
-pip install pillow==11.2.1
-```
+## Подготовка проекта
 
-Установите библиотеку PyQT:
-```
-sudo apt install qtbase5-dev qt5-qmake
-pip install pyqt5 --only-binary=:all:
-```
-
-## Запуск программы
-
-Скопируйте проект:
+Скачайте проект:
 ```
 wget https://github.com/aleksioprime/hyperspectrus/archive/refs/heads/main.zip
 unzip main.zip
-mkdir ~/hyperspectrus
-mv hyperspectrus-main/device/rpi/* ~/hyperspectrus/
-chmod +x ~/hyperspectrus/kiosk.sh
 ```
 
-Удаление скачанных файлов:
+Перенесите в рабочую папку:
+```
+mkdir ~/hyperspectrus && mv hyperspectrus-main/device/rpi/* ~/hyperspectrus/
+```
+
+Удалите скачанные файлы:
 ```
 rm -rf ~/main.zip ~/hyperspectrus-main
 ```
+
+Установите необходимые библиотеки:
+```
+pip install -r ~/hyperspectrus/requirements.txt
+```
+
+## Запуск проекта
+
+### Ручной запуск (только на самой плате)
+
+Подключитесь к рабочему столу через VNC, откройте терминал и запустите:
+```
+cd ~/hyperspectrus/src && python run.py
+```
+
+### Автоматический запуск в режиме KIOSK (можно по SSH)
 
 Добавьте права на скрипт включения режима KIOSK:
 ```
@@ -80,51 +93,18 @@ chmod +x ~/hyperspectrus/kiosk.sh
 ~/hyperspectrus/kiosk.sh disable
 ```
 
-## Ручная настройка автозапуска:
+## Тестирование проекта
 
-Создайте файл для автозапуска:
-```
-mkdir -p ~/.config/autostart
-nano ~/.config/autostart/camera-app.desktop
-```
+Тест подключения к локалному web-серверу приложения:
 
-Содержимое файла:
-```
-[Desktop Entry]
-Type=Application
-Name=CameraApp
-Exec=/usr/bin/python3 /home/pi/hyperspectrus/src/run.py
-X-GNOME-Autostart-enabled=true
-```
+curl -X POST "http://localhost:8080
 
-Уберите системную панель и рабочий стол.
-Откройте файл:
+Тест создания задачи:
 ```
-mkdir -p ~/.config/lxsession/LXDE-pi
-nano ~/.config/lxsession/LXDE-pi/autostart
-```
-
-Запишите следующие строки:
-```
-@xset s off
-@xset -dpms
-@xset s noblank
-@unclutter -idle 0
-```
-
-Для включения рабочего стола нужно добавить эти строки (для выключение - закомментировать #):
-```
-@lxpanel --profile LXDE-pi
-@pcmanfm --desktop --profile LXDE-pi
-```
-
-Тестовый запрос через CURL:
-
-```
-curl -X POST http://localhost:8080/tasks \
-  -H "Content-Type: application/json" \
-  -d '{
-    "title": "Тестовая серия",
-    "spectra": [[255,0,0],[0,255,0],[0,0,255],[255,255,0],[255,255,255]]
-  }'
+curl -X POST "http://localhost:8080/tasks" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "title": "Больная Кузьмина А.В.",
+           "spectra": [470, 660, 810]
+         }'
 ```

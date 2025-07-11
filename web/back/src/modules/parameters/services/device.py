@@ -88,9 +88,9 @@ class DeviceService:
             for spectrum in device.spectra:
                 for chromophore in chromophores:
                     if chromophore.symbol.lower() == "bkg":
-                        coefficient_value = 100.00
+                        coefficient_value = 100
                     else:
-                        coefficient_value = round(random.uniform(0, 50000), 2)
+                        coefficient_value = random.randint(0, 50000)
                     overlap = await self.uow.overlap.get_by_spec_and_chrom(
                         spectrum.id, chromophore.id
                     )

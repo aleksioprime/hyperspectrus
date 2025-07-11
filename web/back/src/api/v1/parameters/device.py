@@ -26,7 +26,7 @@ router = APIRouter()
 )
 async def get_devices(
         service: Annotated[DeviceService, Depends(get_device_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE, RoleName.ADMIN}))],
 ) -> list[DeviceSchema]:
     """
     Возвращает список всех устройств
@@ -44,7 +44,7 @@ async def get_devices(
 async def get_device(
         device_id: UUID,
         service: Annotated[DeviceService, Depends(get_device_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.ADMIN}))],
 ) -> DeviceDetailSchema:
     """
     Получает детальную информацию об устройстве
@@ -61,7 +61,7 @@ async def get_device(
 async def create_device(
         body: DeviceCreateSchema,
         service: Annotated[DeviceService, Depends(get_device_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.ADMIN}))],
 ) -> DeviceSchema:
     """
     Создаёт новое устройство
@@ -80,7 +80,7 @@ async def update_device(
         device_id: UUID,
         body: DeviceUpdateSchema,
         service: Annotated[DeviceService, Depends(get_device_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.ADMIN}))],
 ) -> DeviceSchema:
     """
     Обновляет устройство по его ID
@@ -97,7 +97,7 @@ async def update_device(
 async def delete_device(
         device_id: UUID,
         service: Annotated[DeviceService, Depends(get_device_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.ADMIN}))],
 ) -> None:
     """
     Удаляет устройство по его ID
@@ -113,7 +113,7 @@ async def delete_device(
 async def fill_device_overlaps_random(
     device_id: UUID,
     service: Annotated[DeviceService, Depends(get_device_service)],
-    user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
+    user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.ADMIN}))],
 ):
     """
     Заполняет матрицу перекрытий случайными коэффициентами для всех спектров устройства

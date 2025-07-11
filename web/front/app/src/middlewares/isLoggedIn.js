@@ -1,5 +1,6 @@
 import { useAuthStore } from "@/stores/auth";
 import jwtService from "@/services/jwt/jwt.service";
+import logger from '@/common/helpers/logger';
 
 export const isLoggedIn = async ({ to }) => {
   const authStore = useAuthStore();
@@ -11,10 +12,10 @@ export const isLoggedIn = async ({ to }) => {
   if (!accessToken || !authStore.isAuthenticated) {
     if (!jwtService.getRefreshToken()) return { name: "login" };
     try {
-      console.log("Attempting token refresh...");
+      logger.info("Попытка обновления токена....");
       await authStore.refresh(); // Обновляем токен
     } catch (error) {
-      console.error("Token refresh failed:", error);
+      logger.error("Обновление токена не удалось:", error);
     }
   }
 

@@ -50,7 +50,7 @@ async def get_patients(
 async def get_patient(
         patient_id: UUID,
         service: Annotated[PatientService, Depends(get_patient_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE, RoleName.ADMIN}))],
 ) -> PatientDetailSchema:
     """
     Получает детальную информацию о пациенте
@@ -67,7 +67,7 @@ async def get_patient(
 async def create_patient(
         body: PatientCreateSchema,
         service: Annotated[PatientService, Depends(get_patient_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE, RoleName.ADMIN}))],
 ) -> PatientSchema:
     """
     Создаёт нового пациента
@@ -86,7 +86,7 @@ async def update_patient(
         patient_id: UUID,
         body: PatientUpdateSchema,
         service: Annotated[PatientService, Depends(get_patient_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE, RoleName.ADMIN}))],
 ) -> PatientSchema:
     """
     Обновляет пациента по его ID
@@ -103,7 +103,7 @@ async def update_patient(
 async def delete_patient(
         patient_id: UUID,
         service: Annotated[PatientService, Depends(get_patient_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE, RoleName.ADMIN}))],
 ) -> None:
     """
     Удаляет пациента по его ID

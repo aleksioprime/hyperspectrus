@@ -27,7 +27,7 @@ router = APIRouter()
 async def get_spectrums(
         device_id: UUID,
         service: Annotated[SpectrumService, Depends(get_spectrum_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE, RoleName.ADMIN}))],
 ) -> list[SpectrumSchema]:
     """
     Возвращает список всех спектров выбранного устройства
@@ -46,7 +46,7 @@ async def create_spectrum(
         device_id: UUID,
         body: SpectrumCreateSchema,
         service: Annotated[SpectrumService, Depends(get_spectrum_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.ADMIN}))],
 ) -> SpectrumSchema:
     """
     Создаёт новый спектр
@@ -66,7 +66,7 @@ async def update_spectrum(
         spectrum_id: UUID,
         body: SpectrumUpdateSchema,
         service: Annotated[SpectrumService, Depends(get_spectrum_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.ADMIN}))],
 ) -> SpectrumSchema:
     """
     Обновляет спектр по его ID
@@ -84,7 +84,7 @@ async def delete_spectrum(
         device_id: UUID,
         spectrum_id: UUID,
         service: Annotated[SpectrumService, Depends(get_spectrum_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.ADMIN}))],
 ) -> None:
     """
     Удаляет спектр по его ID

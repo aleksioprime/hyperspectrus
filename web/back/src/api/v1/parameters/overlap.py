@@ -27,7 +27,7 @@ router = APIRouter()
 async def create_overlap_coefficient(
         body: OverlapCoefficientCreateSchema,
         service: Annotated[OverlapCoefficientService, Depends(get_overlap_coefficient_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.ADMIN}))],
 ) -> OverlapCoefficientSchema:
     """
     Создаёт новый коэффициент перекрытия
@@ -46,7 +46,7 @@ async def update_overlap_coefficient(
         overlap_coefficient_id: UUID,
         body: OverlapCoefficientUpdateSchema,
         service: Annotated[OverlapCoefficientService, Depends(get_overlap_coefficient_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.ADMIN}))],
 ) -> OverlapCoefficientSchema:
     """
     Обновляет коэффициент перекрытия по его ID
@@ -63,7 +63,7 @@ async def update_overlap_coefficient(
 async def delete_overlap_coefficient(
         overlap_coefficient_id: UUID,
         service: Annotated[OverlapCoefficientService, Depends(get_overlap_coefficient_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.ADMIN}))],
 ) -> None:
     """
     Удаляет коэффициент перекрытия по его ID

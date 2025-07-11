@@ -30,7 +30,7 @@ async def get_session(
         patient_id: UUID,
         session_id: UUID,
         service: Annotated[SessionService, Depends(get_session_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE, RoleName.ADMIN}))],
 ) -> SessionDetailSchema:
     """
     Получает детальную информацию о сеансе
@@ -49,7 +49,7 @@ async def create_session(
         patient_id: UUID,
         body: SessionCreateSchema,
         service: Annotated[SessionService, Depends(get_session_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE, RoleName.ADMIN}))],
 ) -> SessionDetailSchema:
     """
     Создаёт новый сеанс
@@ -69,7 +69,7 @@ async def update_session(
         session_id: UUID,
         body: SessionUpdateSchema,
         service: Annotated[SessionService, Depends(get_session_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE, RoleName.ADMIN}))],
 ) -> SessionDetailSchema:
     """
     Обновляет сеанс по его ID
@@ -87,7 +87,7 @@ async def delete_session(
         patient_id: UUID,
         session_id: UUID,
         service: Annotated[SessionService, Depends(get_session_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE, RoleName.ADMIN}))],
 ) -> None:
     """
     Удаляет сеанс по его ID
@@ -102,7 +102,7 @@ async def delete_session(
 )
 async def set_processing_session(
         session_id: UUID,
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE, RoleName.ADMIN}))],
         service: Annotated[SessionService, Depends(get_session_service)],
 ):
     """
@@ -122,7 +122,7 @@ async def get_processing_status(
         patient_id: UUID,
         session_id: UUID,
         service: Annotated[SessionService, Depends(get_session_service)],
-        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE}))],
+        user: Annotated[UserJWT, Depends(JWTBearer(allowed_roles={RoleName.EMPLOYEE, RoleName.ADMIN}))],
 ):
     """
     Проверить статус фоновой задачи обработки для сеанса по его ID

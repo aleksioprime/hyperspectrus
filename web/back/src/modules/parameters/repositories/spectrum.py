@@ -20,6 +20,7 @@ class SpectrumRepository:
             select(Spectrum)
             .where(Spectrum.device_id == device_id)
             .options(selectinload(Spectrum.overlaps))
+            .order_by(Spectrum.wavelength.asc())
         )
         result = await self.session.execute(query)
         return result.scalars().unique().all()

@@ -19,7 +19,7 @@ class RoleRepository(BaseRoleRepository, BaseSQLRepository):
 
     async def get_role_all(self) -> list[Role]:
         """ Получает список всех ролей """
-        query = select(Role)
+        query = select(Role).order_by(Role.name.asc())
         result = await self.session.execute(query)
         return result.scalars().all()
 

@@ -49,6 +49,7 @@ class UserRepository(BaseUserRepository, BaseSQLRepository):
         if params.organization_id is not None:
             query = query.where(User.organization_id == params.organization_id)
 
+        query = query.order_by(User.last_name.asc(), User.first_name.asc())
         query = query.limit(params.limit).offset(params.offset)
 
         result = await self.session.execute(query)

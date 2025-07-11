@@ -51,6 +51,9 @@ class PatientService:
             if not patient:
                 raise BaseException(f"Пациент с ID {patient_id} не найден")
 
+            if patient.sessions:
+                patient.sessions.sort(key=lambda s: s.date, reverse=True)
+
         return PatientDetailSchema.model_validate(patient)
 
     async def create(self, body: PatientCreateSchema) -> PatientSchema:

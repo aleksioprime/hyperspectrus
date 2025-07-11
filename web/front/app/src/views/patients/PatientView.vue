@@ -275,7 +275,7 @@ const submitDialog = async () => {
     const newPatient = await patientStore.createPatient(getFormPayload(form));
     if (!newPatient) return;
 
-    patients.value.unshift(newPatient);
+    await fetchPatients(true);
   }
 
   modalDialogEdit.value.visible = false;

@@ -16,7 +16,7 @@ class ChromophoreRepository:
 
     async def get_all(self) -> list[Chromophore]:
         """ Получает список всех хромофоров """
-        query = select(Chromophore)
+        query = select(Chromophore).order_by(Chromophore.name.asc())
         result = await self.session.execute(query)
         return result.scalars().all()
 

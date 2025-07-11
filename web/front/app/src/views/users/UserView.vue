@@ -330,7 +330,12 @@ const submitDialog = async () => {
   } else {
     const newUser = await userStore.createUser(getUserCreatePayload(form));
     if (!newUser) return;
-    users.value.unshift(newUser);
+    users.value.push(newUser);
+    users.value.sort((a, b) => {
+      const aName = (a.last_name || a.first_name || '').toLowerCase();
+      const bName = (b.last_name || b.first_name || '').toLowerCase();
+      return aName.localeCompare(bName);
+    });
   }
 
   modalDialogEdit.value.visible = false;

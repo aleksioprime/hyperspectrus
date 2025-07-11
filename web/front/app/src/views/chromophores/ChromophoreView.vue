@@ -118,7 +118,10 @@ const submitDialog = async () => {
     if (index !== -1) chromophores.value[index] = { ...chromophores.value[index], ...form };
   } else {
     const newChromophore = await chromophoreStore.createChromophore(getFormPayload(form));
-    if (newChromophore) chromophores.value.unshift(newChromophore);
+    if (newChromophore) {
+      chromophores.value.push(newChromophore);
+      chromophores.value.sort((a, b) => a.name.localeCompare(b.name));
+    }
   }
 
   modalDialogEdit.value.visible = false;

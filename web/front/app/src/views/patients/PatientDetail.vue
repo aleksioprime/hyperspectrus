@@ -216,7 +216,8 @@ const submitDialog = async () => {
     const newSession = await sessionStore.createSession(patient.value.id, form);
     if (!newSession) return
 
-    patient.value.sessions.unshift(newSession);
+    patient.value.sessions.push(newSession);
+    patient.value.sessions.sort((a, b) => new Date(b.date) - new Date(a.date));
   }
 
   modalDialogEdit.value.visible = false;

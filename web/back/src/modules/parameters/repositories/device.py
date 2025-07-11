@@ -16,7 +16,7 @@ class DeviceRepository:
 
     async def get_all(self) -> list[Device]:
         """ Получает список всех устройств """
-        query = select(Device)
+        query = select(Device).order_by(Device.name.asc())
         result = await self.session.execute(query)
         return result.scalars().all()
 

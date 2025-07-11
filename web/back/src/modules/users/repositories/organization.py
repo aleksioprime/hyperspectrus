@@ -19,7 +19,7 @@ class OrganizationRepository(BaseOrganizationRepository, BaseSQLRepository):
 
     async def get_organization_all(self) -> list[Organization]:
         """ Получает список всех организаций """
-        query = select(Organization)
+        query = select(Organization).order_by(Organization.name.asc())
         result = await self.session.execute(query)
         return result.scalars().all()
 

@@ -29,6 +29,8 @@ class PatientRepository:
 
         total_query = select(func.count()).select_from(query.subquery())
 
+        query = query.order_by(Patient.full_name.asc())
+
         paginated_query = query.limit(params.limit).offset(params.offset * params.limit)
 
         total_result = await self.session.execute(total_query)

@@ -123,7 +123,8 @@ const submitDialog = async () => {
     const newOrganization = await organizationStore.createOrganization(getFormPayload(form));
     if (!newOrganization) return;
 
-    organizations.value.unshift(newOrganization);
+    organizations.value.push(newOrganization);
+    organizations.value.sort((a, b) => a.name.localeCompare(b.name));
   }
 
   modalDialogEdit.value.visible = false;

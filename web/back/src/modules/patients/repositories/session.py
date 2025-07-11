@@ -33,8 +33,10 @@ class SessionRepository:
                 joinedload(Session.patient),
                 joinedload(Session.operator),
                 joinedload(Session.device),
-                joinedload(Session.raw_images).joinedload(RawImage.spectrum),
-                joinedload(Session.reconstructed_images).joinedload(ReconstructedImage.chromophore),
+                joinedload(Session.raw_images)
+                    .joinedload(RawImage.spectrum),
+                joinedload(Session.reconstructed_images)
+                    .joinedload(ReconstructedImage.chromophore),
                 joinedload(Session.result),
             )
             .where(Session.id == session_id)

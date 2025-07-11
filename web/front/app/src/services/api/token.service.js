@@ -2,6 +2,7 @@ import { backendClient } from "./axios.clients";
 import jwtService from "@/services/jwt/jwt.service";
 import { jwtDecode } from "jwt-decode";
 import logger from '@/common/helpers/logger';
+import { useAuthStore } from '@/stores/auth';
 
 let isRefreshing = false;
 let refreshSubscribers = [];
@@ -24,6 +25,9 @@ async function _refreshToken() {
     });
 
     if (result.data.access_token) {
+      const authStore = useAuthStore();
+      authStore.access_token = result.data.access_token;
+
       jwtService.saveAccessToken(result.data.access_token);
       logger.info(`Получен новый токен, срок действия: ${_getEncodedTokenData(result.data.access_token)}`);
       return result.data.access_token;

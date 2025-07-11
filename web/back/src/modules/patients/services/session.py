@@ -30,6 +30,14 @@ class SessionService:
             if session.patient_id != patient_id:
                 raise BaseException("Сессия не принадлежит указанному пациенту")
 
+            session.raw_images.sort(
+                key=lambda img: img.spectrum.wavelength if img.spectrum and img.spectrum.wavelength is not None else 0
+            )
+
+            session.reconstructed_images.sort(
+                key=lambda img: img.chromophore.name if img.chromophore and img.chromophore.name else ""
+            )
+
         return session
 
     async def create(self, body: SessionCreateSchema, user_id: UUID, patient_id: UUID) -> SessionDetailSchema:

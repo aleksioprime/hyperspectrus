@@ -133,8 +133,8 @@
             </tbody>
           </v-table>
         </v-card>
-        <v-btn v-if="authStore.isSuperuser" color="secondary" variant="outlined" size="small" class="my-3" @click="fillMatrixRandomly"
-          :loading="randomFillLoading">
+        <v-btn v-if="authStore.isSuperuser" color="secondary" variant="outlined" size="small" class="my-3"
+          @click="fillMatrixRandomly" :loading="randomFillLoading">
           <v-icon start>mdi-dice-multiple</v-icon>
           Заполнить матрицу случайно
         </v-btn>
@@ -316,7 +316,8 @@ const submitDeviceDialog = async () => {
 
     if (!newDevice) return;
 
-    devices.value.unshift(newDevice);
+    devices.value.push(newDevice);
+    devices.value.sort((a, b) => a.name.localeCompare(b.name));
   }
 
   modalDeviceDialog.value.visible = false;
@@ -393,7 +394,10 @@ const submitSpectrumDialog = async () => {
       name: form.name,
       wavelength: form.wavelength,
     });
-    if (newSpectrum) spectra.value.unshift(newSpectrum);
+    if (newSpectrum) {
+      selectedDevice.value.spectra.push(newSpectrum);
+      selectedDevice.value.spectra.sort((a, b) => a.wavelength - b.wavelength);
+    }
   }
   modalSpectrumDialog.value.visible = false;
 };

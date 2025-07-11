@@ -34,6 +34,8 @@ class DeviceService:
         async with self.uow:
             device = await self.uow.device.get_detail_by_id(device_id)
 
+            device.spectra.sort(key=lambda s: s.wavelength if s.wavelength is not None else 0)
+
         return device
 
     async def create(self, body: DeviceUpdateSchema) -> DeviceSchema:

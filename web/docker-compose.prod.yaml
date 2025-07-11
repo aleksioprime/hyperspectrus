@@ -53,6 +53,8 @@ services:
     container_name: hyperspectrus-celery
     <<: *app
     command: celery -A src.celery_app.celery_app worker --loglevel=info
+    volumes:
+      - media:/usr/src/app/media
     depends_on:
       rabbitmq:
         condition: service_healthy

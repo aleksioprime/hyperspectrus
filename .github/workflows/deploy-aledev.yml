@@ -1,6 +1,6 @@
-name: Deploy to Server
+name: Deploy to AleDev Server
 
-run-name: "Deploy to Server for ${{ github.ref_name }} by ${{ github.actor }}"
+run-name: "Deploy to AleDev Server for ${{ github.ref_name }} by ${{ github.actor }}"
 
 on:
   workflow_dispatch:

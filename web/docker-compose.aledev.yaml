@@ -1,0 +1,100 @@
+x-app: &app
+  env_file:
+    - ./.env
+  restart: always
+  platform: linux/amd64
+
+services:
+  postgres:
+    image: postgres:14
+    container_name: hyperspectrus-postgres
+    <<: *app
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "sh -c 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}'",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - postgres_volume:/var/lib/postgresql/data/
+    environment:
+      TZ: "Europe/Moscow"
+      PGTZ: "Europe/Moscow"
+
+  redis:
+    image: redis:6
+    container_name: hyperspectrus-redis
+    <<: *app
+    volumes:
+      - redis_volume:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: hyperspectrus-rabbitmq
+    <<: *app
+    volumes:
+      - rabbit_volume:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  celery_worker:
+    image: aleksioprime/hyperspectrus-back:latest
+    container_name: hyperspectrus-celery
+    <<: *app
+    command: celery -A src.celery_app.celery_app worker --loglevel=info
+    volumes:
+      - media:/usr/src/app/media
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+
+  backend:
+    image: aleksioprime/hyperspectrus-back:latest
+    container_name: hyperspectrus-back
+    <<: *app
+    command: python src/main.py
+    volumes:
+      - media:/usr/src/app/media
+    depends_on:
+      redis:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    image: aleksioprime/hyperspectrus-front:latest
+    container_name: hyperspectrus-front
+    <<: *app
+    volumes:
+      - media:/usr/share/nginx/html/media
+      - /etc/letsencrypt:/etc/letsencrypt
+      - /var/lib/letsencrypt:/var/lib/letsencrypt
+      - /var/www/certbot:/var/www/certbot
+      - /root/hyperspectrus/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - "8011:80"
+      - "44311:443"
+    depends_on:
+      backend:
+        condition: service_started
+
+volumes:
+  media:
+  postgres_volume:
+  redis_volume:
+  rabbit_volume:

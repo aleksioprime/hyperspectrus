@@ -33,22 +33,22 @@ jobs:
           echo "${{ secrets.ENV_VARS }}" > ~/aledev/services/hyperspectrus/.env
           echo "Файл .env загружен на сервер"
 
-          curl -o ~/aledev/services/hyperspectrus/docker-compose.prod.yaml https://raw.githubusercontent.com/aleksioprime/hyperspectrus/main/web/docker-compose.prod.yaml
+          curl -o ~/aledev/services/hyperspectrus/docker-compose.aledev.yaml https://raw.githubusercontent.com/aleksioprime/hyperspectrus/main/web/docker-compose.aledev.yaml
 
-          # Если nginx/nginx.conf НЕ существует, скачиваем его
-          if [ ! -f ~/aledev/services/hyperspectrus/nginx/nginx.conf ]; then
-            echo "Файл nginx/nginx.conf не найден. Скачиваем..."
+          # Если nginx/aledev.conf НЕ существует, скачиваем его
+          if [ ! -f ~/aledev/services/hyperspectrus/nginx/aledev.conf ]; then
+            echo "Файл nginx/aledev.conf не найден. Скачиваем..."
             mkdir -p ~/aledev/services/hyperspectrus/nginx
-            curl -v -o ~/aledev/services/hyperspectrus/nginx/nginx.conf https://raw.githubusercontent.com/aleksioprime/hyperspectrus/main/web/front/nginx/nginx.conf
+            curl -v -o ~/aledev/services/hyperspectrus/nginx/aledev.conf https://raw.githubusercontent.com/aleksioprime/hyperspectrus/main/web/front/nginx/aledev.conf
           else
-            echo "Файл nginx/nginx.conf уже существует. Не скачиваем."
+            echo "Файл nginx/aledev.conf уже существует. Не скачиваем."
           fi
 
           echo "${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}" | docker login --username ${{ secrets.DOCKER_HUB_USERNAME }} --password-stdin
 
-          docker compose -f docker-compose.prod.yaml down
-          docker compose -f docker-compose.prod.yaml pull
-          docker compose -f docker-compose.prod.yaml up -d --remove-orphans
+          docker compose -f docker-compose.aledev.yaml down
+          docker compose -f docker-compose.aledev.yaml pull
+          docker compose -f docker-compose.aledev.yaml up -d --remove-orphans
 
           echo "Удаляем старые неиспользуемые docker-образы..."
           docker image prune -a -f

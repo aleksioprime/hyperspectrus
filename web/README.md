@@ -201,3 +201,17 @@ VALUES
   (gen_random_uuid(), 'admin', 'Администратор', 'Администратор организации'),
   (gen_random_uuid(), 'employee', 'Сотрудник', 'Сотрудник организации');
 ```
+
+Сделать бэкап volume:
+```
+docker run --rm   -v media:/data:ro   -v $(pwd):/backup   busybox   tar czf /backup/backup_media.t
+ar.gz -C /data .
+docker run --rm   -v postgres_volume:/data:ro   -v $(pwd):/backup   busybox   tar czf /backup/backup_postgres.t
+ar.gz -C /data .
+```
+
+Восстановить volume:
+```
+docker run --rm -v media:/data -v $(pwd):/backup busybox tar xzf /backup/media.tar.gz -C /data
+docker run --rm -v postgres_volume:/data -v $(pwd):/backup busybox tar xzf /backup/postgres_volume_backup.tar.gz -C /data
+```

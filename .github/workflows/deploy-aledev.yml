@@ -29,7 +29,7 @@ jobs:
           cd ~/aledev/services/hyperspectrus
 
           # Загружаем переменные окружения на сервер
-          echo "${{ secrets.ENV_VARS }}" > ~/aledev/services/hyperspectrus/.env
+          echo "${{ secrets.ENV_ALEDEV_VARS }}" > ~/aledev/services/hyperspectrus/.env
           echo "Файл .env загружен на сервер"
 
           curl -o ~/aledev/services/hyperspectrus/docker-compose.aledev.yaml https://raw.githubusercontent.com/aleksioprime/hyperspectrus/main/web/docker-compose.aledev.yaml

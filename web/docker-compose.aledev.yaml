@@ -50,8 +50,8 @@ services:
         condition: service_healthy
 
   backend:
-    image: aleksioprime/hyperspectrus-back:latest
-    container_name: hyperspectrus-back
+    image: aleksioprime/hyperspectrus-aledev-back:latest
+    container_name: hyperspectrus-aledev-back
     <<: *app
     command: python src/main.py
     volumes:
@@ -63,8 +63,8 @@ services:
         condition: service_healthy
 
   frontend:
-    image: aleksioprime/hyperspectrus-front:latest
-    container_name: hyperspectrus-front
+    image: aleksioprime/hyperspectrus-aledev-front:latest
+    container_name: hyperspectrus-aledev-front
     <<: *app
     volumes:
       - media:/usr/share/nginx/html/media

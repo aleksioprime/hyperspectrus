@@ -37,8 +37,8 @@ services:
       retries: 5
 
   celery_worker:
-    image: aleksioprime/hyperspectrus-back:latest
-    container_name: hyperspectrus-celery
+    image: aleksioprime/hyperspectru-aledev-back:latest
+    container_name: hyperspectrus-aledev-celery
     <<: *app
     command: celery -A src.celery_app.celery_app worker --loglevel=info
     volumes:

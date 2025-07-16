@@ -37,7 +37,7 @@ class RedisSettings(BaseSettings):
 
     @property
     def url(self):
-        return f"redis://{self.host}:{self.port}/"
+        return f"redis://{self.host}:{self.port}"
 
 
 class RabbitSettings(BaseSettings):

@@ -38,7 +38,7 @@ services:
 
   celery_worker:
     image: aleksioprime/hyperspectrus-aledev-back:latest
-    container_name: hyperspectruss-aledev-celery
+    container_name: hyperspectrus-aledev-celery
     <<: *app
     command: celery -A src.celery_app.celery_app worker --loglevel=info
     volumes:

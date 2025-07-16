@@ -22,7 +22,7 @@ jobs:
 
     - name: Deploy on server
       run: |
-        ssh -i ~/.ssh/id_rsa -p 9022 ${{ secrets.SERVER_USER_ALEDEV }}@${{ secrets.SERVER_HOST_ALEDEV }} << 'EOF'
+        ssh -i ~/.ssh/id_rsa -p 9022 ${{ secrets.SERVER_USER_ALEDEV_HOME }}@${{ secrets.SERVER_HOST_ALEDEV }} << 'EOF'
 
           # Создаём папку, если её нет
           mkdir -p ~/aledev/services/hyperspectrus

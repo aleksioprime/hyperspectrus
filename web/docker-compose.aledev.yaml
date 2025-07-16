@@ -40,7 +40,7 @@ services:
     image: aleksioprime/hyperspectrus-aledev-back:latest
     container_name: hyperspectrus-aledev-celery
     <<: *app
-    command: celery -A src.celery_app.celery_app worker --loglevel=info
+    command: celery -A src.celery_app worker --loglevel=info
     volumes:
       - media:/usr/src/app/media
     depends_on:

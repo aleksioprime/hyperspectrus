@@ -57,6 +57,6 @@ jobs:
         docker build --target prod \
           --build-arg VITE_LOGGING=0 \
           --build-arg VITE_SERVICE_URL=$VITE_SERVICE_URL \
-          -t aleksioprime/hyperspectru-aledev-front:latest ./web/front
+          -t aleksioprime/hyperspectrus-aledev-front:latest ./web/front
 
         docker push aleksioprime/hyperspectrus-aledev-front:latest

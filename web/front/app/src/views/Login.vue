@@ -4,7 +4,7 @@
 
       <!-- Логотип и название -->
       <div class="mb-6 text-center">
-        <v-img :src="logo" alt="EmPolimer Logo" max-width="100" class="mx-auto mb-2"
+        <v-img :src="logo" alt="Hyperspectrus Logo" max-width="100" class="mx-auto mb-2"
           style="border-radius: 16px;"></v-img>
         <div class="text-h5 font-weight-bold" style="letter-spacing:1px;">Проект Hyperspectrus</div>
       </div>

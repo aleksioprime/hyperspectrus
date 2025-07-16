@@ -169,7 +169,7 @@ const organizations = ref([]);
 // --- СПИСОК ПОЛЬЗОВАТЕЛЕЙ ---
 
 // Переменные пагинированного списка
-const page = ref(0);
+const page = ref(1);
 const limit = 20;
 const total = ref(0);
 const hasNextPage = ref(true);
@@ -187,7 +187,7 @@ const fetchUsers = async (reset = false) => {
   // Если изменился фильтр или нужно перезагрузить весь список
   if (reset) {
     users.value = [];
-    page.value = 0;
+    page.value = 1;
     hasNextPage.value = true;
   }
 

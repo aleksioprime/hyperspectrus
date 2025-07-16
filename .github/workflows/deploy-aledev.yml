@@ -18,11 +18,11 @@ jobs:
         mkdir -p ~/.ssh
         echo "${{ secrets.SERVER_SSH_KEY_ALEDEV }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H ${{ secrets.SERVER_HOST_ALEDEV }} >> ~/.ssh/known_hosts
+        ssh-keyscan -p 9022 -H ${{ secrets.SERVER_HOST_ALEDEV }} >> ~/.ssh/known_hosts
 
     - name: Deploy on server
       run: |
-        ssh -i ~/.ssh/id_rsa ${{ secrets.SERVER_USER_ALEDEV }}@${{ secrets.SERVER_HOST_ALEDEV }} << 'EOF'
+        ssh -i ~/.ssh/id_rsa -p 9022 ${{ secrets.SERVER_USER_ALEDEV }}@${{ secrets.SERVER_HOST_ALEDEV }} << 'EOF'
 
           # Создаём папку, если её нет
           mkdir -p ~/aledev/services/hyperspectrus

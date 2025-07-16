@@ -100,6 +100,7 @@ export const useAuthStore = defineStore("auth", {
       const result = await resources.auth.login(credentials);
 
       if (result.__state === "success") {
+        this.access_token = result.data.access_token;
         jwtService.saveAccessToken(result.data.access_token);
         jwtService.saveRefreshToken(result.data.refresh_token);
         resources.auth.setAuthHeader(result.data.access_token);

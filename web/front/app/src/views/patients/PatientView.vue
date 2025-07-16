@@ -139,7 +139,7 @@ const snackbar = ref({
 // --- СПИСОК ПАЦИЕНТОВ ---
 
 // Переменные пагинированного списка
-const page = ref(0);
+const page = ref(1);
 const limit = 20;
 const total = ref(0);
 const hasNextPage = ref(true);
@@ -155,7 +155,7 @@ const fetchPatients = async (reset = false) => {
   // Если изменился фильтр или нужно перезагрузить весь список:
   if (reset) {
     patients.value = [];
-    page.value = 0;
+    page.value = 1;
     hasNextPage.value = true;
   }
 

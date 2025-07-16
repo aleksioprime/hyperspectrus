@@ -36,22 +36,36 @@ services:
       timeout: 5s
       retries: 5
 
-  celery_worker:
-    image: aleksioprime/hyperspectrus-aledev-back:latest
-    container_name: hyperspectrus-aledev-celery
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: hyperspectrus-rabbitmq
     <<: *app
-    command: celery -A src.celery_app worker --loglevel=info
+    volumes:
+      - rabbit_volume:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  celery_worker:
+    image: aleksioprime/hyperspectrus-back:latest
+    container_name: hyperspectrus-celery
+    <<: *app
+    command: celery -A src.celery_app.celery_app worker --loglevel=info
     volumes:
       - media:/usr/src/app/media
     depends_on:
+      rabbitmq:
+        condition: service_healthy
       redis:
         condition: service_healthy
       postgres:
         condition: service_healthy
 
   backend:
-    image: aleksioprime/hyperspectrus-aledev-back:latest
-    container_name: hyperspectrus-aledev-back
+    image: aleksioprime/hyperspectrus-back:latest
+    container_name: hyperspectrus-back
     <<: *app
     command: python src/main.py
     volumes:
@@ -63,8 +77,8 @@ services:
         condition: service_healthy
 
   frontend:
-    image: aleksioprime/hyperspectrus-aledev-front:latest
-    container_name: hyperspectrus-aledev-front
+    image: aleksioprime/hyperspectrus-front:latest
+    container_name: hyperspectrus-front
     <<: *app
     volumes:
       - media:/usr/share/nginx/html/media
@@ -73,8 +87,8 @@ services:
       - /var/www/certbot:/var/www/certbot
       - ~/aledev/services/hyperspectrus/nginx/aledev.conf:/etc/nginx/conf.d/default.conf
     ports:
-      - "8011:80"
-      - "44311:443"
+      - "80:80"
+      - "443:443"
     depends_on:
       backend:
         condition: service_started
@@ -83,3 +97,4 @@ volumes:
   media:
   postgres_volume:
   redis_volume:
+  rabbit_volume:

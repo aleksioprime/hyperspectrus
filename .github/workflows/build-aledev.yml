@@ -1,4 +1,4 @@
-name: Deploy to Docker Hub
+name: Build AleDev to Docker Hub
 
 run-name: "Build and push Docker images for ${{ github.ref_name }} by ${{ github.actor }}"
 
